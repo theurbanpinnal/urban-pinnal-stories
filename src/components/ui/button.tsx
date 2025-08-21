@@ -18,6 +18,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        elegant: "bg-craft-terracotta text-craft-ivory hover:bg-craft-clay transition-elegant font-medium tracking-wide",
+        story: "border-2 border-craft-terracotta text-craft-terracotta hover:bg-craft-terracotta hover:text-craft-ivory transition-elegant font-medium tracking-wide",
+        newsletter: "bg-accent text-accent-foreground hover:bg-craft-terracotta hover:text-craft-ivory transition-elegant",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -52,6 +52,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Brand-specific colors
+				craft: {
+					terracotta: 'hsl(var(--craft-terracotta))',
+					ivory: 'hsl(var(--warm-ivory))',
+					clay: 'hsl(var(--deep-clay))',
+					gold: 'hsl(var(--heritage-gold))',
+					green: 'hsl(var(--artisan-green))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -62,6 +70,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			fontFamily: {
+				serif: ['var(--font-serif)', 'serif'],
+				sans: ['var(--font-sans)', 'sans-serif'],
+			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-craft': 'var(--gradient-craft)',
+			},
+			boxShadow: {
+				'craft': 'var(--shadow-craft)',
+				'card': 'var(--shadow-card)',
+			},
+			transitionTimingFunction: {
+				'elegant': 'var(--transition-elegant)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
