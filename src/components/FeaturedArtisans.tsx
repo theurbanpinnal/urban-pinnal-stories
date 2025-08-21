@@ -40,7 +40,7 @@ const FeaturedArtisans = () => {
                 <div className="w-48 h-48 mx-auto rounded-full overflow-hidden shadow-card group-hover:shadow-craft transition-all duration-300">
                   <img 
                     src={artisan.image} 
-                    alt={`${artisan.name} from ${artisan.village}`}
+                    alt={`Portrait of ${artisan.name}, skilled artisan from ${artisan.village} village in Tamil Nadu, working with traditional handcraft techniques`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>

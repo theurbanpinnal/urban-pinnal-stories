@@ -4,12 +4,12 @@ const HeroSection = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Hero Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
-      </div>
+      <img 
+        src={heroImage}
+        alt="Traditional Tamil Nadu handloom weaving process showing skilled artisan hands creating beautiful textiles with natural materials"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
       
       {/* Hero Content */}
       <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
