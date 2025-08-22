@@ -2,9 +2,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import BrandIntroduction from "@/components/BrandIntroduction";
-import FeaturedArtisans from "@/components/FeaturedArtisans";
 import CraftSection from "@/components/CraftSection";
-import JournalPreview from "@/components/JournalPreview";
+// import JournalPreview from "@/components/JournalPreview";
 import NewsletterCTA from "@/components/NewsletterCTA";
 
 const Index = () => {
@@ -19,9 +18,9 @@ const Index = () => {
         <Navigation />
         <HeroSection />
         <BrandIntroduction />
-        <FeaturedArtisans />
+        {/* <FeaturedArtisans /> */}
         <CraftSection />
-        <JournalPreview />
+        {/* <JournalPreview /> */}
         <NewsletterCTA />
         <Footer />
       </div>
