@@ -4,33 +4,66 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, Phone, MapPin } from "lucide-react";
-import { useState } from "react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
+import { contactFormSchema, type ContactFormData } from "@/lib/validations";
+import { submitToSpamFreeForm, submitToCustomAPI } from "@/lib/form-submissions";
 
 const Contact = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+      _honeypot: "", // Hidden field for spam protection
+    },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: "Thank you for reaching out. We'll get back to you soon.",
-    });
-    setFormData({ name: "", email: "", subject: "", message: "" });
-  };
+  const onSubmit = async (data: ContactFormData) => {
+    try {
+      let result;
+      
+      try {
+        // Try Spam-free Form first
+        result = await submitToSpamFreeForm(data);
+      } catch (spamFreeError) {
+        // If Spam-free Form fails (CORS, network, etc.), fallback to custom API
+        console.log('Spam-free Form unavailable, using fallback API');
+        result = await submitToCustomAPI(data);
+      }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+      if (result.success) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: result.message,
+        });
+        reset(); // Clear the form
+      } else {
+        toast({
+          title: "Failed to Send Message",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -131,21 +164,30 @@ const Contact = () => {
                   Send Us a Message
                 </h2>
                 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Honeypot field for spam protection - hidden from users */}
+                  <input
+                    {...register("_honeypot")}
+                    type="text"
+                    style={{ display: "none" }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+
                   <div>
                     <Label htmlFor="name" className="text-sm font-medium text-foreground mb-2 block">
                       Full Name *
                     </Label>
                     <Input
                       id="name"
-                      name="name"
                       type="text"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full"
+                      {...register("name")}
+                      className={`w-full ${errors.name ? "border-red-500" : ""}`}
                       placeholder="Your full name"
                     />
+                    {errors.name && (
+                      <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -154,14 +196,14 @@ const Contact = () => {
                     </Label>
                     <Input
                       id="email"
-                      name="email"
                       type="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full"
+                      {...register("email")}
+                      className={`w-full ${errors.email ? "border-red-500" : ""}`}
                       placeholder="your.email@example.com"
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -170,14 +212,14 @@ const Contact = () => {
                     </Label>
                     <Input
                       id="subject"
-                      name="subject"
                       type="text"
-                      required
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full"
+                      {...register("subject")}
+                      className={`w-full ${errors.subject ? "border-red-500" : ""}`}
                       placeholder="What would you like to discuss?"
                     />
+                    {errors.subject && (
+                      <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -186,13 +228,13 @@ const Contact = () => {
                     </Label>
                     <Textarea
                       id="message"
-                      name="message"
-                      required
-                      value={formData.message}
-                      onChange={handleChange}
-                      className="w-full min-h-[120px]"
+                      {...register("message")}
+                      className={`w-full min-h-[120px] ${errors.message ? "border-red-500" : ""}`}
                       placeholder="Tell us more about your inquiry..."
                     />
+                    {errors.message && (
+                      <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+                    )}
                   </div>
 
                   <Button 
@@ -200,8 +242,10 @@ const Contact = () => {
                     variant="elegant" 
                     size="lg" 
                     className="w-full"
+                    disabled={isSubmitting}
                   >
-                    Send Message
+                    {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </div>
