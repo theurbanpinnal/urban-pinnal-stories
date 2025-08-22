@@ -9,7 +9,7 @@ export const sanityClient = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID as string,
   dataset: import.meta.env.VITE_SANITY_DATASET as string,
   apiVersion: import.meta.env.VITE_SANITY_API_VERSION || "2023-10-15",
-  useCdn: true, // `false` if you need the freshest data
+  useCdn: import.meta.env.PROD, // Use CDN in production, fresh data in development
 });
 
 export interface SanityPost {
