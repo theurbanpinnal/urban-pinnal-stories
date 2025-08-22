@@ -1,8 +1,9 @@
 import heroImage from "@/assets/hero-weaving-3.jpg";
 import AnimatedHandwriting from "@/components/AnimatedHandwriting";
 
-// Royalty-free typewriter sound from Pixabay (free for commercial use)
-const typewriterSfx = "https://cdn.pixabay.com/download/audio/2023/05/25/audio_7e4d3e10ae.mp3?filename=typewriter-typing-146859.mp3";
+// Typewriter sound - disabled due to CORS issues
+// const typewriterSfx = "https://cdn.pixabay.com/download/audio/2023/05/25/audio_7e4d3e10ae.mp3?filename=typewriter-typing-146859.mp3";
+const typewriterSfx = undefined; // Disable audio for now
 
 const HeroSection = () => {
   return (
