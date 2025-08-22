@@ -20,4 +20,34 @@ export default defineConfig(({ mode }) => ({
     },
   },
   assetsInclude: ['**/*.PNG', '**/*.JPG', '**/*.JPEG', '**/*.GIF', '**/*.WEBP'],
+  // Production build optimizations
+  build: {
+    // Raise warning limit or adjust as needed
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        // Manual vendor chunking to improve cacheability and reduce initial bundle size
+        manualChunks: {
+          react: [
+            'react',
+            'react-dom',
+            'react-dom/client'
+          ],
+          'react-router': [
+            'react-router-dom',
+            'react-router'
+          ],
+          'tanstack-query': [
+            '@tanstack/react-query'
+          ],
+          shadcn: [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tooltip'
+          ]
+        }
+      }
+    }
+  },
 }));
