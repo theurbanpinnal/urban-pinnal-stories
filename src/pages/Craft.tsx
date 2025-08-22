@@ -25,62 +25,80 @@ const Craft = () => {
           </div>
         </section>
 
-        {/* Coming Soon Content */}
-        <section className="py-20">
-          <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="bg-craft-terracotta/10 rounded-lg p-12 mb-16">
-                <h2 className="font-serif text-3xl font-bold text-foreground mb-6">
-                  Coming Soon
-                </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                  We're crafting something beautiful for this page. Soon, you'll be able to explore our traditional techniques, 
-                  learn about natural materials, and discover the intricate processes that bring our handmade products to life.
-                </p>
-                <div className="inline-flex items-center px-6 py-3 bg-craft-terracotta text-craft-ivory rounded-lg">
-                  <Clock className="w-5 h-5 mr-2" />
-                  <span className="font-medium">Under Development</span>
-                </div>
+        {/* Natural Materials Section */}
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
+                Natural & Ethical Materials
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                We honour the earth that nurtures us by selecting materials that are gentle on the planet and safe for the people who craft and use them. Our artisans work primarily with <span className="font-semibold text-foreground">wild-harvested cane, sustainably farmed ratan, and locally sourced natural fibres</span>.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                Dyes are extracted from <span className="font-semibold text-foreground">turmeric, indigo, marigold</span>, and other botanical sources, ensuring every hue mirrors nature’s own palette. These practices reduce chemical pollution and celebrate the rich biodiversity of Tamil Nadu.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <Leaf className="w-8 h-8 text-craft-terracotta" />
+                <span className="text-base font-medium text-foreground">100% Plastic-Free & Biodegradable</span>
               </div>
+            </div>
+            <img src="/src/assets/hero-weaving.jpg" alt="Artisan weaving with natural cane" className="rounded-lg shadow-lg object-cover w-full h-[340px]" />
+          </div>
+        </section>
 
-              {/* Preview Cards */}
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="text-center p-6 border border-border rounded-lg">
-                  <div className="w-16 h-16 mx-auto bg-craft-terracotta/10 rounded-full flex items-center justify-center mb-4">
-                    <Leaf className="w-8 h-8 text-craft-terracotta" />
-                  </div>
-                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
-                    Natural Materials
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Learn about our organic cotton, natural dyes, and sustainable sourcing practices.
-                  </p>
-                </div>
-
-                <div className="text-center p-6 border border-border rounded-lg">
-                  <div className="w-16 h-16 mx-auto bg-craft-terracotta/10 rounded-full flex items-center justify-center mb-4">
-                    <Users className="w-8 h-8 text-craft-terracotta" />
-                  </div>
-                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
-                    Traditional Techniques
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Discover the ancient methods passed down through generations of Tamil Nadu artisans.
-                  </p>
-                </div>
-
-                <div className="text-center p-6 border border-border rounded-lg">
-                  <div className="w-16 h-16 mx-auto bg-craft-terracotta/10 rounded-full flex items-center justify-center mb-4">
-                    <Clock className="w-8 h-8 text-craft-terracotta" />
-                  </div>
-                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
-                    Craft Process
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Follow the journey from raw materials to finished products in our workshops.
-                  </p>
-                </div>
+        {/* Traditional Techniques Section */}
+        <section className="py-20 bg-muted/30">
+          <div className="container mx-auto px-6 text-center max-w-5xl">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
+              Traditional Techniques, Timeless Wisdom
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10">
+              From the <span className="font-semibold text-foreground">kuchu knotting</span> that finishes every basket to the intricate <span className="font-semibold text-foreground">wire-koodai weave</span> unique to coastal Tamil Nadu, each technique we use is a living thread of culture. Our master craftswomen pass these skills to apprentices, safeguarding heritage while embracing contemporary design.
+            </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="p-6 border border-border rounded-lg">
+                <h3 className="font-serif text-xl font-semibold text-foreground mb-3">Hand-Preparation</h3>
+                <p className="text-muted-foreground">Every strand of cane is stripped, soaked, and sun-dried by hand, ensuring optimal strength and flexibility.</p>
               </div>
+              <div className="p-6 border border-border rounded-lg">
+                <h3 className="font-serif text-xl font-semibold text-foreground mb-3">Herbal Dye Baths</h3>
+                <p className="text-muted-foreground">Natural pigments are fixed using biodegradable mordants, producing colours that mature gracefully with time.</p>
+              </div>
+              <div className="p-6 border border-border rounded-lg">
+                <h3 className="font-serif text-xl font-semibold text-foreground mb-3">Slow Weaving</h3>
+                <p className="text-muted-foreground">Our artisans weave at an unhurried rhythm that honours precision, allowing every curve and corner to settle perfectly.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Craft Process Section */}
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-6 max-w-5xl">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-10 text-center">
+              From Field to Home – Our Process
+            </h2>
+            <ol className="relative border-s border-craft-terracotta/40 ml-3">
+              <li className="mb-10 ms-6">
+                <span className="absolute -start-3 flex items-center justify-center w-6 h-6 bg-craft-terracotta rounded-full ring-8 ring-background text-craft-ivory">1</span>
+                <h3 className="font-semibold text-foreground">Sourcing & Selection</h3>
+                <p className="text-muted-foreground">Local farmers and foragers provide raw cane, which is inspected for quality and sustainability credentials.</p>
+              </li>
+              <li className="mb-10 ms-6">
+                <span className="absolute -start-3 flex items-center justify-center w-6 h-6 bg-craft-terracotta rounded-full ring-8 ring-background text-craft-ivory">2</span>
+                <h3 className="font-semibold text-foreground">Preparation & Dyeing</h3>
+                <p className="text-muted-foreground">Strips are cleansed in rain-water, sun-bleached, then dyed in small, energy-efficient vats using plant pigments.</p>
+              </li>
+              <li className="mb-10 ms-6">
+                <span className="absolute -start-3 flex items-center justify-center w-6 h-6 bg-craft-terracotta rounded-full ring-8 ring-background text-craft-ivory">3</span>
+                <h3 className="font-semibold text-foreground">Weaving & Finishing</h3>
+                <p className="text-muted-foreground">Artisans weave each piece in their home studios, finishing with hand-stitched labels signed by its maker.</p>
+              </li>
+            </ol>
+            <div className="flex items-center justify-center mt-12">
+              <Users className="w-8 h-8 text-craft-terracotta mr-3" />
+              <span className="font-medium text-foreground">Every purchase supports over 50 rural craftswomen.</span>
             </div>
           </div>
         </section>

@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import BrandIntroduction from "@/components/BrandIntroduction";
 import CraftSection from "@/components/CraftSection";
-// import JournalPreview from "@/components/JournalPreview";
+import JournalPreview from "@/components/JournalPreview";
 import NewsletterCTA from "@/components/NewsletterCTA";
 
 const Index = () => {
@@ -20,7 +20,7 @@ const Index = () => {
         <BrandIntroduction />
         {/* <FeaturedArtisans /> */}
         <CraftSection />
-        {/* <JournalPreview /> */}
+        <JournalPreview />
         <NewsletterCTA />
         <Footer />
       </div>

@@ -9,6 +9,7 @@ import Contact from "./pages/Contact";
 import Craft from "./pages/Craft";
 import Artisans from "./pages/Artisans";
 import Journal from "./pages/Journal";
+import JournalPost from "./pages/JournalPost";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Shipping from "./pages/Shipping";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/craft" element={<Craft />} />
           <Route path="/artisans" element={<Artisans />} />
           <Route path="/journal" element={<Journal />} />
+          <Route path="/journal/:slug" element={<JournalPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
