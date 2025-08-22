@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Leaf, Users, Clock } from "lucide-react";
+import { Leaf, Users } from "lucide-react";
+import heroWeavingImage from "@/assets/hero-weaving.jpg";
 
 const Craft = () => {
   return (
@@ -43,7 +44,7 @@ const Craft = () => {
                 <span className="text-base font-medium text-foreground">100% Plastic-Free & Biodegradable</span>
               </div>
             </div>
-            <img src="/src/assets/hero-weaving.jpg" alt="Artisan weaving with natural cane" className="rounded-lg shadow-lg object-cover w-full h-[340px]" />
+            <img src={heroWeavingImage} alt="Artisan weaving with natural cane" className="rounded-lg shadow-lg object-cover w-full h-[340px]" />
           </div>
         </section>
 
