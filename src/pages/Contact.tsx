@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { contactFormSchema, type ContactFormData } from "@/lib/validations";
-import { submitToSpamFreeForm, submitToCustomAPI } from "@/lib/form-submissions";
+import { submitToWeb3Forms } from "@/lib/form-submissions";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -32,16 +32,7 @@ const Contact = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      let result;
-      
-      try {
-        // Try Spam-free Form first
-        result = await submitToSpamFreeForm(data);
-      } catch (spamFreeError) {
-        // If Spam-free Form fails (CORS, network, etc.), fallback to custom API
-        console.log('Spam-free Form unavailable, using fallback API');
-        result = await submitToCustomAPI(data);
-      }
+      const result = await submitToWeb3Forms(data);
 
       if (result.success) {
         toast({
