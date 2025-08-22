@@ -25,3 +25,6 @@ dist-ssr
 
 #env
 .env
+
+#ignore nextsteps.md
+nextsteps.md
