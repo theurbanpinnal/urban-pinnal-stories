@@ -5,6 +5,7 @@
 /* The Urban Pinnal Design System - Premium Handmade Collective */
 
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;700&family=Noto+Serif+Tamil:wght@400;600;700&display=swap');
 
 @layer base {
   :root {
@@ -53,6 +54,8 @@
     /* Typography tokens */
     --font-serif: 'Crimson Text', serif;
     --font-sans: 'Inter', sans-serif;
+    --font-tamil-sans: 'Noto Sans Tamil', sans-serif;
+    --font-tamil-serif: 'Noto Serif Tamil', serif;
     
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
@@ -128,5 +131,15 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+  @keyframes blink {
+    50% { border-color: transparent; }
   }
 }

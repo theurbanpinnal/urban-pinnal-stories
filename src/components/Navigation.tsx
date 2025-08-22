@@ -7,6 +7,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
+import logoTransparent from "@/assets/logo-transparent.png";
 
 const Navigation = () => {
   const location = useLocation();
@@ -22,10 +23,14 @@ const Navigation = () => {
 
   return (
     <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="font-serif text-2xl font-bold text-craft-terracotta">
-            The Urban Pinnal
+          <Link to="/" className="flex items-center">
+            <img 
+              src={logoTransparent} 
+              alt="The Urban Pinnal - Handmade Collective" 
+              className="h-14 w-auto hover:opacity-90 transition-opacity"
+            />
           </Link>
           
           <NavigationMenu>

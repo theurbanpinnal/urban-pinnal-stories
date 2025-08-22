@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Instagram, Facebook, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import logoTransparent from "@/assets/logo-transparent.png";
 
 const Footer = () => {
   const { toast } = useToast();
@@ -28,8 +29,14 @@ const Footer = () => {
           
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <Link to="/" className="font-serif text-2xl font-bold mb-4 block">
-              The Urban Pinnal
+            <Link to="/" className="block mb-4">
+              <div className="inline-block bg-craft-ivory/95 px-4 py-2 rounded-lg shadow-sm hover:bg-craft-ivory transition-all">
+                <img 
+                  src={logoTransparent} 
+                  alt="The Urban Pinnal - Handmade Collective" 
+                  className="h-12 w-auto"
+                />
+              </div>
             </Link>
             <p className="text-craft-ivory/80 leading-relaxed mb-6">
               Empowering rural craftswomen through sustainable, handmade products that celebrate Tamil Nadu's rich heritage.
@@ -126,12 +133,11 @@ const Footer = () => {
           <div>
             <h3 className="font-serif text-xl font-semibold mb-6">Contact</h3>
             <div className="space-y-3 text-craft-ivory/80">
-              <p>hello@theurbanpinnal.com</p>
-              <p>+91 98765 43210</p>
+              <p>support@theurbanpinnal.com</p>
+              <p>+91 98842 15963</p>
               <p>
-                123 Anna Salai<br />
-                Teynampet, Chennai<br />
-                Tamil Nadu 600018
+                Chennai, Tamil Nadu <br />
+                India<br />
               </p>
             </div>
           </div>
@@ -173,15 +179,15 @@ const Footer = () => {
               © {currentYear} The Urban Pinnal. All rights reserved. Empowering artisans since 2024.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="/privacy" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
+              <Link to="/privacy" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
                 Privacy Policy
-              </a>
-              <a href="/terms" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
+              </Link>
+              <Link to="/terms" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
                 Terms of Service
-              </a>
-              <a href="/shipping" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
+              </Link>
+              <Link to="/shipping" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
                 Shipping & Returns
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -8,11 +8,12 @@ const CraftSection = () => {
         
         <div className="max-w-4xl mx-auto">
           <p className="text-lg lg:text-xl leading-relaxed opacity-90">
-            Our commitment to authenticity runs deep. We source natural materials directly from 
-            local farmers and use traditional dyeing techniques with turmeric, indigo, and pomegranate. 
-            Every fiber is hand-spun, every pattern hand-drawn, and every piece hand-woven using 
-            looms that have been in families for centuries. This is not just craft – this is cultural preservation, 
-            environmental responsibility, and artistic excellence woven into one.
+          Our commitment to authenticity runs deep. We partner with local artisans to source our natural materials,
+           honoring the time-honored weaving techniques they have carried through generations. From the first pinnal
+            (<span className="font-tamil-serif">பின்னல்</span>) prepared by hand to the final intricate pattern, every piece is a testament to true handcraft, 
+            making it far more than just a product—it is cultural preservation, environmental responsibility, and 
+            artistic excellence woven into one.
+            
           </p>
         </div>
         
@@ -34,7 +35,7 @@ const CraftSection = () => {
               </svg>
             </div>
             <h3 className="font-serif text-xl font-medium mb-3">Natural Materials</h3>
-            <p className="text-craft-ivory/80">Organic cotton and plant-based dyes</p>
+            <p className="text-craft-ivory/80">Kauna, Jute, Bamboo, Vegan Leather and Rattan</p>
           </div>
           
           <div className="text-center">

@@ -1,4 +1,8 @@
-import heroImage from "@/assets/hero-weaving.jpg";
+import heroImage from "@/assets/hero-weaving-3.jpg";
+import AnimatedHandwriting from "@/components/AnimatedHandwriting";
+
+// Royalty-free typewriter sound from Pixabay (free for commercial use)
+const typewriterSfx = "https://cdn.pixabay.com/download/audio/2023/05/25/audio_7e4d3e10ae.mp3?filename=typewriter-typing-146859.mp3";
 
 const HeroSection = () => {
   return (
@@ -14,11 +18,16 @@ const HeroSection = () => {
       {/* Hero Content */}
       <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-semibold text-craft-ivory mb-6 leading-tight">
-          The Urban <span className="text-craft-gold">பின்னல்</span>
+          The Urban Pinnal<span className="text-craft-gold"></span>
         </h1>
-        <p className="font-serif text-xl md:text-2xl lg:text-3xl text-craft-ivory/90 max-w-3xl mx-auto leading-relaxed">
-          The Story of Our Hands, The Tradition in Yours.
-        </p>
+        <div className="max-w-3xl mx-auto">
+          <AnimatedHandwriting
+            text="The Story of Our Hands, The Tradition in Yours."
+            duration={4000}
+            audioSrc={typewriterSfx}
+            className="text-craft-ivory text-xl md:text-2xl lg:text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-1"
+          />
+        </div>
       </div>
       
       {/* Scroll Indicator */}

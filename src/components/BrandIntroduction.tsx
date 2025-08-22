@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const BrandIntroduction = () => {
   return (
@@ -23,8 +24,10 @@ const BrandIntroduction = () => {
         </div>
         
         <div className="mt-12">
-          <Button variant="story" size="lg" className="px-12 py-4 text-lg">
-            Read Our Story
+          <Button asChild variant="story" size="lg" className="px-12 py-4 text-lg">
+            <Link to="/our-story">
+              Read Our Story
+            </Link>
           </Button>
         </div>
       </div>

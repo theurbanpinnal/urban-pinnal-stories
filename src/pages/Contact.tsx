@@ -80,8 +80,7 @@ const Contact = () => {
                       <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
                         Email Us
                       </h3>
-                      <p className="text-muted-foreground">hello@theurbanpinnal.com</p>
-                      <p className="text-muted-foreground">partnerships@theurbanpinnal.com</p>
+                      <p className="text-muted-foreground">support@theurbanpinnal.com</p>
                     </div>
                   </div>
 
@@ -93,8 +92,8 @@ const Contact = () => {
                       <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
                         Call Us
                       </h3>
-                      <p className="text-muted-foreground">+91 98765 43210</p>
-                      <p className="text-sm text-muted-foreground">Monday - Friday, 9 AM - 6 PM IST</p>
+                      <p className="text-muted-foreground">+91 98842 15963</p>
+                      <p className="text-sm text-muted-foreground">Monday - Friday, 10 AM - 6 PM IST</p>
                     </div>
                   </div>
 
@@ -104,12 +103,12 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
-                        Visit Our Studio
+                        Visit Our Corporate Office
                       </h3>
                       <p className="text-muted-foreground">
-                        The Urban Pinnal Studio<br />
-                        123 Anna Salai<br />
-                        Teynampet, Chennai - 600018<br />
+                        The Urban Pinnal<br />
+                        621, Canal Road<br />
+                        Kilpauk Garden Colony, Chennai - 600010<br />
                         Tamil Nadu, India
                       </p>
                     </div>

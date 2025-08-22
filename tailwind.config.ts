@@ -74,6 +74,8 @@ export default {
 			fontFamily: {
 				serif: ['var(--font-serif)', 'serif'],
 				sans: ['var(--font-sans)', 'sans-serif'],
+				'tamil-serif': ['var(--font-tamil-serif)', 'serif'],
+				'tamil-sans': ['var(--font-tamil-sans)', 'sans-serif'],
 			},
 			backgroundImage: {
 				'gradient-hero': 'var(--gradient-hero)',
