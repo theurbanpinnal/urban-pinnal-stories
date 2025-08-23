@@ -33,6 +33,10 @@ const Navigation = () => {
               src={logoTransparent} 
               alt="The Urban Pinnal - Handmade Collective" 
               className="h-14 w-auto hover:opacity-90 transition-opacity"
+              width={56}
+              height={56}
+              loading="eager"
+              decoding="async"
             />
           </Link>
           

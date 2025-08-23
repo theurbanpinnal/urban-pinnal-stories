@@ -1,6 +1,7 @@
 import artisan1 from "@/assets/artisan-1.jpg";
 import artisan2 from "@/assets/artisan-2.jpg";
 import artisan3 from "@/assets/artisan-3.jpg";
+import LazyImage from "@/components/LazyImage";
 
 const FeaturedArtisans = () => {
   const artisans = [
@@ -38,10 +39,13 @@ const FeaturedArtisans = () => {
             <div key={index} className="text-center group">
               <div className="relative mb-6">
                 <div className="w-48 h-48 mx-auto rounded-full overflow-hidden shadow-card group-hover:shadow-craft transition-all duration-300">
-                  <img 
-                    src={artisan.image} 
+                  <LazyImage
+                    src={artisan.image}
                     alt={`Portrait of ${artisan.name}, skilled artisan from ${artisan.village} village in Tamil Nadu, working with traditional handcraft techniques`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    width={192}
+                    height={192}
                   />
                 </div>
               </div>

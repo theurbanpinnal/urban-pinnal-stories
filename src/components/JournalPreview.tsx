@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPosts, SanityPost } from "@/lib/cms";
+import LazyImage from "@/components/LazyImage";
 
 const JournalPreview = () => {
   const { data: posts } = useQuery<SanityPost[]>({
@@ -25,11 +26,16 @@ const JournalPreview = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {previewPosts?.map((post) => (
-            <Link key={post._id} to="/journal" className="block group">
+            <Link key={post._id} to={`/journal/${post.slug.current}`} className="block group">
               <Card className="group-hover:shadow-card transition-all duration-300 border-0 shadow-sm">
                 <div className="aspect-[4/3] bg-secondary/50 rounded-t-lg relative overflow-hidden">
                 {post.coverUrl ? (
-                  <img src={post.coverUrl} alt={post.coverAlt || post.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <LazyImage 
+                    src={post.coverUrl}
+                    alt={post.coverAlt || post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-craft-terracotta/20 to-accent/20 group-hover:from-craft-terracotta/30 group-hover:to-accent/30 transition-all duration-300" />
                 )}
