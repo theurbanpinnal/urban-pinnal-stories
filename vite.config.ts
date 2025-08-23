@@ -3,14 +3,13 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { readdirSync } from "fs";
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // A simple plugin to proxy /api requests to our Vercel functions
 // This allows `vite dev` to run the functions from the /api directory
 // without needing `vercel dev`
 const vercelApiProxy = () => ({
   name: 'vercel-api-proxy',
-  configureServer(server) {
+  configureServer(server: any) {
     // --- DEBUGGING STEP ---
     // Log the env variable when the server starts to check if it's loaded from .env
     console.log(
@@ -19,16 +18,21 @@ const vercelApiProxy = () => ({
     );
 
     const apiDir = path.resolve(__dirname, 'api');
-    const apiFiles = readdirSync(apiDir).filter(file => file.endsWith('.ts'));
+    const apiFiles = readdirSync(apiDir).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
-    server.middlewares.use(async (req, res, next) => {
+    server.middlewares.use(async (req: any, res: any, next: any) => {
       if (!req.url || !req.url.startsWith('/api/')) {
         return next();
       }
 
       const [apiPath] = req.url.split('?');
       const functionName = apiPath.substring(5); // remove /api/
-      const apiFile = `${functionName}.ts`;
+
+      // Resolve .ts or .js for local dev
+      let apiFile = `${functionName}.ts`;
+      if (!apiFiles.includes(apiFile)) {
+        apiFile = `${functionName}.js`;
+      }
 
       if (!apiFiles.includes(apiFile)) {
         res.statusCode = 404;
@@ -43,34 +47,34 @@ const vercelApiProxy = () => ({
 
         // Collect body
         let body = '';
-        req.on('data', chunk => {
+        req.on('data', (chunk: any) => {
           body += chunk.toString();
         });
 
         req.on('end', async () => {
           if (body) {
             try {
-              (req as VercelRequest).body = JSON.parse(body);
+              (req as any).body = JSON.parse(body);
             } catch (e) {
-              (req as VercelRequest).body = body;
+              (req as any).body = body;
             }
           }
           
-          (req as VercelRequest).query = Object.fromEntries(new URLSearchParams(req.url.split('?')[1] || '').entries());
+          (req as any).query = Object.fromEntries(new URLSearchParams(req.url.split('?')[1] || '').entries());
 
 
           // Simple compatibility layer for res.status() and res.json()
-          (res as VercelResponse).status = (statusCode) => {
+          (res as any).status = (statusCode: number) => {
             res.statusCode = statusCode;
-            return res as VercelResponse;
+            return res as any;
           };
 
-          (res as VercelResponse).json = (data) => {
+          (res as any).json = (data: unknown) => {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(data));
           };
 
-          await handler(req as VercelRequest, res as VercelResponse);
+          await handler(req as any, res as any);
         });
 
       } catch (error) {
