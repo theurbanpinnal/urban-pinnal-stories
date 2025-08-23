@@ -9,7 +9,7 @@ const Craft = () => {
       {/* SEO Meta Tags */}
       <title>The Craft - The Urban Pinnal | Traditional Tamil Nadu Techniques</title>
       <meta name="description" content="Discover the traditional craft techniques and natural materials used by The Urban Pinnal artisans. Learn about sustainable handmade processes from Tamil Nadu." />
-      <meta name="keywords" content="traditional crafts Tamil Nadu, handloom weaving, natural dyes, sustainable textiles, artisan techniques, Chennai craftsmanship" />
+      <meta name="keywords" content="traditional crafts Tamil Nadu, handloom weaving, natural dyes, sustainable recycled materials, artisan techniques, Chennai craftsmanship" />
       
       <div className="min-h-screen bg-background">
         <Navigation />

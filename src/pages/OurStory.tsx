@@ -20,7 +20,7 @@ const OurStory = () => {
         <section className="relative h-[60vh] w-full overflow-hidden">
           <img
             src={bannerImage}
-            alt="Smiling Tamil Nadu craftswomen working together on traditional handloom weaving in rural village setting"
+            alt="Tamil Nadu craftswomen working together on traditional handloom weaving in rural village setting"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/30" />
@@ -60,7 +60,7 @@ const OurStory = () => {
                   <div className="md:w-1/2">
                     <img
                       src={founderArtisanImage}
-                      alt="Urban Pinnal founder collaborating with elderly Tamil Nadu artisan woman, showing hands working on traditional craft techniques"
+                      alt="Urban Pinnal artisan, an elderly Tamil Nadu artisan woman, showing hands working on traditional craft techniques"
                       className="w-full rounded-lg shadow-craft"
                     />
                   </div>
@@ -79,7 +79,7 @@ const OurStory = () => {
                   <div className="md:w-1/2">
                     <img
                       src={villageImage}
-                      alt="Peaceful Tamil Nadu village landscape with traditional houses and palm trees where rural artisans live and work"
+                      alt="A woman in Chennai, India, weaves a vibrant plastic basket. Seated in profile, she concentrates on the intricate work, with partially finished baskets and materials nearby."
                       className="w-full rounded-lg shadow-craft"
                     />
                   </div>
