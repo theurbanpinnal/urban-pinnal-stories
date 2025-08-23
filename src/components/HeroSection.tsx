@@ -8,11 +8,14 @@ const typewriterSfx = undefined; // Disable audio for now
 const HeroSection = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Hero Background Image */}
+      {/* Hero Background Image - Priority loading for above-the-fold content */}
       <img 
         src={heroImage}
         alt="Traditional Tamil Nadu handloom weaving process showing skilled artisan hands creating beautiful bags with natural materials"
         className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
       

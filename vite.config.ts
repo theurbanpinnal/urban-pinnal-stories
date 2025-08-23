@@ -24,6 +24,16 @@ export default defineConfig(({ mode }) => ({
   build: {
     // Raise warning limit or adjust as needed
     chunkSizeWarningLimit: 1000,
+    // Target modern browsers for better performance
+    target: 'es2020',
+    // Minify more aggressively
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         // Manual vendor chunking to improve cacheability and reduce initial bundle size
@@ -40,12 +50,17 @@ export default defineConfig(({ mode }) => ({
           'tanstack-query': [
             '@tanstack/react-query'
           ],
-          shadcn: [
+          radix: [
             '@radix-ui/react-accordion',
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-tooltip'
-          ]
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-select',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-navigation-menu'
+          ],
+          lucide: ['lucide-react'],
+          utils: ['clsx', 'class-variance-authority', 'tailwind-merge']
         }
       }
     }
