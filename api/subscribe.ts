@@ -29,6 +29,19 @@ interface VercelResponse extends ServerResponse {
 const SHEETS_WEBHOOK_URL = process.env.SHEETS_WEBHOOK_URL || process.env.VITE_SHEETS_WEBHOOK_URL;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const allowedOrigins = ['https://theurbanpinnal.com', 'https://www.theurbanpinnal.com'];
+  const originHeader = req.headers.origin as string | undefined;
+  if (originHeader && allowedOrigins.includes(originHeader)) {
+    res.setHeader('Access-Control-Allow-Origin', originHeader);
+  }
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // 1. Allow only POST
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);

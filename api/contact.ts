@@ -74,6 +74,13 @@ export default async function handler(
 ) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
+  // Allowed origins for CORS (adjust domains as needed)
+  const allowedOrigins = ['https://theurbanpinnal.com', 'https://www.theurbanpinnal.com'];
+  const originHeader = req.headers.origin as string | undefined;
+  if (originHeader && allowedOrigins.includes(originHeader)) {
+    res.setHeader('Access-Control-Allow-Origin', originHeader);
+  }
+  res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -103,7 +110,9 @@ export default async function handler(
     }
 
     // Validate request body
-    const result = contactSchema.safeParse(req.body);
+    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body ?? {});
+    const parsed = rawBody ? JSON.parse(rawBody) : {};
+    const result = contactSchema.safeParse(parsed);
     
     if (!result.success) {
       return res.status(400).json({
