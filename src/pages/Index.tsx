@@ -1,10 +1,26 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
-import BrandIntroduction from "@/components/BrandIntroduction";
-import CraftSection from "@/components/CraftSection";
-import JournalPreview from "@/components/JournalPreview";
-import NewsletterCTA from "@/components/NewsletterCTA";
+import { Suspense, lazy } from "react";
+
+// Lazy load non-critical components for better performance
+const BrandIntroduction = lazy(() => import("@/components/BrandIntroduction"));
+const CraftSection = lazy(() => import("@/components/CraftSection"));
+const JournalPreview = lazy(() => import("@/components/JournalPreview"));
+const NewsletterCTA = lazy(() => import("@/components/NewsletterCTA"));
+
+const ComponentSkeleton = () => (
+  <div className="animate-pulse py-20 px-6">
+    <div className="max-w-6xl mx-auto">
+      <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
+      <div className="space-y-4">
+        <div className="h-4 bg-gray-200 rounded w-full"></div>
+        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+      </div>
+    </div>
+  </div>
+);
 
 const Index = () => {
   return (
@@ -17,11 +33,18 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <HeroSection />
-        <BrandIntroduction />
-        {/* <FeaturedArtisans /> */}
-        <CraftSection />
-        <JournalPreview />
-        <NewsletterCTA />
+        <Suspense fallback={<ComponentSkeleton />}>
+          <BrandIntroduction />
+        </Suspense>
+        <Suspense fallback={<ComponentSkeleton />}>
+          <CraftSection />
+        </Suspense>
+        <Suspense fallback={<ComponentSkeleton />}>
+          <JournalPreview />
+        </Suspense>
+        <Suspense fallback={<ComponentSkeleton />}>
+          <NewsletterCTA />
+        </Suspense>
         <Footer />
       </div>
     </>

@@ -22,6 +22,9 @@ const OurStory = () => {
             src={bannerImage}
             alt="Tamil Nadu craftswomen working together on traditional handloom weaving in rural village setting"
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-black/30" />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -62,6 +65,8 @@ const OurStory = () => {
                       src={founderArtisanImage}
                       alt="Urban Pinnal artisan, an elderly Tamil Nadu artisan woman, showing hands working on traditional craft techniques"
                       className="w-full rounded-lg shadow-craft"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   <div className="md:w-1/2">
@@ -81,6 +86,8 @@ const OurStory = () => {
                       src={villageImage}
                       alt="A woman in Chennai, India, weaves a vibrant plastic basket. Seated in profile, she concentrates on the intricate work, with partially finished baskets and materials nearby."
                       className="w-full rounded-lg shadow-craft"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   <div className="md:w-1/2">
