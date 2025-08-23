@@ -59,6 +59,10 @@ const Footer = () => {
                   src={logoTransparent} 
                   alt="The Urban Pinnal - Handmade Collective" 
                   className="h-12 w-auto"
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </Link>

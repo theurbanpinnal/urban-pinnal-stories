@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPostBySlug, SanityPost } from "@/lib/cms";
-import PortableText from "react-portable-text";
+import { PortableText } from "@portabletext/react";
 
 const JournalPost = () => {
   const { slug } = useParams();
@@ -49,7 +49,7 @@ const JournalPost = () => {
 
               {post.body && (
                 <div className="prose lg:prose-lg max-w-none text-foreground">
-                  <PortableText content={post.body} />
+                  <PortableText value={post.body} />
                 </div>
               )}
             </>
