@@ -1,4 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import fs from 'fs';
+import path from 'path';
 
 // Minimal local versions of Vercel's Request/Response for type safety during development.
 interface VercelRequest extends IncomingMessage {
@@ -24,12 +26,52 @@ interface VercelResponse extends ServerResponse {
  * and will POST that email (and a timestamp) to the Sheets webhook.
  */
 
-// Prefer the server-side variable but fall back to the Vite-prefixed one so
-// `vite dev` or `vercel dev` pick it up from a plain `.env` file.
-const SHEETS_WEBHOOK_URL = process.env.SHEETS_WEBHOOK_URL || process.env.VITE_SHEETS_WEBHOOK_URL;
+/**
+ * Load .env in development so local Vite dev can hit this API route without
+ * depending on Vite's client-side env injection. This keeps server code
+ * responsible for its own configuration.
+ */
+function loadDevEnvIfNeeded(): void {
+  if (process.env.NODE_ENV === 'production') return;
+  try {
+    const envPath = path.resolve(process.cwd(), '.env');
+    if (!fs.existsSync(envPath)) return;
+    const content = fs.readFileSync(envPath, 'utf8');
+    for (const rawLine of content.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith('#')) continue;
+      const eqIndex = line.indexOf('=');
+      if (eqIndex === -1) continue;
+      const key = line.slice(0, eqIndex).trim();
+      let value = line.slice(eqIndex + 1).trim();
+      // Strip wrapping quotes if present
+      value = value.replace(/^['\"]|['\"]$/g, '');
+      if (!(key in process.env)) {
+        process.env[key] = value;
+      }
+    }
+  } catch (err) {
+    console.warn('[subscribe] Failed to load .env in development:', err);
+  }
+}
+
+loadDevEnvIfNeeded();
+
+// Retrieve Sheets webhook URL from env vars and sanitize by stripping accidental wrapping quotes.
+const rawSheetsUrl = process.env.SHEETS_WEBHOOK_URL || process.env.VITE_SHEETS_WEBHOOK_URL || "";
+// Remove any leading/trailing single or double quotes that may exist when the value is defined as
+// SHEETS_WEBHOOK_URL="https://example.com" in the .env file.  Having quotes in the actual runtime
+// value would result in an invalid URL and cause network errors.
+const SHEETS_WEBHOOK_URL = rawSheetsUrl.replace(/^['"]|['"]$/g, "");
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const allowedOrigins = ['https://theurbanpinnal.com', 'https://www.theurbanpinnal.com'];
+  const allowedOrigins = [
+    'https://theurbanpinnal.com',
+    'https://www.theurbanpinnal.com',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:8080',
+  ];
   const originHeader = req.headers.origin as string | undefined;
   if (originHeader && allowedOrigins.includes(originHeader)) {
     res.setHeader('Access-Control-Allow-Origin', originHeader);
