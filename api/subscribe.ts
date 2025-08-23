@@ -1,79 +1,92 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { IncomingMessage, ServerResponse } from 'http';
 
-// Prefer server-side env vars without VITE_ prefix because those are not
-// automatically exposed to serverless functions in Vercel.
-const MAILERLITE_API_KEY = process.env.MAILERLITE_API_KEY || process.env.VITE_MAILERLITE_API_KEY;
-const MAILERLITE_GROUP_ID = process.env.MAILERLITE_GROUP_ID || process.env.VITE_MAILERLITE_GROUP_ID;
+// Minimal local versions of Vercel's Request/Response for type safety during development.
+interface VercelRequest extends IncomingMessage {
+  body: any;
+  query: Record<string, string | string[]>;
+  cookies: Record<string, string>;
+}
 
-const MAILERLITE_API_URL = 'https://connect.mailerlite.com/api';
+interface VercelResponse extends ServerResponse {
+  json: (body: unknown) => void;
+  status: (code: number) => VercelResponse;
+}
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse,
-) {
-  // 1. Validate request method
+/**
+ * Newsletter subscription handler
+ * -------------------------------------------------------------
+ * Stores subscriber emails in a Google Sheet through a low-friction
+ * “sheet webhook” service (for example sheet.best, Sheety, NoCodeAPI,
+ * or a Google Apps Script web-app).  Configure the webhook URL in the
+ * environment variable `SHEETS_WEBHOOK_URL`.
+ *
+ * The function expects a JSON body: { email: "person@example.com" }
+ * and will POST that email (and a timestamp) to the Sheets webhook.
+ */
+
+// Prefer the server-side variable but fall back to the Vite-prefixed one so
+// `vite dev` or `vercel dev` pick it up from a plain `.env` file.
+const SHEETS_WEBHOOK_URL = process.env.SHEETS_WEBHOOK_URL || process.env.VITE_SHEETS_WEBHOOK_URL;
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // 1. Allow only POST
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).end('Method Not Allowed');
   }
 
-  // 2. Check for required secrets
-  if (!MAILERLITE_API_KEY || !MAILERLITE_GROUP_ID) {
-    console.error('MailerLite API key or Group ID is not configured.');
+  if (!SHEETS_WEBHOOK_URL) {
+    console.error('SHEETS_WEBHOOK_URL env var is missing.');
     return res.status(500).json({ success: false, message: 'Server configuration error.' });
   }
-  
-  const { email } = req.body;
 
-  // Debug: log incoming request
+  // Vercel automatically parses JSON if Content-Type header is correct.
+  const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+  const { email } = body;
+
   console.log('[Newsletter] Incoming subscribe request:', { email });
 
-  // 3. Validate email
   if (!email || !/\S+@\S+\.\S+/.test(email)) {
     return res.status(400).json({ success: false, message: 'A valid email is required.' });
   }
 
   try {
-    // 4. Send data to MailerLite (v2) via group endpoint
-    const groupEndpoint = `${MAILERLITE_API_URL}/groups/${MAILERLITE_GROUP_ID}/subscribers`;
+    const payload = {
+      email,
+      timestamp: new Date().toISOString(),
+    };
 
-    const payload = { email };
+    console.log('[Newsletter] Sending to Sheets webhook:', { url: SHEETS_WEBHOOK_URL, payload });
 
-    // Debug: log outgoing request
-    console.log('[Newsletter] Sending to MailerLite:', { groupEndpoint, payload });
-
-    const mailerliteRes = await fetch(groupEndpoint, {
+    const sheetsRes = await fetch(SHEETS_WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${MAILERLITE_API_KEY}`,
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(payload),
     });
 
-    const mailerliteData = await mailerliteRes.json();
-
-    // Debug: log MailerLite response
-    console.log('[Newsletter] MailerLite response:', {
-      status: mailerliteRes.status,
-      body: mailerliteData,
-    });
-
-    if ((mailerliteRes.status === 200 || mailerliteRes.status === 201) && mailerliteData.data) {
+    // sheet.best & most similar services return 200 or 201 on success
+    if (sheetsRes.ok) {
       return res.status(200).json({ success: true, message: 'You have been subscribed successfully!' });
     }
 
-    // If subscriber already exists (status 409) we still consider it success
-    if (mailerliteRes.status === 409) {
-      return res.status(200).json({ success: true, message: 'You are already subscribed!' });
-    }
-
-    const errorMessage = mailerliteData?.error?.message || 'An error occurred with the subscription service.';
-    console.error('MailerLite API Error:', mailerliteData);
-    return res.status(mailerliteRes.status).json({ success: false, message: errorMessage });
+    const sheetsData = await safeJson(sheetsRes);
+    console.error('Sheets webhook error', { status: sheetsRes.status, body: sheetsData });
+    return res.status(sheetsRes.status).json({ success: false, message: 'Failed to save subscription.' });
   } catch (error) {
     console.error('Internal Server Error:', error);
     return res.status(500).json({ success: false, message: 'An internal server error occurred.' });
+  }
+}
+
+/**
+ * Helper: safely parse JSON without throwing on invalid JSON responses.
+ */
+async function safeJson(res: Response) {
+  try {
+    return await res.json();
+  } catch (_) {
+    return null;
   }
 }
