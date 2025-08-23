@@ -11,7 +11,7 @@ const HeroSection = () => {
       {/* Hero Background Image */}
       <img 
         src={heroImage}
-        alt="Traditional Tamil Nadu handloom weaving process showing skilled artisan hands creating beautiful textiles with natural materials"
+        alt="Traditional Tamil Nadu handloom weaving process showing skilled artisan hands creating beautiful bags with natural materials"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
@@ -26,7 +26,7 @@ const HeroSection = () => {
             text="The Story of Our Hands, The Tradition in Yours."
             duration={4000}
             audioSrc={typewriterSfx}
-            className="text-craft-ivory text-xl md:text-2xl lg:text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-1"
+            className="text-craft-ivory text-0.75xl md:text-2xl lg:text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-1"
           />
         </div>
       </div>

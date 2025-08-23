@@ -10,13 +10,37 @@ const Footer = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Welcome to our community!",
-      description: "Thank you for subscribing to our newsletter.",
-    });
-    setEmail("");
+
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const json = await res.json();
+
+      if (res.ok && json.success) {
+        toast({
+          title: "Welcome to our community!",
+          description: "Thank you for subscribing to our newsletter.",
+        });
+        setEmail("");
+      } else {
+        toast({
+          title: "Subscription failed",
+          description: json.message || "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Network error",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   const currentYear = new Date().getFullYear();
