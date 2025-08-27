@@ -150,7 +150,7 @@ const Contact = () => {
               </div>
 
               {/* Right Column - Contact Form */}
-              <div className="bg-muted/20 p-8 rounded-lg">
+              <div className="bg-muted/20 rounded-lg self-start">
                 <h2 className="font-serif text-3xl font-bold text-foreground mb-8">
                   Send Us a Message
                 </h2>
