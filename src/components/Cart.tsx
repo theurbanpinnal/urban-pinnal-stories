@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShoppingCart, Minus, Plus, Trash2, Loader2 } from 'lucide-react';
 import LazyImage from '@/components/LazyImage';
+import { formatCurrency } from '@/lib/utils';
 
 interface CartProps {
   children?: React.ReactNode;
@@ -98,8 +99,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
                 <div className="flex justify-between items-center text-lg font-semibold">
                   <span>Subtotal:</span>
                   <span>
-                    {subtotal.currencyCode === 'USD' ? '$' : subtotal.currencyCode}
-                    {parseFloat(subtotal.amount).toFixed(2)}
+                    {formatCurrency(subtotal.amount, subtotal.currencyCode)}
                   </span>
                 </div>
               )}
@@ -173,8 +173,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
           <p className="text-sm text-gray-500">{variant.title}</p>
         )}
         <p className="text-sm font-medium text-gray-900">
-          {variant.price.currencyCode === 'USD' ? '$' : variant.price.currencyCode}
-          {parseFloat(variant.price.amount).toFixed(2)}
+          {formatCurrency(variant.price.amount, variant.price.currencyCode)}
         </p>
 
         {/* Quantity Controls */}

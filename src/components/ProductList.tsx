@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import LazyImage from '@/components/LazyImage';
+import { formatCurrency } from '@/lib/utils';
 
 interface ProductListProps {
   limit?: number;
@@ -92,8 +93,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
           <div className="flex items-center justify-between">
             <Badge variant="secondary" className="text-lg font-bold">
-              {price.currencyCode === 'USD' ? '$' : price.currencyCode}
-              {parseFloat(price.amount).toFixed(2)}
+              {formatCurrency(price.amount, price.currencyCode)}
             </Badge>
           </div>
         </CardContent>

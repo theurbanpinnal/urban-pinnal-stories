@@ -12,6 +12,7 @@ import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react';
 import LazyImage from '@/components/LazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { formatCurrency } from '@/lib/utils';
 
 const ProductPage: React.FC = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -136,8 +137,7 @@ const ProductPage: React.FC = () => {
               {selectedVariant && (
                 <div className="flex items-center gap-4 mb-6">
                   <Badge variant="secondary" className="text-xl font-bold px-4 py-2">
-                    {selectedVariant.price.currencyCode === 'USD' ? '$' : selectedVariant.price.currencyCode}
-                    {parseFloat(selectedVariant.price.amount).toFixed(2)}
+                    {formatCurrency(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
                   </Badge>
                   {!selectedVariant.availableForSale && (
                     <Badge variant="destructive">Out of Stock</Badge>
@@ -177,8 +177,7 @@ const ProductPage: React.FC = () => {
                         <div className="flex justify-between items-center w-full">
                           <span>{variant.title}</span>
                           <span className="ml-2 font-medium">
-                            {variant.price.currencyCode === 'USD' ? '$' : variant.price.currencyCode}
-                            {parseFloat(variant.price.amount).toFixed(2)}
+                            {formatCurrency(variant.price.amount, variant.price.currencyCode)}
                           </span>
                         </div>
                       </SelectItem>
