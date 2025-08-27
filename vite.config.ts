@@ -87,6 +87,24 @@ const vercelApiProxy = (env: Record<string, string>) => ({
   }
 });
 
+const corsMiddleware = () => ({
+  name: 'dev-cors-middleware',
+  configureServer(server: any) {
+    server.middlewares.use((req: any, res: any, next: any) => {
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Shopify-Storefront-Access-Token');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      if (req.method === 'OPTIONS') {
+        res.statusCode = 204;
+        res.end();
+        return;
+      }
+      next();
+    });
+  }
+});
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
@@ -105,13 +123,33 @@ export default defineConfig(({ mode }) => {
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
       },
+      proxy: {
+        '/shopify': {
+          target: 'https://enzqhm-e2.myshopify.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/shopify/, ''),
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              // Forward all headers including X-Shopify-Storefront-Access-Token
+              if (req.headers.authorization) {
+                proxyReq.setHeader('Authorization', req.headers.authorization);
+              }
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              // Remove existing CORS headers from Shopify response
+              delete proxyRes.headers['access-control-allow-origin'];
+              delete proxyRes.headers['access-control-allow-methods'];
+              delete proxyRes.headers['access-control-allow-headers'];
+            });
+          }
+        }
+      },
     },
     plugins: [
       react(),
-      // Pass the loaded environment variables to the plugin
+      corsMiddleware(),
       vercelApiProxy(env),
-      mode === 'development' &&
-      componentTagger(),
+      mode === 'development' && componentTagger(),
     ].filter(Boolean),
     resolve: {
       alias: {

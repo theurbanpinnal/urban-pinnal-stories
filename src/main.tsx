@@ -11,7 +11,7 @@ if (!storeDomain || !storefrontToken) {
 }
 
 const client = createClient({
-  url: `https://${storeDomain}/api/2024-01/graphql.json`,
+  url: `/shopify/api/2024-01/graphql.json`,
   exchanges: [cacheExchange, fetchExchange],
   fetchOptions: {
     headers: {

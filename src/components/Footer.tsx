@@ -48,19 +48,19 @@ const Footer = () => {
   return (
     <footer className="bg-craft-terracotta text-craft-ivory">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <Link to="/" className="block mb-4">
-              <div className="inline-block bg-craft-ivory/95 px-4 py-2 rounded-lg shadow-sm hover:bg-craft-ivory transition-all">
-                <img 
-                  src={logoTransparent} 
-                  alt="The Urban Pinnal - Handmade Collective" 
-                  className="h-12 w-auto"
-                  width={48}
-                  height={48}
+              <div className="inline-block bg-craft-ivory/95 px-3 sm:px-4 py-2 rounded-lg shadow-sm hover:bg-craft-ivory transition-all">
+                <img
+                  src={logoTransparent}
+                  alt="The Urban Pinnal - Handmade Collective"
+                  className="h-10 sm:h-12 lg:h-14 w-auto object-contain"
+                  width={140}
+                  height={56}
                   loading="lazy"
                   decoding="async"
                 />
@@ -69,33 +69,33 @@ const Footer = () => {
             <p className="text-craft-ivory/80 leading-relaxed mb-6">
               Empowering rural craftswomen through sustainable, handmade products that celebrate Tamil Nadu's rich heritage.
             </p>
-            <div className="flex space-x-4">
-              <a 
-                href="https://instagram.com/theurbanpinnal" 
-                target="_blank" 
+            <div className="flex gap-3 sm:gap-4">
+              <a
+                href="https://instagram.com/theurbanpinnal"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
+                className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
                 aria-label="Follow us on Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
-              <a 
-                href="https://facebook.com/theurbanpinnal" 
-                target="_blank" 
+              <a
+                href="https://facebook.com/theurbanpinnal"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
+                className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
                 aria-label="Follow us on Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
-              <a 
-                href="https://pinterest.com/theurbanpinnal" 
-                target="_blank" 
+              <a
+                href="https://pinterest.com/theurbanpinnal"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
+                className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
                 aria-label="Follow us on Pinterest"
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 0C5.373 0 0 5.372 0 12s5.373 12 12 12c6.628 0 12-5.372 12-12S18.628 0 12 0zm5.568 8.16c-.169 1.858-.896 3.175-1.84 4.12-.944.944-2.262 1.67-4.12 1.839-.62.056-1.233.084-1.85.084-.617 0-1.23-.028-1.849-.084-1.858-.169-3.176-.895-4.12-1.84-.945-.944-1.671-2.261-1.84-4.119C1.793 7.54 1.765 6.927 1.765 6.31c0-.617.028-1.23.084-1.849.169-1.858.895-3.175 1.84-4.12.944-.944 2.262-1.67 4.12-1.839.619-.056 1.232-.084 1.849-.084.617 0 1.23.028 1.85.084 1.858.169 3.175.895 4.119 1.84.945.944 1.671 2.261 1.84 4.119.056.619.084 1.232.084 1.849 0 .617-.028 1.23-.084 1.849z"/>
                 </svg>
               </a>
@@ -104,7 +104,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-serif text-xl font-semibold mb-6">Quick Links</h3>
+            <h3 className="font-serif text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Quick Links</h3>
             <ul className="space-y-3">
               <li>
                 <Link 
@@ -159,7 +159,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="font-serif text-xl font-semibold mb-6">Contact</h3>
+            <h3 className="font-serif text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Contact</h3>
             <div className="space-y-3 text-craft-ivory/80">
               <p>support@theurbanpinnal.com</p>
               <p>+91 98842 15963</p>
@@ -172,7 +172,7 @@ const Footer = () => {
 
           {/* Newsletter */}
           <div>
-            <h3 className="font-serif text-xl font-semibold mb-6">Join Our Journey</h3>
+            <h3 className="font-serif text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Join Our Journey</h3>
             <p className="text-craft-ivory/80 mb-4">
               Subscribe to receive stories from our artisans and updates on new collections.
             </p>
@@ -201,12 +201,12 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-craft-ivory/20">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
             <p className="text-craft-ivory/60 text-sm">
               © {currentYear} The Urban Pinnal. All rights reserved. Empowering artisans since 2024.
             </p>
-            <div className="flex space-x-6 text-sm">
+            <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-xs sm:text-sm">
               <Link to="/privacy" className="text-craft-ivory/60 hover:text-craft-ivory transition-elegant">
                 Privacy Policy
               </Link>
