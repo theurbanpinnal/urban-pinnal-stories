@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
+import Cart from "@/components/Cart";
 
 const Navigation = () => {
   const location = useLocation();
@@ -20,6 +21,7 @@ const Navigation = () => {
     { label: "Our Story", href: "/our-story" },
     { label: "The Craft", href: "/craft" },
     { label: "Our Artisans", href: "/artisans" },
+    { label: "Store", href: "/store" },
     { label: "Journal", href: "/journal" },
     { label: "Contact", href: "/contact" },
   ];
@@ -41,51 +43,57 @@ const Navigation = () => {
           </Link>
           
           {/* Desktop navigation */}
-          <nav className="hidden md:block">
-            <NavigationMenu>
-              <NavigationMenuList>
-                {navigationItems.map((item) => (
-                  <NavigationMenuItem key={item.href}>
-                    <Link to={item.href}>
-                      <NavigationMenuLink
-                        className={cn(
-                          navigationMenuTriggerStyle(),
-                          "font-sans text-sm font-medium transition-colors hover:text-craft-terracotta",
-                          location.pathname === item.href && "text-craft-terracotta"
-                        )}
-                      >
-                        {item.label}
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </nav>
+          <div className="hidden md:flex items-center gap-4">
+            <nav>
+              <NavigationMenu>
+                <NavigationMenuList>
+                  {navigationItems.map((item) => (
+                    <NavigationMenuItem key={item.href}>
+                      <Link to={item.href}>
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            "font-sans text-sm font-medium transition-colors hover:text-craft-terracotta",
+                            location.pathname === item.href && "text-craft-terracotta"
+                          )}
+                        >
+                          {item.label}
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </nav>
+            <Cart />
+          </div>
 
-          {/* Mobile hamburger */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="w-6 h-6" />
-                <span className="sr-only">Open navigation</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-6 space-y-6">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={cn(
-                    "block font-medium text-lg",
-                    location.pathname === item.href ? "text-craft-terracotta" : "text-foreground"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </SheetContent>
-          </Sheet>
+          {/* Mobile navigation */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Cart />
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="w-6 h-6" />
+                  <span className="sr-only">Open navigation</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-6 space-y-6">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={cn(
+                      "block font-medium text-lg",
+                      location.pathname === item.href ? "text-craft-terracotta" : "text-foreground"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
