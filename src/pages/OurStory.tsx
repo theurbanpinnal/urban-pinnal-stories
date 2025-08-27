@@ -23,7 +23,7 @@ const OurStory = () => {
             alt="Tamil Nadu craftswomen working together on traditional handloom weaving in rural village setting"
             className="w-full h-full object-cover"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
           />
           <div className="absolute inset-0 bg-black/30" />
