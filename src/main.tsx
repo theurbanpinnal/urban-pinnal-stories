@@ -1,18 +1,22 @@
-import { createRoot } from 'react-dom/client'
-import { Provider } from 'urql'
-import { createClient } from 'urql'
-import App from './App.tsx'
-import './index.css'
+import { createRoot } from 'react-dom/client';
+import { Provider, createClient, cacheExchange, fetchExchange } from 'urql';
+import App from './App.tsx';
+import './index.css';
 
-// Configure URQL client for Shopify Storefront API
+const storeDomain = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
+const storefrontToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
+
+if (!storeDomain || !storefrontToken) {
+  throw new Error("Shopify environment variables are missing.");
+}
+
 const client = createClient({
-  url: `https://${import.meta.env.VITE_SHOPIFY_STORE_DOMAIN}/api/2024-01/graphql.json`,
-  fetchOptions: () => {
-    return {
-      headers: {
-        'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN,
-      },
-    };
+  url: `https://${storeDomain}/api/2024-01/graphql.json`,
+  exchanges: [cacheExchange, fetchExchange],
+  fetchOptions: {
+    headers: {
+      'X-Shopify-Storefront-Access-Token': storefrontToken,
+    },
   },
 });
 

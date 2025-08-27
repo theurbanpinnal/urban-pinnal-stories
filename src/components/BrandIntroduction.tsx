@@ -11,7 +11,7 @@ const BrandIntroduction = () => {
         
         <div className="space-y-8 text-lg lg:text-xl text-muted-foreground leading-relaxed">
           <p>
-            At The Urban Pinnal, we believe every thread tells a story. Born from Chennai's rich heritage of craftsmanship, 
+            At The Urban Pinnal, we believe every knot and pinnal (<span className="font-tamil-serif">பின்னல்</span>) tells a story. Born from Chennai's rich heritage of craftsmanship, 
             we bridge the gap between traditional artisans and contemporary design. Our collective represents more than just 
             handmade products – it's a movement that honors age-old techniques while embracing modern sensibilities.
           </p>
