@@ -49,8 +49,9 @@ const Navigation = () => {
                 <NavigationMenuList>
                   {navigationItems.map((item) => (
                     <NavigationMenuItem key={item.href}>
-                      <Link to={item.href}>
-                        <NavigationMenuLink
+                      <NavigationMenuLink asChild>
+                        <Link 
+                          to={item.href}
                           className={cn(
                             navigationMenuTriggerStyle(),
                             "font-sans text-xs sm:text-sm xl:text-base font-medium transition-colors hover:text-craft-terracotta px-2 sm:px-3 xl:px-4",
@@ -58,8 +59,8 @@ const Navigation = () => {
                           )}
                         >
                           {item.label}
-                        </NavigationMenuLink>
-                      </Link>
+                        </Link>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                   ))}
                 </NavigationMenuList>

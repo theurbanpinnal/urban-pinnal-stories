@@ -13,11 +13,13 @@ if (!storeDomain || !storefrontToken) {
 const client = createClient({
   url: `/shopify/api/2024-01/graphql.json`,
   exchanges: [cacheExchange, fetchExchange],
-  fetchOptions: {
+  fetchOptions: () => ({
+    method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       'X-Shopify-Storefront-Access-Token': storefrontToken,
     },
-  },
+  }),
 });
 
 createRoot(document.getElementById("root")!).render(

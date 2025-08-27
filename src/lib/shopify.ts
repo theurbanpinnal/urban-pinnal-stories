@@ -9,6 +9,8 @@ export const GET_PRODUCTS = `
           title
           handle
           description
+          productType
+          totalInventory
           priceRange {
             minVariantPrice {
               amount
@@ -21,6 +23,35 @@ export const GET_PRODUCTS = `
                 url
                 altText
               }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_SHOP_INFO = `
+  query {
+    shop {
+      name
+      description
+    }
+  }
+`;
+
+export const GET_PRODUCTS_SIMPLE = `
+  query getProducts($first: Int!) {
+    products(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
             }
           }
         }
@@ -349,6 +380,8 @@ export interface ShopifyProduct {
   handle: string;
   description: string;
   descriptionHtml?: string;
+  productType?: string;
+  totalInventory?: number;
   priceRange: {
     minVariantPrice: {
       amount: string;
@@ -364,6 +397,10 @@ export interface ShopifyProduct {
       };
     }>;
   };
+  metafields?: Array<{
+    key: string;
+    value: string;
+  }>;
   variants?: {
     edges: Array<{
       node: {
