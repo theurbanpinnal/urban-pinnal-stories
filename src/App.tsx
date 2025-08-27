@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { Suspense, lazy } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ResourcePreloader from "@/components/ResourcePreloader";
+import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
 import heroImage from "@/assets/hero-weaving-3.jpg";
 
 const Index = lazy(() => import(/* webpackChunkName: "page-index" */ "./pages/Index"));
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <FloatingWhatsAppButton />
         </BrowserRouter>
       </CartProvider>
     </TooltipProvider>

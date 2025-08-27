@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,8 @@ interface CartProps {
 
 const Cart: React.FC<CartProps> = ({ children }) => {
   const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const itemCount = getCartItemCount();
@@ -71,7 +74,15 @@ const Cart: React.FC<CartProps> = ({ children }) => {
               <div className="text-center py-12">
                 <ShoppingCart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 mb-4">Your cart is empty</p>
-                <Button onClick={() => setOpen(false)} variant="outline">
+                <Button
+                  onClick={() => {
+                    if (!location.pathname.startsWith('/store')) {
+                      navigate('/store');
+                    }
+                    setOpen(false);
+                  }}
+                  variant="outline"
+                >
                   Continue Shopping
                 </Button>
               </div>

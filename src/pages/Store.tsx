@@ -8,8 +8,8 @@ const Store: React.FC = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-amber-50 to-orange-50 py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="bg-muted/30 py-20">
+        <div className="container mx-auto px-6 text-center">
           <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
             Our Collection
           </h1>
