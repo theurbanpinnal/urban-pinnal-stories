@@ -34,11 +34,11 @@ const ProductPage: React.FC = () => {
   
   if (error || !data?.productByHandle) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-8">The product you're looking for doesn't exist or has been moved.</p>
+          <h1 className="font-serif text-3xl font-semibold text-foreground mb-4">Product Not Found</h1>
+          <p className="text-muted-foreground mb-8">The product you're looking for doesn't exist or has been moved.</p>
           <Button onClick={() => navigate('/store')} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Store
@@ -71,7 +71,7 @@ const ProductPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
@@ -80,7 +80,7 @@ const ProductPage: React.FC = () => {
           <Button 
             variant="ghost" 
             onClick={() => navigate('/store')}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Store
@@ -100,7 +100,7 @@ const ProductPage: React.FC = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-gray-400">No Image Available</span>
+                  <span className="text-muted-foreground">No Image Available</span>
                 </div>
               )}
             </div>
@@ -132,11 +132,11 @@ const ProductPage: React.FC = () => {
           {/* Product Information */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.title}</h1>
+              <h1 className="font-serif text-4xl font-semibold text-foreground mb-4">{product.title}</h1>
               
               {selectedVariant && (
                 <div className="flex items-center gap-4 mb-6">
-                  <Badge variant="secondary" className="text-xl font-bold px-4 py-2">
+                  <Badge variant="secondary" className="text-lg font-semibold px-4 py-2">
                     {formatCurrency(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
                   </Badge>
                   {!selectedVariant.availableForSale && (
@@ -148,7 +148,7 @@ const ProductPage: React.FC = () => {
 
             {/* Product Description */}
             {product.description && (
-              <div className="prose prose-gray max-w-none">
+              <div className="prose prose-muted max-w-none">
                 <div 
                   dangerouslySetInnerHTML={{ 
                     __html: product.descriptionHtml || product.description 
@@ -160,7 +160,7 @@ const ProductPage: React.FC = () => {
             {/* Variant Selection */}
             {variants.length > 1 && (
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-foreground">
                   Variant
                 </label>
                 <Select value={selectedVariantId} onValueChange={setSelectedVariantId}>
@@ -189,7 +189,7 @@ const ProductPage: React.FC = () => {
 
             {/* Quantity Selection */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-foreground">
                 Quantity
               </label>
               <Select 
@@ -243,7 +243,7 @@ const ProductPage: React.FC = () => {
 
 const ProductPageSkeleton: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">

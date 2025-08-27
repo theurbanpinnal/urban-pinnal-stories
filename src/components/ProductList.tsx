@@ -68,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Link to={`/store/products/${product.handle}`} className="group">
-      <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
+      <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card text-card-foreground">
         <div className="aspect-square overflow-hidden">
           {primaryImage ? (
             <LazyImage
@@ -83,16 +83,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
         <CardContent className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="font-serif font-semibold text-lg md:text-xl text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
             {product.title}
           </h3>
           {product.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            <p className="text-base md:text-lg text-muted-foreground mb-3 line-clamp-2">
               {product.description}
             </p>
           )}
           <div className="flex items-center justify-between">
-            <Badge variant="secondary" className="text-lg font-bold">
+            <Badge variant="secondary" className="text-base font-semibold">
               {formatCurrency(price.amount, price.currencyCode)}
             </Badge>
           </div>

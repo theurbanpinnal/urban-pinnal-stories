@@ -78,7 +78,7 @@ const Navigation = () => {
                   <span className="sr-only">Open navigation</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <SheetContent side="left" className="p-4 sm:p-6 space-y-4 sm:space-y-6 h-screen overflow-y-auto custom-scrollbar">
                 {navigationItems.map((item) => (
                   <Link
                     key={item.href}

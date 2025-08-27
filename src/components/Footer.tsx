@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Instagram, Facebook, ArrowRight } from "lucide-react";
+import { Instagram, Facebook, ArrowRight, Youtube, Twitter } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import logoTransparent from "@/assets/logo-transparent.png";
@@ -88,6 +88,7 @@ const Footer = () => {
               >
                 <Facebook className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
+              {/* Pinterest */}
               <a
                 href="https://pinterest.com/theurbanpinnal"
                 target="_blank"
@@ -95,9 +96,29 @@ const Footer = () => {
                 className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
                 aria-label="Follow us on Pinterest"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0C5.373 0 0 5.372 0 12s5.373 12 12 12c6.628 0 12-5.372 12-12S18.628 0 12 0zm5.568 8.16c-.169 1.858-.896 3.175-1.84 4.12-.944.944-2.262 1.67-4.12 1.839-.62.056-1.233.084-1.85.084-.617 0-1.23-.028-1.849-.084-1.858-.169-3.176-.895-4.12-1.84-.945-.944-1.671-2.261-1.84-4.119C1.793 7.54 1.765 6.927 1.765 6.31c0-.617.028-1.23.084-1.849.169-1.858.895-3.175 1.84-4.12.944-.944 2.262-1.67 4.12-1.839.619-.056 1.232-.084 1.849-.084.617 0 1.23.028 1.85.084 1.858.169 3.175.895 4.119 1.84.945.944 1.671 2.261 1.84 4.119.056.619.084 1.232.084 1.849 0 .617-.028 1.23-.084 1.849z"/>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 0C5.371 0 .8 5.371 .8 12c0 4.946 3.129 9.126 7.469 10.688-.104-.896-.2-2.287.04-3.28.22-.936 1.408-5.954 1.408-5.954s-.36-.72-.36-1.78c0-1.667 .967-2.914 2.17-2.914 1.023 0 1.515 .77 1.515 1.693 0 1.032-.657 2.573-1 4.006-.286 1.208 .6 2.192 1.773 2.192 2.126 0 3.765-2.246 3.765-5.49 0-2.87-2.062-4.886-5.003-4.886-3.408 0-5.407 2.556-5.407 5.205 0 1.034 .397 2.143 .893 2.745 .098 .12 .112 .224 .083 .344-.091 .376-.298 1.207-.338 1.374-.053 .223-.18 .27-.414 .162-1.547-.716-2.515-2.958-2.515-4.756 0-3.885 2.826-7.456 8.155-7.456 4.277 0 7.604 3.051 7.604 7.132 0 4.247-2.683 7.664-6.406 7.664-1.252 0-2.43-.648-2.834-1.416l-.773 2.95c-.278 1.078-1.03 2.433-1.536 3.254 1.155 .358 2.377 .55 3.653 .55 6.629 0 11.989-5.371 11.989-11.999C24 5.371 18.629 0 12 0z" />
                 </svg>
+              </a>
+
+              <a
+                href="https://youtube.com/@theurbanpinnal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
+                aria-label="Subscribe on YouTube"
+              >
+                <Youtube className="w-4 h-4 sm:w-5 sm:h-5" />
+              </a>
+
+              <a
+                href="https://twitter.com/theurbanpinnal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 bg-craft-ivory/10 rounded-full flex items-center justify-center hover:bg-craft-ivory/20 transition-elegant"
+                aria-label="Follow us on Twitter"
+              >
+                <Twitter className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             </div>
           </div>

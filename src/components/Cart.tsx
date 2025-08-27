@@ -51,7 +51,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
         )}
       </SheetTrigger>
       
-      <SheetContent className="w-full sm:max-w-md">
+      <SheetContent className="w-full sm:max-w-md h-screen max-h-screen flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
@@ -65,9 +65,8 @@ const Cart: React.FC<CartProps> = ({ children }) => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col h-full">
-          {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto py-6">
+        {/* Cart Items */}
+        <div className="flex-1 overflow-y-auto py-6 custom-scrollbar">
             {cartLines.length === 0 ? (
               <div className="text-center py-12">
                 <ShoppingCart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -91,9 +90,9 @@ const Cart: React.FC<CartProps> = ({ children }) => {
             )}
           </div>
 
-          {/* Cart Footer */}
-          {cartLines.length > 0 && (
-            <div className="border-t pt-6 space-y-4">
+        {/* Cart Footer */}
+        {cartLines.length > 0 && (
+          <div className="border-t pt-6 space-y-4 shrink-0">
               {/* Subtotal */}
               {subtotal && (
                 <div className="flex justify-between items-center text-lg font-semibold">
@@ -104,7 +103,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
                 </div>
               )}
               
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Shipping and taxes calculated at checkout.
               </p>
               
@@ -126,7 +125,6 @@ const Cart: React.FC<CartProps> = ({ children }) => {
               </Button>
             </div>
           )}
-        </div>
       </SheetContent>
     </Sheet>
   );
@@ -168,11 +166,11 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
 
       {/* Product Details */}
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-gray-900 truncate">{product.title}</h4>
+        <h4 className="font-medium text-base md:text-lg text-foreground truncate">{product.title}</h4>
         {variant.title !== 'Default Title' && (
           <p className="text-sm text-gray-500">{variant.title}</p>
         )}
-        <p className="text-sm font-medium text-gray-900">
+        <p className="text-base font-medium text-foreground">
           {formatCurrency(variant.price.amount, variant.price.currencyCode)}
         </p>
 
