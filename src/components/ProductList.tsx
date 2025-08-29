@@ -23,6 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import LazyImage from '@/components/LazyImage';
 import StarRating from '@/components/ui/star-rating';
 import { formatCurrency } from '@/lib/utils';
+import { getSmartObjectPosition } from '@/lib/image-utils';
 import FilterSortDrawer, { FilterOptions, SortOption } from '@/components/FilterSortDrawer';
 import { useState, useMemo, useEffect } from 'react';
 import { Clock, Package, Star, Zap } from 'lucide-react';
@@ -254,6 +255,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               alt={primaryImage?.altText || product.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               placeholderClassName="w-full h-full"
+              objectPosition={getSmartObjectPosition(
+                product.title,
+                primaryImageUrl,
+                product.productType,
+                product.tags
+              )}
             />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">

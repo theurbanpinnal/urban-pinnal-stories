@@ -9,6 +9,7 @@ interface LazyImageProps {
   priority?: boolean;
   width?: number;
   height?: number;
+  objectPosition?: string;
 }
 
 const LazyImage = ({ 
@@ -19,7 +20,8 @@ const LazyImage = ({
   loading = 'lazy',
   priority = false,
   width,
-  height 
+  height,
+  objectPosition = 'center'
 }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
@@ -60,7 +62,10 @@ const LazyImage = ({
           height={height}
           onLoad={() => setIsLoaded(true)}
           decoding="async"
-          style={{ aspectRatio: width && height ? `${width}/${height}` : undefined }}
+          style={{ 
+            aspectRatio: width && height ? `${width}/${height}` : undefined,
+            objectPosition: objectPosition
+          }}
         />
       )}
     </div>
