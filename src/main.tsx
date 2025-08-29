@@ -3,12 +3,8 @@ import { Provider, createClient, cacheExchange, fetchExchange } from 'urql';
 import App from './App.tsx';
 import './index.css';
 
-const storeDomain = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
-const storefrontToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
-
-if (!storeDomain || !storefrontToken) {
-  throw new Error("Shopify environment variables are missing.");
-}
+// Shopify configuration is now handled by the serverless proxy
+// No need to expose tokens in the frontend
 
 const client = createClient({
   url: `/shopify/api/2024-01/graphql.json`,
@@ -17,7 +13,6 @@ const client = createClient({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': storefrontToken,
     },
   }),
 });
