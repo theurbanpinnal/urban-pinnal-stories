@@ -64,7 +64,7 @@ const ProductPage: React.FC = () => {
   useEffect(() => {
     if (data?.productByHandle) {
       const product = data.productByHandle;
-      document.title = `${product.title} | MY STORE`;
+      document.title = `${product.title} | THE URBAN PINNAL`;
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');

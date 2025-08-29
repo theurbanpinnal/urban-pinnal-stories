@@ -33,6 +33,28 @@ export const GET_PRODUCTS = `
               }
             }
           }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                quantityAvailable
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
           collections(first: 10) {
             edges {
               node {

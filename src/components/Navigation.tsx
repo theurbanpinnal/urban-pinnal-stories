@@ -110,8 +110,8 @@ const Navigation = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
-            <HamburgerSearch />
             <Cart />
+            <HamburgerSearch />
           </div>
 
           {/* Mega Menu Content - Positioned absolutely within header */}
@@ -307,6 +307,7 @@ const Navigation = () => {
           {/* Mobile navigation */}
           <div className="flex items-center gap-2 lg:hidden">
             <Cart />
+            <HamburgerSearch />
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -315,14 +316,6 @@ const Navigation = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-4 sm:p-6 space-y-4 sm:space-y-6 h-screen overflow-y-auto custom-scrollbar">
-                {/* Search Bar */}
-                <div className="border-b border-border/20 pb-4">
-                  <SearchBar 
-                    className="w-full" 
-                    placeholder="Search products..."
-                  />
-                </div>
-                
                 {/* Primary Navigation */}
                 {primaryNavigationItems.map((item) => (
                   <Link

@@ -226,8 +226,53 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const primaryImageUrl = getPrimaryMedia(product);
   const primaryImage = product.images.edges[0]?.node;
-  const currentPrice = getLowestPrice(product);
-  const originalPrice = getHighestCompareAtPrice(product);
+
+  // Enhanced pricing logic - select a representative variant for pricing display
+  const selectRepresentativeVariant = () => {
+    if (!product.variants?.edges?.length) {
+      return null;
+    }
+
+    // Priority 1: First variant with compareAtPrice (for showing discounts)
+    const variantWithCompareAtPrice = product.variants.edges.find(({ node: variant }) =>
+      variant.compareAtPrice?.amount &&
+      parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount)
+    );
+
+    if (variantWithCompareAtPrice) {
+      return variantWithCompareAtPrice.node;
+    }
+
+    // Priority 2: Lowest priced variant (fallback)
+    let lowestVariant = product.variants.edges[0].node;
+    let lowestPrice = parseFloat(lowestVariant.price.amount);
+
+    for (const { node: variant } of product.variants.edges) {
+      const price = parseFloat(variant.price.amount);
+      if (price < lowestPrice) {
+        lowestPrice = price;
+        lowestVariant = variant;
+      }
+    }
+
+    return lowestVariant;
+  };
+
+  const selectedVariant = selectRepresentativeVariant();
+  const currentPrice = selectedVariant ? parseFloat(selectedVariant.price.amount) : getLowestPrice(product);
+  const currencyCode = selectedVariant ? selectedVariant.price.currencyCode : product.priceRange.minVariantPrice.currencyCode;
+
+  // Get compare-at price from selected variant
+  let originalPrice: number | null = null;
+  let compareAtCurrency: string | null = null;
+
+  if (selectedVariant?.compareAtPrice?.amount) {
+    const compareAtPrice = parseFloat(selectedVariant.compareAtPrice.amount);
+    if (compareAtPrice > currentPrice) {
+      originalPrice = compareAtPrice;
+      compareAtCurrency = selectedVariant.compareAtPrice.currencyCode;
+    }
+  }
   
   // Get all product badges
   const badges = getProductBadges(product);
@@ -276,9 +321,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 New
               </Badge>
             )}
-            {onSale && (
+            {/* Sale badge - now consistent with enhanced pricing logic */}
+            {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
               <Badge variant="destructive" className="text-xs">
-                {discountPercentage > 0 ? `${discountPercentage}% OFF` : 'Sale'}
+                {discountPercentage > 0 ? `${discountPercentage}% OFF` : 'SALE'}
               </Badge>
             )}
             {badges.includes('Featured') && (
@@ -328,27 +374,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </p>
           )}
 
-          {/* Pricing */}
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col items-start gap-1">
-              {/* Original Price (Compare At Price) */}
-              {originalPrice && originalPrice > currentPrice && (
+          {/* Enhanced Pricing - Same logic as ProductPage */}
+          <div className="space-y-2">
+            {/* Compare-at Price (Original Price) */}
+            {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
+              <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground line-through">
-                  {formatCurrency(originalPrice.toString(), product.priceRange.minVariantPrice.currencyCode)}
+                  {formatCurrency(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
                 </span>
-              )}
-              {/* Current Price */}
-              <Badge variant="secondary" className={`text-base font-semibold ${originalPrice && originalPrice > currentPrice ? 'text-craft-terracotta' : ''}`}>
-                {formatCurrency(currentPrice.toString(), product.priceRange.minVariantPrice.currencyCode)}
-              </Badge>
-            </div>
+              </div>
+            )}
 
-            {/* Creation Date for New Products
-            {isNew && product.createdAt && (
-              <span className="text-xs text-muted-foreground">
-                {formatDateRelative(product.createdAt)}
+            {/* Current Price */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-foreground">
+                {formatCurrency(currentPrice.toString(), currencyCode)}
               </span>
-            )} */}
+            </div>
           </div>
 
           {/* Tags */}
