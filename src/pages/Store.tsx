@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap } from 'lucide-react';
 
@@ -48,15 +49,15 @@ const Store: React.FC = () => {
     }
   };
 
-  // Handle clearing collection filter
-  const handleClearCollection = () => {
+  // Handle clearing all filters (collection and search)
+  const handleClearAllFilters = () => {
     setSelectedCollection(null);
     setSearchParams({});
   };
 
   // Set SEO metadata
   useEffect(() => {
-    const shopName = shopData?.shop?.name || 'THE URBAN PINNAL';
+    const shopName = shopData?.shop?.name || 'The Urban Pinnal';
     const shopDescription = shopData?.shop?.description || 'Discover authentic, handcrafted pieces that tell stories of tradition and skill.';
     
     document.title = `${shopName} - Handcrafted Collection | Authentic Artisan Products`;
@@ -237,12 +238,22 @@ const Store: React.FC = () => {
             </p>
             
             {/* Collection Filter Indicator */}
-            {selectedCollection && (
+            {(selectedCollection || searchQuery) && (
               <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="text-sm text-muted-foreground">Showing products from:</span>
+                <span className="text-sm text-muted-foreground">
+                  {selectedCollection ? 'Showing products from:' : 'Search results for:'}
+                </span>
                 <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                  {selectedCollection}
+                  {selectedCollection || searchQuery}
                 </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearAllFilters}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Clear
+                </Button>
               </div>
             )}
             

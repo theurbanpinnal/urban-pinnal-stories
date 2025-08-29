@@ -64,7 +64,7 @@ const ProductPage: React.FC = () => {
   useEffect(() => {
     if (data?.productByHandle) {
       const product = data.productByHandle;
-      document.title = `${product.title} | THE URBAN PINNAL`;
+      document.title = `${product.title} | The Urban Pinnal`;
       
       // Set meta description
       const metaDescription = document.querySelector('meta[name="description"]');
@@ -241,7 +241,7 @@ const ProductPage: React.FC = () => {
             {/* Vendor & Collections */}
             <div className="flex items-center justify-between">
               <div className="font-sans text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                {product.vendor || 'THE URBAN PINNAL'}
+                {product.vendor || 'The Urban Pinnal'}
               </div>
             </div>
 
