@@ -142,4 +142,70 @@
   @keyframes blink {
     50% { border-color: transparent; }
   }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--primary));
+    border-radius: 4px;
+  }
+
+  /* Hero Section Animations */
+  @keyframes fadeInDelay {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-delay {
+    opacity: 0;
+    animation: fadeInDelay 0.8s ease-out 4.5s forwards;
+  }
+
+  /* Navigation Mega Menu Integration */
+  [data-radix-navigation-menu-content] {
+    border-top: none !important;
+    margin-top: 0 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Ensure mega menu connects seamlessly with nav */
+  [data-radix-navigation-menu-trigger][data-state="open"] {
+    background-color: hsl(var(--background));
+    border-bottom: 1px solid transparent;
+  }
+
+  /* Product Image Consistency */
+  .aspect-square {
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  .aspect-square img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  /* Ensure placeholder maintains aspect ratio */
+  .aspect-square .bg-gray-200 {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }

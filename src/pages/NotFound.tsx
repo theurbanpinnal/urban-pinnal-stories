@@ -34,7 +34,7 @@ const NotFound = () => {
                 Page Not Found
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                The page you're looking for seems to have wandered off like a thread from our loom. 
+                The page you're looking for seems to have wandered off into the depth of our weavings. 
                 Let's get you back on the right path to discover our beautiful handmade crafts.
               </p>
             </div>
@@ -52,6 +52,12 @@ const NotFound = () => {
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Go Back
                 </button>
+              </Button>
+
+              <Button asChild variant="elegant" size="lg">
+                <Link to="/store">
+                  Continue Shopping
+                </Link>
               </Button>
             </div>
 

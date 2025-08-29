@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const BrandIntroduction = () => {
   return (
-    <section className="py-20 lg:py-28 px-6 max-w-6xl mx-auto">
+    <section className="py-12 lg:py-18 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="font-serif text-4xl lg:text-5xl font-semibold text-foreground mb-12">
           Weaving Stories, Empowering Hands.
@@ -11,7 +11,7 @@ const BrandIntroduction = () => {
         
         <div className="space-y-8 text-lg lg:text-xl text-muted-foreground leading-relaxed">
           <p>
-            At The Urban Pinnal, we believe every thread tells a story. Born from Chennai's rich heritage of craftsmanship, 
+            At The Urban Pinnal, we believe every knot and pinnal (<span className="font-tamil-serif">பின்னல்</span>) tells a story. Born from Chennai's rich heritage of craftsmanship, 
             we bridge the gap between traditional artisans and contemporary design. Our collective represents more than just 
             handmade products – it's a movement that honors age-old techniques while embracing modern sensibilities.
           </p>
