@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const BrandIntroduction = () => {
   return (
-    <section className="py-12 lg:py-18 px-6 max-w-6xl mx-auto">
+    <section className="py-12 lg:py-18 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="font-serif text-4xl lg:text-5xl font-semibold text-foreground mb-12">
           Weaving Stories, Empowering Hands.

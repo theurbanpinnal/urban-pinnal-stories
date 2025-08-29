@@ -23,7 +23,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
       
       {/* Hero Content */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+      <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-semibold text-craft-ivory mb-6 leading-tight">
           The Urban Pinnal<span className="text-craft-gold"></span>
         </h1>

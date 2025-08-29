@@ -13,8 +13,8 @@ const JournalPreview = () => {
   const previewPosts = posts?.slice(0, 3);
 
   return (
-    <section className="py-12 lg:py-18 px-6 bg-craft-terracotta text-craft-ivory">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-12 lg:py-18 bg-craft-terracotta text-craft-ivory">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="font-serif text-4xl lg:text-5xl font-semibold mb-6">
             From the Journal

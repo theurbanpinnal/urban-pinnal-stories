@@ -34,7 +34,7 @@ const NewsletterCTA = () => {
   };
 
   return (
-    <section className="py-12 lg:py-18 px-6 bg-secondary/20">
+    <section className="py-12 lg:py-18 px-4 sm:px-6 lg:px-8 bg-secondary/20">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="font-serif text-4xl lg:text-5xl font-semibold text-foreground mb-6">
           Join Our Journey
