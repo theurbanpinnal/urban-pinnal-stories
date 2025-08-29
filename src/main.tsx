@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { Provider, createClient, cacheExchange, fetchExchange } from 'urql';
+import { Provider, createClient, cacheExchange, fetchExchange, createRequest } from 'urql';
 import App from './App.tsx';
 import './index.css';
 
@@ -15,6 +15,8 @@ const client = createClient({
       'Content-Type': 'application/json',
     },
   }),
+  // Force POST requests and prevent query in URL
+  requestPolicy: 'cache-and-network',
 });
 
 createRoot(document.getElementById("root")!).render(
