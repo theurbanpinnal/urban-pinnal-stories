@@ -1,8 +1,8 @@
 // Shopify GraphQL queries and mutations
 
 export const GET_PRODUCTS = `
-  query getProducts($first: Int!) {
-    products(first: $first) {
+  query getProducts($first: Int!, $sortKey: ProductSortKeys) {
+    products(first: $first, sortKey: $sortKey) {
       edges {
         node {
           id
@@ -10,6 +10,11 @@ export const GET_PRODUCTS = `
           handle
           description
           productType
+          vendor
+          tags
+          createdAt
+          updatedAt
+          publishedAt
           totalInventory
           priceRange {
             minVariantPrice {
@@ -17,11 +22,14 @@ export const GET_PRODUCTS = `
               currencyCode
             }
           }
-          images(first: 1) {
+          images(first: 3) {
             edges {
               node {
+                id
                 url
                 altText
+                width
+                height
               }
             }
           }
@@ -49,7 +57,6 @@ export const GET_COLLECTIONS = `
           title
           handle
           description
-          productsCount
         }
       }
     }
@@ -61,6 +68,10 @@ export const GET_SHOP_INFO = `
     shop {
       name
       description
+      primaryDomain {
+        url
+      }
+      currencyCode
     }
   }
 `;
@@ -73,6 +84,7 @@ export const GET_PRODUCTS_SIMPLE = `
           id
           title
           handle
+          vendor
           priceRange {
             minVariantPrice {
               amount
@@ -93,14 +105,27 @@ export const GET_PRODUCT_BY_HANDLE = `
       description
       descriptionHtml
       handle
+      vendor
       tags
       productType
+      createdAt
+      updatedAt
+      publishedAt
+      totalInventory
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
       images(first: 10) {
         edges {
           node {
             id
             url
             altText
+            width
+            height
           }
         }
       }
@@ -134,6 +159,15 @@ export const GET_PRODUCT_BY_HANDLE = `
         name
         values
       }
+      collections(first: 10) {
+        edges {
+          node {
+            id
+            title
+            handle
+          }
+        }
+      }
     }
   }
 `;
@@ -161,6 +195,7 @@ export const CREATE_CART = `
                   product {
                     title
                     handle
+                    vendor
                     images(first: 1) {
                       edges {
                         node {
@@ -218,6 +253,7 @@ export const ADD_TO_CART = `
                   product {
                     title
                     handle
+                    vendor
                     images(first: 1) {
                       edges {
                         node {
@@ -275,6 +311,7 @@ export const UPDATE_CART_LINES = `
                   product {
                     title
                     handle
+                    vendor
                     images(first: 1) {
                       edges {
                         node {
@@ -332,6 +369,7 @@ export const REMOVE_FROM_CART = `
                   product {
                     title
                     handle
+                    vendor
                     images(first: 1) {
                       edges {
                         node {
@@ -388,6 +426,7 @@ export const GET_CART = `
                 product {
                   title
                   handle
+                  vendor
                   images(first: 1) {
                     edges {
                       node {
@@ -423,7 +462,6 @@ export interface ShopifyCollection {
   title: string;
   handle: string;
   description?: string;
-  productsCount?: number;
 }
 
 export interface ShopifyProduct {
@@ -433,8 +471,12 @@ export interface ShopifyProduct {
   description: string;
   descriptionHtml?: string;
   productType?: string;
-  totalInventory?: number;
+  vendor?: string;
   tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  totalInventory?: number;
   priceRange: {
     minVariantPrice: {
       amount: string;
@@ -446,7 +488,9 @@ export interface ShopifyProduct {
       node: {
         id?: string;
         url: string;
-        altText: string;
+        altText?: string;
+        width?: number;
+        height?: number;
       };
     }>;
   };
@@ -455,10 +499,6 @@ export interface ShopifyProduct {
       node: ShopifyCollection;
     }>;
   };
-  metafields?: Array<{
-    key: string;
-    value: string;
-  }>;
   options?: Array<{
     id: string;
     name: string;
@@ -504,11 +544,12 @@ export interface CartLine {
     product: {
       title: string;
       handle: string;
+      vendor?: string;
       images: {
         edges: Array<{
           node: {
             url: string;
-            altText: string;
+            altText?: string;
           };
         }>;
       };
@@ -537,3 +578,120 @@ export interface ShopifyCart {
   };
   checkoutUrl: string;
 }
+
+// Utility functions for working with product data
+export const getProductBadges = (product: ShopifyProduct): string[] => {
+  const badges: string[] = [];
+  
+  // Check for sale pricing from variants
+  const hasVariantSale = product.variants?.edges?.some(({ node: variant }) => 
+    variant.compareAtPrice && 
+    parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount)
+  );
+  
+  if (hasVariantSale) {
+    badges.push('Sale');
+  }
+  
+  if (product.totalInventory && product.totalInventory <= 5) {
+    badges.push('Low Stock');
+  }
+  
+  if (product.tags?.includes('new')) {
+    badges.push('New');
+  }
+  
+  if (product.tags?.includes('featured')) {
+    badges.push('Featured');
+  }
+  
+  return badges;
+};
+
+export const formatDateRelative = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+  if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
+  return `${Math.ceil(diffDays / 365)} years ago`;
+};
+
+export const getPrimaryMedia = (product: ShopifyProduct): string | null => {
+  // Get first image
+  if (product.images?.edges?.[0]?.node?.url) {
+    return product.images.edges[0].node.url;
+  }
+  
+  return null;
+};
+
+export const hasMultipleVariants = (product: ShopifyProduct): boolean => {
+  return (product.variants?.edges?.length || 0) > 1;
+};
+
+export const getLowestPrice = (product: ShopifyProduct): number => {
+  if (!product.variants?.edges?.length) {
+    return parseFloat(product.priceRange.minVariantPrice.amount);
+  }
+  
+  const prices = product.variants.edges.map(({ node: variant }) => 
+    parseFloat(variant.price.amount)
+  );
+  
+  return Math.min(...prices);
+};
+
+export const getHighestCompareAtPrice = (product: ShopifyProduct): number | null => {
+  if (!product.variants?.edges?.length) {
+    return null;
+  }
+  
+  const compareAtPrices = product.variants.edges
+    .map(({ node: variant }) => variant.compareAtPrice?.amount)
+    .filter(Boolean)
+    .map(price => parseFloat(price!));
+  
+  return compareAtPrices.length > 0 ? Math.max(...compareAtPrices) : null;
+};
+
+export const calculateDiscountPercentage = (product: ShopifyProduct): number => {
+  const currentPrice = getLowestPrice(product);
+  const originalPrice = getHighestCompareAtPrice(product);
+  
+  if (!originalPrice || originalPrice <= currentPrice) {
+    return 0;
+  }
+  
+  return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
+};
+
+export const isProductOnSale = (product: ShopifyProduct): boolean => {
+  return product.variants?.edges?.some(({ node: variant }) => 
+    variant.compareAtPrice && 
+    parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount)
+  ) || false;
+};
+
+export const isLowStock = (product: ShopifyProduct): boolean => {
+  return product.totalInventory !== undefined && product.totalInventory <= 10 && product.totalInventory > 0;
+};
+
+export const isOutOfStock = (product: ShopifyProduct): boolean => {
+  return product.totalInventory === 0 || 
+    (product.variants?.edges?.every(({ node: variant }) => !variant.availableForSale) || false);
+};
+
+export const isNewProduct = (product: ShopifyProduct): boolean => {
+  if (!product.createdAt) return false;
+  
+  const createdDate = new Date(product.createdAt);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  return createdDate > thirtyDaysAgo;
+};

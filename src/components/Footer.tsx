@@ -48,7 +48,7 @@ const Footer = () => {
   return (
     <footer className="bg-craft-terracotta text-craft-ivory">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           
           {/* Brand Section */}
@@ -126,64 +126,68 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h3 className="font-serif text-lg sm:text-xl font-semibold mb-4 sm:mb-6">Quick Links</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link 
-                  to="/" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/store" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Store
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/our-story" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Our Story
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/craft" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  The Craft
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/artisans" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Our Artisans
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/journal" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Journal
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/contact" 
-                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
-                >
-                  Contact
-                </Link>
-              </li>
-            </ul>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+              <ul className="space-y-3">
+                <li>
+                  <Link 
+                    to="/" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/store" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Store
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/contact" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+              <ul className="space-y-3">
+                <li>
+                  <Link 
+                    to="/our-story" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Our Story
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/craft" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    The Craft
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/artisans" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Our Artisans
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/journal" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    Journal
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Contact Info */}

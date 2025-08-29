@@ -1,6 +1,6 @@
 const CraftSection = () => {
   return (
-    <section className="py-20 lg:py-28 px-6 bg-craft-terracotta text-craft-ivory">
+    <section className="py-12 lg:py-18 px-6 bg-craft-terracotta text-craft-ivory">
       <div className="max-w-6xl mx-auto text-center">
         <h2 className="font-serif text-4xl lg:text-5xl font-semibold mb-12">
           Rooted in Tradition. Crafted from Nature.

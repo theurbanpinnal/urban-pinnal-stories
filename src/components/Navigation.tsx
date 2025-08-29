@@ -14,6 +14,10 @@ import { Menu, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
 import Cart from "@/components/Cart";
+import founderArtisanImage from "@/assets/founder-artisan.jpg";
+import heroWeavingImage from "@/assets/hero-weaving.jpg";
+import storyBannerImage from "@/assets/story-banner.jpg";
+import villageLandscapeImage from "@/assets/village-landscape.jpg";
 
 const Navigation = () => {
   const location = useLocation();
@@ -178,19 +182,26 @@ const Navigation = () => {
                       className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-craft-terracotta/20 to-craft-terracotta/5 p-6 flex flex-col justify-end">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
-                        <div className="relative z-10">
-                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
-                            Meet Our Artisans
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                            Discover the skilled women who create beautiful handwoven pieces using traditional techniques passed down through generations.
-                          </p>
-                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
-                            Learn more
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </span>
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        <img 
+                          src={founderArtisanImage}
+                          alt="Skilled artisan working with traditional handloom techniques"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 blur-[1px] group-hover:blur-[0.5px]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          <div className="relative z-10">
+                            <h4 className="font-serif text-lg font-semibold text-white mb-2 group-hover:text-craft-ivory transition-colors">
+                              Meet Our Artisans
+                            </h4>
+                            <p className="text-sm text-craft-ivory/90 mb-3 line-clamp-3">
+                              Discover the skilled women who create beautiful handwoven pieces using traditional techniques passed down through generations.
+                            </p>
+                            <span className="inline-flex items-center text-sm font-medium text-craft-ivory group-hover:text-craft-gold transition-colors">
+                              Learn more
+                              <ArrowRight className="w-4 h-4 ml-1" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -201,19 +212,26 @@ const Navigation = () => {
                       className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-craft-clay/20 to-craft-clay/5 p-6 flex flex-col justify-end">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
-                        <div className="relative z-10">
-                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
-                            Traditional Craft
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                            Explore the ancient art of handloom weaving and sustainable craftsmanship that forms the heart of our collection.
-                          </p>
-                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
-                            Discover craft
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </span>
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        <img 
+                          src={heroWeavingImage}
+                          alt="Traditional handloom weaving process showing skilled artisan hands"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 blur-[1px] group-hover:blur-[0.5px]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          <div className="relative z-10">
+                            <h4 className="font-serif text-lg font-semibold text-white mb-2 group-hover:text-craft-ivory transition-colors">
+                              Traditional Craft
+                            </h4>
+                            <p className="text-sm text-craft-ivory/90 mb-3 line-clamp-3">
+                              Explore the ancient art of handloom weaving and sustainable craftsmanship that forms the heart of our collection.
+                            </p>
+                            <span className="inline-flex items-center text-sm font-medium text-craft-ivory group-hover:text-craft-gold transition-colors">
+                              Discover craft
+                              <ArrowRight className="w-4 h-4 ml-1" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -224,19 +242,26 @@ const Navigation = () => {
                       className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-accent/20 to-accent/5 p-6 flex flex-col justify-end">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
-                        <div className="relative z-10">
-                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
-                            Stories & Updates
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                            Read insights, stories, and updates from our artisan community and their creative journey.
-                          </p>
-                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
-                            Read journal
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </span>
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        <img 
+                          src={storyBannerImage}
+                          alt="Artisan community working together in rural village setting"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 blur-[1px] group-hover:blur-[0.5px]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          <div className="relative z-10">
+                            <h4 className="font-serif text-lg font-semibold text-white mb-2 group-hover:text-craft-ivory transition-colors">
+                              Stories & Updates
+                            </h4>
+                            <p className="text-sm text-craft-ivory/90 mb-3 line-clamp-3">
+                              Read insights, stories, and updates from our artisan community and their creative journey.
+                            </p>
+                            <span className="inline-flex items-center text-sm font-medium text-craft-ivory group-hover:text-craft-gold transition-colors">
+                              Read journal
+                              <ArrowRight className="w-4 h-4 ml-1" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -247,19 +272,26 @@ const Navigation = () => {
                       className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
-                      <div className="aspect-[4/3] bg-gradient-to-br from-secondary/30 to-secondary/10 p-6 flex flex-col justify-end">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
-                        <div className="relative z-10">
-                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
-                            Our Mission
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
-                            Learn about our mission to empower rural craftswomen and preserve traditional techniques.
-                          </p>
-                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
-                            Our story
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </span>
+                      <div className="aspect-[4/3] relative overflow-hidden">
+                        <img 
+                          src={villageLandscapeImage}
+                          alt="Rural village landscape in Tamil Nadu showing traditional craftsmanship heritage"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 blur-[1px] group-hover:blur-[0.5px]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                          <div className="relative z-10">
+                            <h4 className="font-serif text-lg font-semibold text-white mb-2 group-hover:text-craft-ivory transition-colors">
+                              Our Mission
+                            </h4>
+                            <p className="text-sm text-craft-ivory/90 mb-3 line-clamp-3">
+                              Learn about our mission to empower rural craftswomen and preserve traditional techniques.
+                            </p>
+                            <span className="inline-flex items-center text-sm font-medium text-craft-ivory group-hover:text-craft-gold transition-colors">
+                              Our story
+                              <ArrowRight className="w-4 h-4 ml-1" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </Link>

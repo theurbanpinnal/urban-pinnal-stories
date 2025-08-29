@@ -1,14 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
-import { GET_PRODUCT_BY_HANDLE, ShopifyProduct } from '@/lib/shopify';
+import { 
+  GET_PRODUCT_BY_HANDLE, 
+  ShopifyProduct,
+  getProductBadges,
+  formatDateRelative,
+  hasMultipleVariants,
+  isProductOnSale,
+  isLowStock,
+  isOutOfStock,
+  isNewProduct,
+  calculateDiscountPercentage
+} from '@/lib/shopify';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, ShoppingCart, Loader2, Plus, Minus, Zap } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ShoppingCart, 
+  Loader2, 
+  Plus, 
+  Minus, 
+  Zap, 
+  Star,
+  Package,
+  Truck,
+  Shield,
+  Clock,
+  Tag,
+  Calendar,
+  Weight,
+  Ruler,
+  BarChart3,
+  Info
+} from 'lucide-react';
 import LazyImage from '@/components/LazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -31,6 +59,20 @@ const ProductPage: React.FC = () => {
   });
 
   const { data, fetching, error } = result;
+
+  // Set page title for SEO
+  useEffect(() => {
+    if (data?.productByHandle) {
+      const product = data.productByHandle;
+      document.title = `${product.title} | MY STORE`;
+      
+      // Set meta description
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription && product.description) {
+        metaDescription.setAttribute('content', product.description.substring(0, 160));
+      }
+    }
+  }, [data]);
 
   if (fetching) return <ProductPageSkeleton />;
   
@@ -55,7 +97,8 @@ const ProductPage: React.FC = () => {
   const variants = product.variants?.edges?.map(({ node }) => node) || [];
   const images = product.images?.edges?.map(({ node }) => node) || [];
   const options = product.options || [];
-  
+  const badges = getProductBadges(product);
+
   // Set default variant if none selected
   if (!selectedVariantId && variants.length > 0) {
     setSelectedVariantId(variants[0].id);
@@ -93,8 +136,9 @@ const ProductPage: React.FC = () => {
     }
   };
 
-  // Quantity handlers
-  const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, 10));
+  // Quantity handlers with stock limit
+  const maxQuantity = Math.min(10, selectedVariant?.quantityAvailable || 10);
+  const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, maxQuantity));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
   const handleAddToCart = async () => {
@@ -115,12 +159,9 @@ const ProductPage: React.FC = () => {
     setIsBuyingNow(true);
     
     try {
-      // Add item to cart first
       await addToCart(selectedVariant.id, quantity);
-      
-      // Small delay to ensure cart is updated, then redirect to checkout
       setTimeout(() => {
-        checkout(); // This will redirect to Shopify checkout
+        checkout();
         setIsBuyingNow(false);
       }, 500);
     } catch (error) {
@@ -129,13 +170,20 @@ const ProductPage: React.FC = () => {
     }
   };
 
+  // Check stock status
+  const lowStock = isLowStock(product);
+  const outOfStock = isOutOfStock(product) || !selectedVariant?.availableForSale;
+  const onSale = isProductOnSale(product);
+  const discountPercentage = calculateDiscountPercentage(product);
+  const isNew = isNewProduct(product);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-8">
+        {/* Enhanced Breadcrumb */}
+        <div className="mb-8 flex items-center justify-between">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/store')}
@@ -188,11 +236,13 @@ const ProductPage: React.FC = () => {
             )}
           </div>
 
-          {/* Product Information */}
+          {/* Enhanced Product Information */}
           <div className="space-y-6">
-            {/* Store Badge */}
-            <div className="font-sans text-sm text-muted-foreground uppercase tracking-wider font-medium">
-              MY STORE
+            {/* Vendor & Collections */}
+            <div className="flex items-center justify-between">
+              <div className="font-sans text-sm text-muted-foreground uppercase tracking-wider font-medium">
+                {product.vendor || 'THE URBAN PINNAL'}
+              </div>
             </div>
 
             {/* Product Title */}
@@ -201,27 +251,57 @@ const ProductPage: React.FC = () => {
                 {product.title}
               </h1>
               
-              {/* Pricing */}
+              {/* Enhanced Pricing */}
               {selectedVariant && (
-                <div className="flex items-center gap-4 mb-8">
-                  {selectedVariant.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
-                    <>
-                      <span className="font-sans text-xl text-muted-foreground line-through">
-                        Rs. {parseFloat(selectedVariant.compareAtPrice.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                      </span>
-                      <Badge variant="destructive" className="font-sans text-sm px-3 py-1">
-                        sale
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4 mb-4">
+                    {selectedVariant.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
+                      <>
+                        <span className="font-sans text-xl text-muted-foreground line-through">
+                          {formatCurrency(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
+                        </span>
+                        <Badge variant="destructive" className="font-sans text-sm px-3 py-1">
+                          {discountPercentage > 0 ? `${discountPercentage}% OFF` : 'SALE'}
+                        </Badge>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="font-sans text-2xl md:text-3xl font-bold text-foreground">
+                      {formatCurrency(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
+                    </span>
+                    {selectedVariant.sku && (
+                      <Badge variant="outline" className="text-xs">
+                        SKU: {selectedVariant.sku}
                       </Badge>
-                    </>
-                  )}
-                  <span className="font-sans text-2xl md:text-3xl font-bold text-foreground">
-                    Rs. {parseFloat(selectedVariant.price.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                  </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Options Selection (Size, etc.) */}
+            {/* Stock Status */}
+            {selectedVariant && (
+              <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  <span className="font-sans text-sm font-medium">
+                    {outOfStock ? 'Out of Stock' : 
+                     lowStock ? `Low Stock` : 
+                     'In Stock'}
+                  </span>
+                </div>
+                {selectedVariant.quantityAvailable !== undefined && (
+                  <Badge variant="outline" className="text-xs">
+                    <BarChart3 className="w-3 h-3 mr-1" />
+                    {selectedVariant.quantityAvailable} available
+                  </Badge>
+                )}
+              </div>
+            )}
+
+
+            {/* Options Selection */}
             {options.map((option) => (
               <div key={option.id} className="space-y-4">
                 <label className="block font-sans text-base font-semibold text-foreground">
@@ -255,28 +335,35 @@ const ProductPage: React.FC = () => {
               <label className="block font-sans text-base font-semibold text-foreground">
                 Quantity
               </label>
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={decrementQuantity}
-                  disabled={quantity <= 1}
-                  className="h-12 w-12 rounded-full border-2"
-                >
-                  <Minus className="h-5 w-5" />
-                </Button>
-                <span className="font-sans text-xl font-semibold w-12 text-center">
-                  {quantity}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={incrementQuantity}
-                  disabled={quantity >= 10}
-                  className="h-12 w-12 rounded-full border-2"
-                >
-                  <Plus className="h-5 w-5" />
-                </Button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={decrementQuantity}
+                    disabled={quantity <= 1}
+                    className="h-12 w-12 rounded-full border-2"
+                  >
+                    <Minus className="h-5 w-5" />
+                  </Button>
+                  <span className="font-sans text-xl font-semibold w-12 text-center">
+                    {quantity}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={incrementQuantity}
+                    disabled={quantity >= maxQuantity}
+                    className="h-12 w-12 rounded-full border-2"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </div>
+                {selectedVariant?.quantityAvailable && (
+                  <span className="text-sm text-muted-foreground">
+                    Max: {Math.min(maxQuantity, selectedVariant.quantityAvailable)}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -284,7 +371,7 @@ const ProductPage: React.FC = () => {
             <div className="space-y-4 pt-6">
               <Button
                 onClick={handleAddToCart}
-                disabled={!selectedVariant?.availableForSale || cartLoading}
+                disabled={outOfStock || cartLoading}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-background text-foreground border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
                 variant="outline"
               >
@@ -296,14 +383,14 @@ const ProductPage: React.FC = () => {
                 ) : (
                   <>
                     <ShoppingCart className="mr-3 h-6 w-6" />
-                    {selectedVariant?.availableForSale ? 'Add to cart' : 'Out of Stock'}
+                    {outOfStock ? 'Out of Stock' : 'Add to cart'}
                   </>
                 )}
               </Button>
 
               <Button
                 onClick={handleBuyNow}
-                disabled={!selectedVariant?.availableForSale || cartLoading || isBuyingNow}
+                disabled={outOfStock || cartLoading || isBuyingNow}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300"
               >
                 {isBuyingNow ? (
@@ -320,9 +407,28 @@ const ProductPage: React.FC = () => {
               </Button>
             </div>
 
-            {/* Product Description */}
+            {/* Product Tags */}
+            {product.tags && product.tags.length > 0 && (
+              <div className="pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Tag className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-sans text-sm font-medium text-muted-foreground">Tags</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {product.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="border-t pt-6 mt-6"></div>
+
+            {/* Enhanced Product Description */}
             {product.description && (
-              <div className="pt-8 border-t">
+              <div>
                 <h2 className="font-serif text-2xl font-semibold text-foreground mb-4">
                   Product Details
                 </h2>
@@ -350,12 +456,15 @@ const ProductPageSkeleton: React.FC = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 flex justify-between">
           <Skeleton className="h-10 w-32" />
+          <div className="flex gap-2">
+            <Skeleton className="h-6 w-16" />
+            <Skeleton className="h-6 w-20" />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Image Skeleton */}
           <div className="space-y-4">
             <Skeleton className="w-full h-96 rounded-lg" />
             <div className="grid grid-cols-4 gap-2">
@@ -365,16 +474,22 @@ const ProductPageSkeleton: React.FC = () => {
             </div>
           </div>
 
-          {/* Content Skeleton */}
           <div className="space-y-6">
+            <div className="flex justify-between">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-24" />
+            </div>
             <div>
               <Skeleton className="h-16 w-3/4 mb-6" />
-              <Skeleton className="h-10 w-32" />
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-10 w-40" />
+              </div>
             </div>
-            <div className="space-y-3">
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-2/3" />
+            <Skeleton className="h-16 w-full rounded-lg" />
+            <div className="grid grid-cols-2 gap-4">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
             </div>
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-32" />

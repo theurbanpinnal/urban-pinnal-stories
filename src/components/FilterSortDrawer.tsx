@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
-export type SortOption = 'newest' | 'price-low' | 'price-high' | 'alphabetical';
+export type SortOption = 'newest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
 
 export interface FilterOptions {
   categories: string[];
@@ -39,6 +39,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 
   const sortOptions = [
     { value: 'newest', label: 'Newest First' },
+    { value: 'best-selling', label: 'Best Selling' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'alphabetical', label: 'Alphabetical' },
@@ -206,6 +207,14 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
             </div>
           </DrawerContent>
         </Drawer>
+        
+        {/* Clear Filters Button - shown when filters are active */}
+        {activeFiltersCount > 0 && (
+          <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+            Clear Filters
+          </Button>
+        )}
       </div>
 
       {/* Mobile Filter/Sort Button */}
