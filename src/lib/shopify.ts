@@ -25,6 +25,31 @@ export const GET_PRODUCTS = `
               }
             }
           }
+          collections(first: 10) {
+            edges {
+              node {
+                id
+                title
+                handle
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_COLLECTIONS = `
+  query getCollections($first: Int!) {
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          productsCount
         }
       }
     }
@@ -68,7 +93,9 @@ export const GET_PRODUCT_BY_HANDLE = `
       description
       descriptionHtml
       handle
-      images(first: 5) {
+      tags
+      productType
+      images(first: 10) {
         edges {
           node {
             id
@@ -86,9 +113,26 @@ export const GET_PRODUCT_BY_HANDLE = `
               amount
               currencyCode
             }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
             availableForSale
+            quantityAvailable
+            selectedOptions {
+              name
+              value
+            }
+            sku
+            weight
+            weightUnit
           }
         }
+      }
+      options {
+        id
+        name
+        values
       }
     }
   }
@@ -374,6 +418,14 @@ export const GET_CART = `
 `;
 
 // TypeScript interfaces for better type safety
+export interface ShopifyCollection {
+  id: string;
+  title: string;
+  handle: string;
+  description?: string;
+  productsCount?: number;
+}
+
 export interface ShopifyProduct {
   id: string;
   title: string;
@@ -382,6 +434,7 @@ export interface ShopifyProduct {
   descriptionHtml?: string;
   productType?: string;
   totalInventory?: number;
+  tags?: string[];
   priceRange: {
     minVariantPrice: {
       amount: string;
@@ -397,9 +450,19 @@ export interface ShopifyProduct {
       };
     }>;
   };
+  collections?: {
+    edges: Array<{
+      node: ShopifyCollection;
+    }>;
+  };
   metafields?: Array<{
     key: string;
     value: string;
+  }>;
+  options?: Array<{
+    id: string;
+    name: string;
+    values: string[];
   }>;
   variants?: {
     edges: Array<{
@@ -410,7 +473,19 @@ export interface ShopifyProduct {
           amount: string;
           currencyCode: string;
         };
+        compareAtPrice?: {
+          amount: string;
+          currencyCode: string;
+        };
         availableForSale: boolean;
+        quantityAvailable?: number;
+        selectedOptions?: Array<{
+          name: string;
+          value: string;
+        }>;
+        sku?: string;
+        weight?: number;
+        weightUnit?: string;
       };
     }>;
   };

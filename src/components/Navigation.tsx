@@ -1,34 +1,55 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   NavigationMenu,
+  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
+  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
 import Cart from "@/components/Cart";
 
 const Navigation = () => {
   const location = useLocation();
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
-  const navigationItems = [
-    { label: "Home", href: "/" },
+  const primaryNavigationItems = [
     { label: "Store", href: "/store" },
-    { label: "Our Story", href: "/our-story" },
-    { label: "The Craft", href: "/craft" },
-    { label: "Our Artisans", href: "/artisans" },
-    { label: "Journal", href: "/journal" },
     { label: "Contact", href: "/contact" },
   ];
 
+  const moreMenuItems = [
+    { 
+      label: "Our Story", 
+      href: "/our-story",
+      description: "Discover our mission to empower rural craftswomen and preserve traditional techniques."
+    },
+    { 
+      label: "The Craft", 
+      href: "/craft",
+      description: "Explore the ancient art of handloom weaving and sustainable craftsmanship."
+    },
+    { 
+      label: "Our Artisans", 
+      href: "/artisans",
+      description: "Meet the talented women who bring these beautiful creations to life."
+    },
+    { 
+      label: "Journal", 
+      href: "/journal",
+      description: "Read stories, insights, and updates from our artisan community."
+    },
+  ];
+
   return (
-    <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+    <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border relative">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 relative">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img
@@ -47,27 +68,207 @@ const Navigation = () => {
             <nav>
               <NavigationMenu>
                 <NavigationMenuList>
-                  {navigationItems.map((item) => (
+                  {/* Primary Navigation Items */}
+                  {primaryNavigationItems.map((item) => (
                     <NavigationMenuItem key={item.href}>
-                      <NavigationMenuLink asChild>
-                        <Link 
-                          to={item.href}
-                          className={cn(
-                            navigationMenuTriggerStyle(),
-                            "font-sans text-xs sm:text-sm xl:text-base font-medium transition-colors hover:text-craft-terracotta px-2 sm:px-3 xl:px-4",
-                            location.pathname === item.href && "text-craft-terracotta"
-                          )}
-                        >
+                      <Button
+                        variant="ghost"
+                        asChild
+                        className={cn(
+                          "font-sans text-xs sm:text-sm xl:text-base font-medium transition-all duration-200 ease-out hover:text-craft-terracotta hover:bg-accent/10 px-2 sm:px-3 xl:px-4 h-10",
+                          location.pathname === item.href && "text-craft-terracotta"
+                        )}
+                      >
+                        <Link to={item.href}>
                           {item.label}
                         </Link>
-                      </NavigationMenuLink>
+                      </Button>
                     </NavigationMenuItem>
                   ))}
+                  
+                  {/* About Menu Trigger */}
+                  <NavigationMenuItem>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "font-sans text-xs sm:text-sm xl:text-base font-medium transition-all duration-200 ease-out hover:text-craft-terracotta hover:bg-accent/10 px-2 sm:px-3 xl:px-4 h-10",
+                        ["/our-story", "/craft", "/artisans", "/journal"].includes(location.pathname) && "text-craft-terracotta",
+                        isMegaMenuOpen && "text-craft-terracotta"
+                      )}
+                      onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+                      onMouseEnter={() => setIsMegaMenuOpen(true)}
+                    >
+                      About
+                      <ChevronDown className={cn("w-4 h-4 ml-1 transition-transform", isMegaMenuOpen && "rotate-180")} />
+                    </Button>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
             <Cart />
           </div>
+
+          {/* Mega Menu Content - Positioned absolutely within header */}
+          {isMegaMenuOpen && (
+            <>
+              {/* Overlay to close menu when clicking outside */}
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setIsMegaMenuOpen(false)}
+              />
+              <div 
+                className="absolute top-full right-0 w-[95vw] max-w-[1200px] bg-background shadow-lg border border-border/20 rounded-b-lg overflow-hidden z-50"
+                onMouseLeave={() => setIsMegaMenuOpen(false)}
+              >
+              <div className="flex">
+                {/* Left Sidebar - Menu Items */}
+                <div className="w-64 bg-muted/30 border-r border-border/20">
+                  <div className="p-6">
+                    <h3 className="font-serif text-lg font-semibold text-craft-terracotta mb-1">
+                      Discover Our Heritage
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Explore our story and craftsmanship
+                    </p>
+                    
+                    <div className="space-y-1">
+                      {moreMenuItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          to={item.href}
+                          className={cn(
+                            "block px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-background/80 hover:text-craft-terracotta",
+                            location.pathname === item.href 
+                              ? "bg-background text-craft-terracotta shadow-sm" 
+                              : "text-foreground/90"
+                          )}
+                          onClick={() => setIsMegaMenuOpen(false)}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                      
+                      {/* Additional Links */}
+                      <div className="pt-3 mt-3 border-t border-border/20">
+                        <Link
+                          to="/store"
+                          className="block px-3 py-2 text-sm font-medium rounded-md text-foreground/90 hover:bg-background/80 hover:text-craft-terracotta transition-colors"
+                          onClick={() => setIsMegaMenuOpen(false)}
+                        >
+                          Shop Our Collection
+                        </Link>
+                        <Link
+                          to="/contact"
+                          className="block px-3 py-2 text-sm font-medium rounded-md text-foreground/90 hover:bg-background/80 hover:text-craft-terracotta transition-colors"
+                          onClick={() => setIsMegaMenuOpen(false)}
+                        >
+                          Get In Touch
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Right Content Area */}
+                <div className="flex-1 p-8">
+                  <div className="grid grid-cols-2 gap-6 h-full">
+                    {/* First Story Card */}
+                    <Link 
+                      to="/artisans"
+                      className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
+                      onClick={() => setIsMegaMenuOpen(false)}
+                    >
+                      <div className="aspect-[4/3] bg-gradient-to-br from-craft-terracotta/20 to-craft-terracotta/5 p-6 flex flex-col justify-end">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
+                        <div className="relative z-10">
+                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
+                            Meet Our Artisans
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                            Discover the skilled women who create beautiful handwoven pieces using traditional techniques passed down through generations.
+                          </p>
+                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
+                            Learn more
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                    
+                    {/* Second Story Card */}
+                    <Link 
+                      to="/craft"
+                      className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
+                      onClick={() => setIsMegaMenuOpen(false)}
+                    >
+                      <div className="aspect-[4/3] bg-gradient-to-br from-craft-clay/20 to-craft-clay/5 p-6 flex flex-col justify-end">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
+                        <div className="relative z-10">
+                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
+                            Traditional Craft
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                            Explore the ancient art of handloom weaving and sustainable craftsmanship that forms the heart of our collection.
+                          </p>
+                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
+                            Discover craft
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                    
+                    {/* Third Story Card - Journal */}
+                    <Link 
+                      to="/journal"
+                      className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
+                      onClick={() => setIsMegaMenuOpen(false)}
+                    >
+                      <div className="aspect-[4/3] bg-gradient-to-br from-accent/20 to-accent/5 p-6 flex flex-col justify-end">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
+                        <div className="relative z-10">
+                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
+                            Stories & Updates
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                            Read insights, stories, and updates from our artisan community and their creative journey.
+                          </p>
+                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
+                            Read journal
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                    
+                    {/* Fourth Story Card - Our Story */}
+                    <Link 
+                      to="/our-story"
+                      className="mega-menu-card relative overflow-hidden rounded-lg group cursor-pointer block"
+                      onClick={() => setIsMegaMenuOpen(false)}
+                    >
+                      <div className="aspect-[4/3] bg-gradient-to-br from-secondary/30 to-secondary/10 p-6 flex flex-col justify-end">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent group-hover:from-black/20 transition-all"></div>
+                        <div className="relative z-10">
+                          <h4 className="font-serif text-lg font-semibold text-foreground mb-2 group-hover:text-craft-terracotta transition-colors">
+                            Our Mission
+                          </h4>
+                          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                            Learn about our mission to empower rural craftswomen and preserve traditional techniques.
+                          </p>
+                          <span className="inline-flex items-center text-sm font-medium text-craft-terracotta group-hover:text-craft-terracotta/80 transition-colors">
+                            Our story
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </>
+          )}
 
           {/* Mobile navigation */}
           <div className="flex items-center gap-2 lg:hidden">
@@ -80,18 +281,43 @@ const Navigation = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-4 sm:p-6 space-y-4 sm:space-y-6 h-screen overflow-y-auto custom-scrollbar">
-                {navigationItems.map((item) => (
+                {/* Primary Navigation */}
+                {primaryNavigationItems.map((item) => (
                   <Link
                     key={item.href}
                     to={item.href}
                     className={cn(
-                      "block font-medium text-base sm:text-lg py-2 sm:py-3 border-b border-border/20 last:border-b-0",
+                      "block font-medium text-base sm:text-lg py-2 sm:py-3 border-b border-border/20",
                       location.pathname === item.href ? "text-craft-terracotta" : "text-foreground"
                     )}
                   >
                     {item.label}
                   </Link>
                 ))}
+                
+                {/* More Menu Items */}
+                <div className="pt-2">
+                  <h3 className="font-medium text-sm text-muted-foreground mb-3 uppercase tracking-wider">
+                    Explore
+                  </h3>
+                  {moreMenuItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={cn(
+                        "block py-2 sm:py-3 border-b border-border/20 last:border-b-0",
+                        location.pathname === item.href ? "text-craft-terracotta" : "text-foreground"
+                      )}
+                    >
+                      <div className="font-medium text-base sm:text-lg mb-1">
+                        {item.label}
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-snug">
+                        {item.description}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
               </SheetContent>
             </Sheet>
           </div>

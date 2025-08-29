@@ -129,7 +129,10 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               <div>
                 <h3 className="font-semibold mb-3">Categories</h3>
                 <div className="space-y-2">
-                  {availableCategories.map((category) => (
+                  {availableCategories.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No categories available</p>
+                  ) : (
+                    availableCategories.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
                       <Checkbox
                         id={category}
@@ -142,7 +145,8 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                         {category}
                       </Label>
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -251,20 +255,24 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               <div>
                 <h3 className="font-semibold mb-3">Categories</h3>
                 <div className="space-y-2">
-                  {availableCategories.map((category) => (
-                    <div key={category} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`mobile-${category}`}
-                        checked={filters.categories.includes(category)}
-                        onCheckedChange={(checked) => 
-                          handleCategoryChange(category, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`mobile-${category}`} className="capitalize">
-                        {category}
-                      </Label>
-                    </div>
-                  ))}
+                  {availableCategories.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No categories available</p>
+                  ) : (
+                    availableCategories.map((category) => (
+                      <div key={category} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`mobile-${category}`}
+                          checked={filters.categories.includes(category)}
+                          onCheckedChange={(checked) => 
+                            handleCategoryChange(category, checked as boolean)
+                          }
+                        />
+                        <Label htmlFor={`mobile-${category}`} className="capitalize">
+                          {category}
+                        </Label>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 

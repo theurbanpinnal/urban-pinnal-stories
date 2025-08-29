@@ -1,6 +1,6 @@
 import { useQuery } from 'urql';
 import { Link } from 'react-router-dom';
-import { GET_PRODUCTS, GET_PRODUCTS_SIMPLE, ShopifyProduct } from '@/lib/shopify';
+import { GET_PRODUCTS, GET_PRODUCTS_SIMPLE, GET_COLLECTIONS, ShopifyProduct, ShopifyCollection } from '@/lib/shopify';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,30 +27,54 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     variables: { first: limit },
   });
 
+  const [collectionsResult] = useQuery({
+    query: GET_COLLECTIONS,
+    variables: { first: 50 }, // Fetch up to 50 collections
+  });
+
   const { data, fetching, error } = result;
+  const { data: collectionsData, fetching: fetchingCollections } = collectionsResult;
   
   const rawProducts = data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [];
   
 
 
-  // Get available categories for filter
+  // Get available categories from collections with fallback to productType
   const availableCategories = useMemo(() => {
-    const categories = rawProducts
-      .map(product => product.productType)
-      .filter((type): type is string => Boolean(type))
-      .filter((type, index, arr) => arr.indexOf(type) === index);
-    return categories;
-  }, [rawProducts]);
+    // First try to get collections
+    const collections = collectionsData?.collections?.edges?.map(({ node }: { node: ShopifyCollection }) => node.title) || [];
+    
+
+    
+    // If no collections available, fallback to productType as categories
+    if (collections.length === 0) {
+      const productTypes = rawProducts
+        .map(product => product.productType)
+        .filter((type): type is string => Boolean(type))
+        .filter((type, index, arr) => arr.indexOf(type) === index);
+      return productTypes;
+    }
+    return collections.filter((collection, index, arr) => arr.indexOf(collection) === index);
+  }, [collectionsData, rawProducts]);
 
   // Filter and sort products
   const products = useMemo(() => {
     let filtered = [...rawProducts];
 
-    // Apply category filter
+    // Apply category filter using collections or fallback to productType
     if (filters.categories.length > 0) {
-      filtered = filtered.filter(product => 
-        product.productType && filters.categories.includes(product.productType)
-      );
+      filtered = filtered.filter(product => {
+        // First try filtering by collections
+        if (product.collections?.edges && product.collections.edges.length > 0) {
+          const productCollections = product.collections.edges.map(edge => edge.node.title);
+          return filters.categories.some(selectedCategory => 
+            productCollections.includes(selectedCategory)
+          );
+        }
+        
+        // Fallback to productType filtering
+        return product.productType && filters.categories.includes(product.productType);
+      });
     }
 
     // Apply price filter
@@ -89,7 +113,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
   }, [rawProducts, filters, sortBy]);
 
   // Handle loading and error states after all hooks
-  if (fetching) return <ProductListSkeleton />;
+  if (fetching || fetchingCollections) return <ProductListSkeleton />;
   
   if (error) {
     console.error('GraphQL Error:', error);
@@ -164,12 +188,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <Link to={`/store/products/${product.handle}`} className="group">
       <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card text-card-foreground">
-        <div className="aspect-square overflow-hidden relative">
+        <div className="aspect-square overflow-hidden relative bg-gray-50">
           {primaryImage ? (
             <LazyImage
               src={primaryImage.url}
               alt={primaryImage.altText || product.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              placeholderClassName="w-full h-full"
             />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -218,7 +243,9 @@ const ProductListSkeleton: React.FC = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {Array.from({ length: 12 }).map((_, index) => (
         <Card key={index} className="overflow-hidden">
-          <Skeleton className="aspect-square w-full" />
+          <div className="aspect-square overflow-hidden relative bg-gray-50">
+            <Skeleton className="w-full h-full" />
+          </div>
           <CardContent className="p-4">
             <Skeleton className="h-5 w-3/4 mb-2" />
             <Skeleton className="h-4 w-full mb-1" />

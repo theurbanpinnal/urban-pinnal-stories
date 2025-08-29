@@ -1,5 +1,8 @@
 import heroImage from "@/assets/hero-weaving-3.jpg";
 import AnimatedHandwriting from "@/components/AnimatedHandwriting";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 // Typewriter sound - disabled due to CORS issues
 // const typewriterSfx = "https://cdn.pixabay.com/download/audio/2023/05/25/audio_7e4d3e10ae.mp3?filename=typewriter-typing-146859.mp3";
@@ -31,6 +34,21 @@ const HeroSection = () => {
             audioSrc={typewriterSfx}
             className="text-craft-ivory text-0.75xl md:text-2xl lg:text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-transform duration-300 hover:-translate-y-1"
           />
+          
+          {/* Shop Now Button - appears after animation completes */}
+          <div className="mt-8 animate-fade-in-delay">
+            <Button 
+              asChild 
+              variant="elegant"
+              size="lg"
+              className="group shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Link to="/store">
+                Shop Now
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
       

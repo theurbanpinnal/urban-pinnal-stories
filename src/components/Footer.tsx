@@ -137,6 +137,14 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
+                  to="/store" 
+                  className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                >
+                  Store
+                </Link>
+              </li>
+              <li>
+                <Link 
                   to="/our-story" 
                   className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
                 >

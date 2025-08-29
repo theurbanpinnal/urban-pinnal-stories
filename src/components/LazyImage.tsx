@@ -48,7 +48,7 @@ const LazyImage = ({
   return (
     <div className={`relative ${placeholderClassName}`} ref={imgRef}>
       {!isLoaded && (
-        <div className={`absolute inset-0 bg-gray-200 animate-pulse ${className}`} />
+        <div className={`absolute inset-0 bg-gray-200 animate-pulse rounded-sm`} />
       )}
       {(isInView || priority) && (
         <img
@@ -60,6 +60,7 @@ const LazyImage = ({
           height={height}
           onLoad={() => setIsLoaded(true)}
           decoding="async"
+          style={{ aspectRatio: width && height ? `${width}/${height}` : undefined }}
         />
       )}
     </div>
