@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap } from 'lucide-react';
+import heroWeavingImage from '@/assets/hero-weaving-3.jpg';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -120,7 +121,7 @@ const Store: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/src/assets/hero-weaving-3.jpg"
+            src={heroWeavingImage}
             alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
             className="w-full h-full object-cover"
             loading="eager"
