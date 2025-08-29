@@ -20,6 +20,6 @@
     ]
   }
 ], "rewrites": [
-  { "source": "/shopify/:path*", "destination": "/api/shopify" },
+  { "source": "/shopify/(.*)", "destination": "/api/shopify" },
   { "source": "/(.*)", "destination": "/index.html" }
 ]}
