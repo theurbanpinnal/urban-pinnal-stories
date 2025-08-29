@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from 'urql';
+import LaunchBanner from '@/components/LaunchBanner';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
@@ -107,6 +108,7 @@ const Store: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <LaunchBanner />
       <Navigation />
       
       {/* Enhanced Hero Section */}

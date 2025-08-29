@@ -14,6 +14,7 @@ import { Menu, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
 import Cart from "@/components/Cart";
+import HamburgerSearch from "@/components/HamburgerSearch";
 import founderArtisanImage from "@/assets/founder-artisan.jpg";
 import heroWeavingImage from "@/assets/hero-weaving.jpg";
 import storyBannerImage from "@/assets/story-banner.jpg";
@@ -109,6 +110,7 @@ const Navigation = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
+            <HamburgerSearch />
             <Cart />
           </div>
 
@@ -313,6 +315,14 @@ const Navigation = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-4 sm:p-6 space-y-4 sm:space-y-6 h-screen overflow-y-auto custom-scrollbar">
+                {/* Search Bar */}
+                <div className="border-b border-border/20 pb-4">
+                  <SearchBar 
+                    className="w-full" 
+                    placeholder="Search products..."
+                  />
+                </div>
+                
                 {/* Primary Navigation */}
                 {primaryNavigationItems.map((item) => (
                   <Link

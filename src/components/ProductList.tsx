@@ -330,13 +330,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Pricing */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {onSale && originalPrice && (
+            <div className="flex flex-col items-start gap-1">
+              {/* Original Price (Compare At Price) */}
+              {originalPrice && originalPrice > currentPrice && (
                 <span className="text-sm text-muted-foreground line-through">
                   {formatCurrency(originalPrice.toString(), product.priceRange.minVariantPrice.currencyCode)}
                 </span>
               )}
-              <Badge variant="secondary" className="text-base font-semibold">
+              {/* Current Price */}
+              <Badge variant="secondary" className={`text-base font-semibold ${originalPrice && originalPrice > currentPrice ? 'text-craft-terracotta' : ''}`}>
                 {formatCurrency(currentPrice.toString(), product.priceRange.minVariantPrice.currencyCode)}
               </Badge>
             </div>

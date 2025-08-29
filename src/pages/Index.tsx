@@ -1,3 +1,4 @@
+import LaunchBanner from "@/components/LaunchBanner";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
@@ -53,6 +54,7 @@ const Index = () => {
       <meta name="keywords" content="handmade crafts, sustainable products, Tamil Nadu artisans, women-owned business, ethical fashion, natural materials, Chennai crafts, Indian craftsmanship" />
       
       <div className="min-h-screen bg-background">
+        <LaunchBanner />
         <Navigation />
         <HeroSection />
         <Suspense fallback={<ComponentSkeleton />}>
@@ -64,7 +66,7 @@ const Index = () => {
         
         {/* Collections Section */}
         <section className="py-12 lg:py-18 bg-muted/20">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-6">
             <div className="mb-12 text-center">
               <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
                 Explore Our Collections

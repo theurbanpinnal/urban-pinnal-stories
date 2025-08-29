@@ -270,11 +270,6 @@ const ProductPage: React.FC = () => {
                     <span className="font-sans text-2xl md:text-3xl font-bold text-foreground">
                       {formatCurrency(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
                     </span>
-                    {selectedVariant.sku && (
-                      <Badge variant="outline" className="text-xs">
-                        SKU: {selectedVariant.sku}
-                      </Badge>
-                    )}
                   </div>
                 </div>
               )}
