@@ -16,15 +16,25 @@ export default async function handler(request, response) {
       return response.status(200).end();
     }
 
-    // We only want to handle POST requests, which is what GraphQL uses
-    if (request.method !== 'POST') {
-      console.log('Method not allowed:', request.method);
-      return response.status(405).json({ 
-        error: 'Method Not Allowed',
-        method: request.method,
-        allowed: 'POST'
-      });
-    }
+      // Handle both GET and POST requests for debugging
+  if (request.method === 'GET') {
+    console.log('GET request detected - this should not happen with proper GraphQL setup');
+    console.log('Query params:', request.query);
+    return response.status(400).json({ 
+      error: 'GraphQL queries should use POST method',
+      method: request.method,
+      suggestion: 'Check frontend urql configuration to ensure POST requests are sent'
+    });
+  }
+  
+  if (request.method !== 'POST') {
+    console.log('Method not allowed:', request.method);
+    return response.status(405).json({ 
+      error: 'Method Not Allowed',
+      method: request.method,
+      allowed: 'POST'
+    });
+  }
 
     // Set CORS headers for POST requests
     response.setHeader('Access-Control-Allow-Origin', '*');
