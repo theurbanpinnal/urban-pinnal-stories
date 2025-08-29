@@ -118,7 +118,7 @@ const Store: React.FC = () => {
             alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
             className="w-full h-full object-cover"
             loading="eager"
-            fetchPriority="high"
+            {...({ fetchpriority: "high" } as any)}
           />
           <div className="absolute inset-0 bg-black/40" />
         </div>
