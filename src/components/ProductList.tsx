@@ -32,9 +32,10 @@ interface ProductListProps {
   limit?: number;
   showFilters?: boolean;
   initialCollection?: string | null;
+  searchQuery?: string | null;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, initialCollection = null }) => {
+const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, initialCollection = null, searchQuery = null }) => {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [filters, setFilters] = useState<FilterOptions>({
     categories: initialCollection ? [initialCollection] : [],
@@ -63,7 +64,8 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     query: GET_PRODUCTS,
     variables: { 
       first: limit,
-      sortKey: getSortKey(sortBy)
+      sortKey: getSortKey(sortBy),
+      query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
     },
   });
 
@@ -190,10 +192,10 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No Products Available
+          {searchQuery ? `No results found for "${searchQuery}"` : 'No Products Available'}
         </h3>
         <p className="text-gray-600">
-          Please check back later for new arrivals.
+          {searchQuery ? 'Try adjusting your search terms or browse our collections.' : 'Please check back later for new arrivals.'}
         </p>
       </div>
     );

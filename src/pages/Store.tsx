@@ -30,6 +30,9 @@ const Store: React.FC = () => {
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
     searchParams.get('collection') || null
   );
+  
+  // Get search query from URL parameters
+  const searchQuery = searchParams.get('search');
 
   // Handle collection selection and scroll to products
   const handleCollectionSelect = (collectionTitle: string) => {
@@ -53,7 +56,7 @@ const Store: React.FC = () => {
 
   // Set SEO metadata
   useEffect(() => {
-    const shopName = shopData?.shop?.name || 'MY STORE';
+    const shopName = shopData?.shop?.name || 'THE URBAN PINNAL';
     const shopDescription = shopData?.shop?.description || 'Discover authentic, handcrafted pieces that tell stories of tradition and skill.';
     
     document.title = `${shopName} - Handcrafted Collection | Authentic Artisan Products`;
@@ -266,7 +269,7 @@ const Store: React.FC = () => {
           
 
           
-          <ProductList limit={24} initialCollection={selectedCollection} />
+          <ProductList limit={24} initialCollection={selectedCollection} searchQuery={searchQuery} />
         </div>
       </section>
 

@@ -25,7 +25,7 @@ const LaunchBanner = () => {
               <span className="hidden sm:inline">•</span>
               <span className="hidden sm:inline">Free Shipping on Orders ₹1999+</span>
               <span className="hidden md:inline">•</span>
-              <span className="hidden md:inline">Limited Time Only - Shop Now!</span>
+              <span className="hidden md:inline">Shop Now!</span>
             </div>
           </Link>
           <Sparkles className="w-4 h-4 text-craft-ivory animate-spin" />

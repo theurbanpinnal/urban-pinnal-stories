@@ -14,7 +14,7 @@ import { Menu, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
 import Cart from "@/components/Cart";
-import HamburgerSearch from "@/components/HamburgerSearch";
+import DrawerSearch from "@/components/DrawerSearch";
 import founderArtisanImage from "@/assets/founder-artisan.jpg";
 import heroWeavingImage from "@/assets/hero-weaving.jpg";
 import storyBannerImage from "@/assets/story-banner.jpg";
@@ -111,7 +111,7 @@ const Navigation = () => {
               </NavigationMenu>
             </nav>
             <Cart />
-            <HamburgerSearch />
+            <DrawerSearch />
           </div>
 
           {/* Mega Menu Content - Positioned absolutely within header */}
@@ -307,7 +307,7 @@ const Navigation = () => {
           {/* Mobile navigation */}
           <div className="flex items-center gap-2 lg:hidden">
             <Cart />
-            <HamburgerSearch />
+            <DrawerSearch />
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">

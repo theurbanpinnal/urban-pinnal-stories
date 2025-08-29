@@ -1,4 +1,4 @@
-import heroImage from "@/assets/hero-weaving-3.jpg";
+import heroImage from "@/assets/hero_3.PNG";
 import AnimatedHandwriting from "@/components/AnimatedHandwriting";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
