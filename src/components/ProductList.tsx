@@ -75,9 +75,11 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
   });
 
   const { data, fetching, error } = result;
-  const { data: collectionsData, fetching: fetchingCollections } = collectionsResult;
+  const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
   
   const rawProducts = data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [];
+
+
 
   // Update filters when initialCollection changes
   useEffect(() => {

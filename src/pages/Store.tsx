@@ -26,7 +26,9 @@ const Store: React.FC = () => {
   });
 
   const { data: shopData } = shopResult;
-  const { data: collectionsData, fetching: fetchingCollections } = collectionsResult;
+  const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
+
+
   
   // State for collection filtering - initialize from URL parameter
   const [selectedCollection, setSelectedCollection] = useState<string | null>(

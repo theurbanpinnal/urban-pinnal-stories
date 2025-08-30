@@ -130,9 +130,9 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/shopify/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
-              // Forward all headers including X-Shopify-Storefront-Access-Token
-              if (req.headers.authorization) {
-                proxyReq.setHeader('Authorization', req.headers.authorization);
+              // Forward Shopify access token header
+              if (req.headers['x-shopify-storefront-access-token']) {
+                proxyReq.setHeader('X-Shopify-Storefront-Access-Token', req.headers['x-shopify-storefront-access-token']);
               }
             });
             proxy.on('proxyRes', (proxyRes, req, res) => {

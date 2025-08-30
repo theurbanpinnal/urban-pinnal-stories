@@ -6,20 +6,24 @@ import './index.css';
 const storeDomain = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
 const storefrontToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
 
-if (!storeDomain || !storefrontToken) {
-  throw new Error("Shopify environment variables are missing.");
-}
+// Check if we're in development or production
+const isDevelopment = import.meta.env.DEV;
 
 const client = createClient({
-  url: `/shopify/api/2024-01/graphql.json`,
+  url: `/shopify/api/2024-01/graphql.json`,  // Use proxy URL for both dev and prod
   exchanges: [cacheExchange, fetchExchange],
   fetchOptions: () => ({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': storefrontToken,
+      // Include token in development (Vite proxy handles it)
+      ...(isDevelopment && storefrontToken && {
+        'X-Shopify-Storefront-Access-Token': storefrontToken,
+      }),
     },
   }),
+  requestPolicy: 'cache-and-network',
+  suspense: false,
 });
 
 createRoot(document.getElementById("root")!).render(

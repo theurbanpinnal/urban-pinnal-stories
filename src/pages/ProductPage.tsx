@@ -60,6 +60,8 @@ const ProductPage: React.FC = () => {
 
   const { data, fetching, error } = result;
 
+
+
   // Set page title for SEO
   useEffect(() => {
     if (data?.productByHandle) {
