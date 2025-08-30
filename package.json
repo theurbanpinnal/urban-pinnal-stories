@@ -34,6 +34,7 @@
     "@sanity/client": "^6.5.4",
     "@tanstack/react-query": "^5.83.0",
     "@urql/core": "^6.0.1",
+    "@vercel/node": "^5.3.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
