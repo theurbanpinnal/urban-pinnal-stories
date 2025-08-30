@@ -3,20 +3,25 @@ import { Provider, createClient, cacheExchange, fetchExchange, createRequest } f
 import App from './App.tsx';
 import './index.css';
 
-// Shopify configuration is now handled by the serverless proxy
-// No need to expose tokens in the frontend
+const storeDomain = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
+const storefrontToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
 
 const client = createClient({
-  url: `/shopify/api/2024-01/graphql.json`,
+  url: `/shopify/api/2024-01/graphql.json`,  // Use proxy URL for both dev and prod
   exchanges: [cacheExchange, fetchExchange],
   fetchOptions: () => ({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      
+      // Include token in development (Vite proxy handles it)
+      ...(isDevelopment && storefrontToken && {
+        'X-Shopify-Storefront-Access-Token': storefrontToken,
+      }),
     },
   }),
-  // Force POST requests and prevent query in URL
   requestPolicy: 'cache-and-network',
+  suspense: false,
 });
 
 createRoot(document.getElementById("root")!).render(

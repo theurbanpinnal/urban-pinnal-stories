@@ -37,8 +37,10 @@ const Index = () => {
     variables: { first: 4 },
   });
 
-  const { data: collectionsData, fetching: fetchingCollections } = collectionsResult;
+  const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
   const featuredCollections = collectionsData?.collections?.edges?.slice(0, 4) || [];
+
+
 
   // Handle collection selection and navigation to store
   const handleCollectionSelect = (collectionTitle: string) => {

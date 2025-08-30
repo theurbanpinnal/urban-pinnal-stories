@@ -9,35 +9,35 @@ export default async function handler(request, response) {
 
     // Handle CORS preflight requests
     if (request.method === 'OPTIONS') {
-      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Origin', 'https://theurbanpinnal.com');
       response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
       response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Shopify-Storefront-Access-Token');
       response.setHeader('Access-Control-Max-Age', '86400');
       return response.status(200).end();
     }
 
-      // Handle both GET and POST requests for debugging
-  if (request.method === 'GET') {
-    console.log('GET request detected - this should not happen with proper GraphQL setup');
-    console.log('Query params:', request.query);
-    return response.status(400).json({ 
-      error: 'GraphQL queries should use POST method',
-      method: request.method,
-      suggestion: 'Check frontend urql configuration to ensure POST requests are sent'
-    });
-  }
-  
-  if (request.method !== 'POST') {
-    console.log('Method not allowed:', request.method);
-    return response.status(405).json({ 
-      error: 'Method Not Allowed',
-      method: request.method,
-      allowed: 'POST'
-    });
-  }
+    // Handle both GET and POST requests for debugging
+    if (request.method === 'GET') {
+      console.log('GET request detected - this should not happen with proper GraphQL setup');
+      console.log('Query params:', request.query);
+      return response.status(400).json({ 
+        error: 'GraphQL queries should use POST method',
+        method: request.method,
+        suggestion: 'Check frontend urql configuration to ensure POST requests are sent'
+      });
+    }
+    
+    if (request.method !== 'POST') {
+      console.log('Method not allowed:', request.method);
+      return response.status(405).json({ 
+        error: 'Method Not Allowed',
+        method: request.method,
+        allowed: 'POST'
+      });
+    }
 
     // Set CORS headers for POST requests
-    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Origin', 'https://theurbanpinnal.com');
     response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Shopify-Storefront-Access-Token');
 
