@@ -1,34 +1,32 @@
-import { createRoot } from 'react-dom/client';
-import { Provider, createClient, cacheExchange, fetchExchange, createRequest } from 'urql';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { createClient, Provider, fetchExchange } from 'urql';
+import { CartProvider } from './contexts/CartContext.tsx';
 import App from './App.tsx';
 import './index.css';
 
-const storeDomain = import.meta.env.VITE_SHOPIFY_STORE_DOMAIN;
-const storefrontToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
-
-// Check if we're in development or production
-const isDevelopment = import.meta.env.DEV;
+// Client-side Shopify configuration
+const shopifyUrl = `/shopify/api/2024-01/graphql.json`;
 
 const client = createClient({
-  url: `/shopify/api/2024-01/graphql.json`,  // Use proxy URL for both dev and prod
-  exchanges: [cacheExchange, fetchExchange],
-  fetchOptions: () => ({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      
-      // Include token in development (Vite proxy handles it)
-      ...(isDevelopment && storefrontToken && {
-        'X-Shopify-Storefront-Access-Token': storefrontToken,
-      }),
-    },
-  }),
-  requestPolicy: 'cache-and-network',
-  suspense: false,
+  url: shopifyUrl,
+  exchanges: [
+    fetchExchange // Use the fetchExchange to customize fetch behavior
+  ],
+  fetchOptions: () => {
+    return {
+      // This ensures that all requests, including queries, are sent as POST
+      preferGetMethod: false 
+    };
+  },
 });
 
-createRoot(document.getElementById("root")!).render(
-  <Provider value={client}>
-    <App />
-  </Provider>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Provider value={client}>
+      <CartProvider>
+        <App />
+      </CartProvider>
+    </Provider>
+  </React.StrictMode>
 );
