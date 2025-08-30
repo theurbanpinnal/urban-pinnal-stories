@@ -24,5 +24,18 @@
   "rewrites": [
     { "source": "/shopify/(.*)", "destination": "/api/shopify" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "shop.theurbanpinnal.com"
+        }
+      ],
+      "destination": "https://theurbanpinnal.com/store",
+      "permanent": true
+    }
   ]
 }
