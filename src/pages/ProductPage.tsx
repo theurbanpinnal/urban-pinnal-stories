@@ -196,15 +196,7 @@ const ProductPage: React.FC = () => {
             Back to Store
           </Button>
           
-          {/* Share Button in Header */}
-          {product && (
-            <ShareButton
-              productTitle={product.title}
-              productUrl={window.location.href}
-              productImage={currentImage?.url}
-              className="w-auto"
-            />
-          )}
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
