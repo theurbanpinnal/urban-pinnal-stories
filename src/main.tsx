@@ -16,7 +16,11 @@ const client = createClient({
   fetchOptions: () => {
     return {
       // This ensures that all requests, including queries, are sent as POST
-      preferGetMethod: false 
+      preferGetMethod: false,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
+      }
     };
   },
 });

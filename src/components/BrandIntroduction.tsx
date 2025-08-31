@@ -18,7 +18,7 @@ const BrandIntroduction = () => {
           
           <p>
             Each piece in our collection is meticulously crafted by skilled artisans from Tamil Nadu's villages, 
-            using techniques passed down through generations. From hand-spun cotton to natural dyes derived from 
+            using techniques passed down through generations. From cane, recycled plastic, bamboo, and other natural materials to natural dyes derived from 
             plants and minerals, we ensure that every creation is not just beautiful, but also sustainable and ethically made.
           </p>
         </div>

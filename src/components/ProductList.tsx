@@ -2,7 +2,8 @@ import { useQuery } from 'urql';
 import { Link } from 'react-router-dom';
 import { 
   GET_PRODUCTS, 
-  GET_COLLECTIONS, 
+  GET_COLLECTIONS,
+  GET_PRODUCTS_COUNT,
   ShopifyProduct, 
   ShopifyCollection,
   getProductBadges,
@@ -31,17 +32,33 @@ import { Clock, Package, Star, Zap } from 'lucide-react';
 interface ProductListProps {
   limit?: number;
   showFilters?: boolean;
-  initialCollection?: string | null;
   searchQuery?: string | null;
+  onClearAllFilters?: () => void;
+  onFiltersChange?: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, initialCollection = null, searchQuery = null }) => {
+const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, searchQuery = null, onClearAllFilters, onFiltersChange, initialFilters }) => {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [filters, setFilters] = useState<FilterOptions>({
-    categories: initialCollection ? [initialCollection] : [],
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {
+    categories: [],
     priceRange: { min: 0, max: 10000 },
     availability: 'all',
   });
+
+  // Notify parent component when filters change
+  useEffect(() => {
+    if (onFiltersChange) {
+      onFiltersChange(filters);
+    }
+  }, [filters, onFiltersChange]);
+
+  // Update filters when initialFilters changes (from parent component)
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
 
   // Convert sortBy to Shopify sortKey
   const getSortKey = (sortBy: SortOption) => {
@@ -74,22 +91,22 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     variables: { first: 50 },
   });
 
+  const [countResult] = useQuery({
+    query: GET_PRODUCTS_COUNT,
+    variables: { 
+      query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
+    },
+  });
+
   const { data, fetching, error } = result;
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
+  const { data: countData } = countResult;
   
   const rawProducts = data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [];
 
 
 
-  // Update filters when initialCollection changes
-  useEffect(() => {
-    if (initialCollection) {
-      setFilters(prev => ({
-        ...prev,
-        categories: [initialCollection]
-      }));
-    }
-  }, [initialCollection]);
+
 
   // Get available categories from collections with fallback to productType
   const availableCategories = useMemo(() => {
@@ -150,11 +167,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     // Enhanced availability filter
     if (filters.availability === 'in-stock') {
       filtered = filtered.filter(product => 
-        !isOutOfStock(product) && !isLowStock(product)
-      );
-    } else if (filters.availability === 'low-stock') {
-      filtered = filtered.filter(product => 
-        isLowStock(product) || isOutOfStock(product)
+        !isOutOfStock(product) // Include both regular stock and low stock items
       );
     }
 
@@ -212,6 +225,8 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
           filters={filters}
           onFiltersChange={setFilters}
           availableCategories={availableCategories}
+          productCount={products.length}
+          onClearAllFilters={onClearAllFilters}
         />
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

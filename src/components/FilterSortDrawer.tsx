@@ -15,7 +15,7 @@ export interface FilterOptions {
     min: number;
     max: number;
   };
-  availability: 'all' | 'in-stock' | 'low-stock';
+  availability: 'all' | 'in-stock';
 }
 
 interface FilterSortDrawerProps {
@@ -24,6 +24,8 @@ interface FilterSortDrawerProps {
   filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   availableCategories: string[];
+  productCount?: number;
+  onClearAllFilters?: () => void;
   className?: string;
 }
 
@@ -33,6 +35,8 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   filters,
   onFiltersChange,
   availableCategories,
+  productCount,
+  onClearAllFilters,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +52,6 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   const availabilityOptions = [
     { value: 'all', label: 'All Products' },
     { value: 'in-stock', label: 'In Stock' },
-    { value: 'low-stock', label: 'Low Stock' },
   ];
 
   const handleCategoryChange = (category: string, checked: boolean) => {
@@ -79,6 +82,10 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
       priceRange: { min: 0, max: 10000 },
       availability: 'all',
     });
+    // Also clear collection filters if the function is provided
+    if (onClearAllFilters) {
+      onClearAllFilters();
+    }
   };
 
   const activeFiltersCount = filters.categories.length + 
@@ -207,6 +214,12 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
             </div>
           </DrawerContent>
         </Drawer>
+        
+        {productCount !== undefined && (
+          <div className="text-sm text-muted-foreground">
+            <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
+          </div>
+        )}
         
         {/* Clear Filters Button - shown when filters are active */}
         {activeFiltersCount > 0 && (
@@ -341,6 +354,12 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
             </div>
           </DrawerContent>
         </Drawer>
+        
+        {productCount !== undefined && (
+          <div className="mt-3 text-sm text-muted-foreground text-center">
+            <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -80,15 +80,41 @@ const Index = () => {
             
             {!fetchingCollections && featuredCollections.length > 0 && (
               <div className={`grid gap-6 ${
-                featuredCollections.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-                featuredCollections.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                featuredCollections.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
+                (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
                 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
               }`}>
+                {/* All Collections Card */}
+                <Link 
+                  to="/store"
+                  className="block"
+                >
+                  <div
+                    className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 border-transparent h-full"
+                  >
+                    <h3 className="font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-craft-terracotta transition-colors">
+                      All Collections
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                      Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                    </p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <Badge variant="outline" className="text-xs">
+                        View All
+                      </Badge>
+                      <div className="flex items-center text-craft-terracotta text-sm font-medium group-hover:translate-x-1 transition-transform">
+                        Explore
+                        <Zap className="w-4 h-4 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+                
                 {featuredCollections.map(({ node: collection }) => (
                   <Link 
                     key={collection.id}
-                    to="/store"
+                    to={`/store?collection=${encodeURIComponent(collection.title)}`}
                     className="block"
                   >
                     <div
