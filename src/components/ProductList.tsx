@@ -221,7 +221,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
           filters={filters}
           onFiltersChange={setFilters}
           availableCategories={availableCategories}
-          productCount={countData?.products?.edges?.length || 0}
+          productCount={products.length}
         />
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

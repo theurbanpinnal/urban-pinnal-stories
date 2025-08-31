@@ -211,7 +211,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
         </Drawer>
         
         {productCount !== undefined && (
-          <div className="mt-3 text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground">
             <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
           </div>
         )}
