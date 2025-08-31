@@ -88,7 +88,7 @@ const Index = () => {
                 {featuredCollections.map(({ node: collection }) => (
                   <Link 
                     key={collection.id}
-                    to="/store"
+                    to={`/store?collection=${encodeURIComponent(collection.title)}`}
                     className="block"
                   >
                     <div

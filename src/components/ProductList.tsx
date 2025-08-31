@@ -2,7 +2,8 @@ import { useQuery } from 'urql';
 import { Link } from 'react-router-dom';
 import { 
   GET_PRODUCTS, 
-  GET_COLLECTIONS, 
+  GET_COLLECTIONS,
+  GET_PRODUCTS_COUNT,
   ShopifyProduct, 
   ShopifyCollection,
   getProductBadges,
@@ -74,8 +75,16 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     variables: { first: 50 },
   });
 
+  const [countResult] = useQuery({
+    query: GET_PRODUCTS_COUNT,
+    variables: { 
+      query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
+    },
+  });
+
   const { data, fetching, error } = result;
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
+  const { data: countData } = countResult;
   
   const rawProducts = data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [];
 
@@ -212,6 +221,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
           filters={filters}
           onFiltersChange={setFilters}
           availableCategories={availableCategories}
+          productCount={countData?.products?.edges?.length || 0}
         />
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

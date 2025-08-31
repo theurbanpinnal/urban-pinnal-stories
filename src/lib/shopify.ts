@@ -185,6 +185,21 @@ export const GET_PRODUCTS_SIMPLE = `
   }
 `;
 
+export const GET_PRODUCTS_COUNT = `
+  query getProductsCount($query: String) {
+    products(first: 250, query: $query) {
+      edges {
+        node {
+          id
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+`;
+
 export const GET_PRODUCT_BY_HANDLE = `
   query getProductByHandle($handle: String!) {
     productByHandle(handle: $handle) {

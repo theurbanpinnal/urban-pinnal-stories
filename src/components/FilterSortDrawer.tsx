@@ -24,6 +24,7 @@ interface FilterSortDrawerProps {
   filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   availableCategories: string[];
+  productCount?: number;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   filters,
   onFiltersChange,
   availableCategories,
+  productCount,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -208,6 +210,12 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           </DrawerContent>
         </Drawer>
         
+        {productCount !== undefined && (
+          <div className="mt-3 text-sm text-muted-foreground">
+            <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
+          </div>
+        )}
+        
         {/* Clear Filters Button - shown when filters are active */}
         {activeFiltersCount > 0 && (
           <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -341,6 +349,12 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
             </div>
           </DrawerContent>
         </Drawer>
+        
+        {productCount !== undefined && (
+          <div className="mt-3 text-sm text-muted-foreground text-center">
+            <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
+          </div>
+        )}
       </div>
     </div>
   );
