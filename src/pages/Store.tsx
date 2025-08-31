@@ -5,6 +5,7 @@ import LaunchBanner from '@/components/LaunchBanner';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
+import ShopifyDebug from '@/components/ShopifyDebug';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -282,6 +283,11 @@ const Store: React.FC = () => {
           </div>
           
 
+          
+          {/* Debug component - commented out since API is working */}
+          {/* <div className="mb-8">
+            <ShopifyDebug />
+          </div> */}
           
           <ProductList limit={24} initialCollection={selectedCollection} searchQuery={searchQuery} />
         </div>

@@ -91,9 +91,10 @@ const corsMiddleware = () => ({
   name: 'dev-cors-middleware',
   configureServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
-      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+      // Allow all origins in development
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Shopify-Storefront-Access-Token');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Shopify-Storefront-Access-Token, X-Requested-With');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
       if (req.method === 'OPTIONS') {
         res.statusCode = 204;
@@ -133,6 +134,11 @@ export default defineConfig(({ mode }) => {
               // Forward Shopify access token header
               if (req.headers['x-shopify-storefront-access-token']) {
                 proxyReq.setHeader('X-Shopify-Storefront-Access-Token', req.headers['x-shopify-storefront-access-token']);
+              }
+              
+              // Add the Storefront API token from environment variables if not present in headers
+              if (!req.headers['x-shopify-storefront-access-token'] && env.VITE_SHOPIFY_STOREFRONT_API_TOKEN) {
+                proxyReq.setHeader('X-Shopify-Storefront-Access-Token', env.VITE_SHOPIFY_STOREFRONT_API_TOKEN);
               }
             });
             proxy.on('proxyRes', (proxyRes, req, res) => {

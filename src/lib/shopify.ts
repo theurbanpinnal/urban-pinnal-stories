@@ -160,7 +160,6 @@ export const GET_SHOP_INFO = `
       primaryDomain {
         url
       }
-      currencyCode
     }
   }
 `;
