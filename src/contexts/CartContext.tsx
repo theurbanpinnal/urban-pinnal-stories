@@ -218,6 +218,51 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       if (result.error || result.data?.cartLinesUpdate?.userErrors?.length > 0) {
         const errorMessage = result.error?.message || result.data?.cartLinesUpdate?.userErrors?.[0]?.message || 'Failed to update cart';
+        
+        // Check if the error is about the merchandise line not existing
+        if (errorMessage.includes('does not exist') || errorMessage.includes('merchandise line')) {
+          // Refresh the cart state from Shopify to sync with current state
+          try {
+            const refreshResult = await fetch(`/shopify/api/2024-01/graphql.json`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
+              },
+              body: JSON.stringify({
+                query: GET_CART,
+                variables: { cartId: state.cart.id },
+              }),
+            });
+            
+            const refreshData = await refreshResult.json();
+            if (refreshData.data?.cart) {
+              dispatch({ type: 'SET_CART', payload: refreshData.data.cart });
+              toast({
+                title: 'Cart Updated',
+                description: 'Cart has been refreshed.',
+              });
+            } else {
+              // If refresh fails, clear the cart
+              localStorage.removeItem('shopify_cart_id');
+              dispatch({ type: 'SET_CART', payload: null });
+              toast({
+                title: 'Cart Cleared',
+                description: 'Cart has been cleared due to synchronization issues.',
+              });
+            }
+          } catch (refreshError) {
+            // If refresh also fails, clear the cart
+            localStorage.removeItem('shopify_cart_id');
+            dispatch({ type: 'SET_CART', payload: null });
+            toast({
+              title: 'Cart Cleared',
+              description: 'Cart has been cleared due to synchronization issues.',
+            });
+          }
+          return;
+        }
+        
         dispatch({ type: 'SET_ERROR', payload: errorMessage });
         toast({
           title: 'Error',
@@ -263,6 +308,51 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       if (result.error || result.data?.cartLinesRemove?.userErrors?.length > 0) {
         const errorMessage = result.error?.message || result.data?.cartLinesRemove?.userErrors?.[0]?.message || 'Failed to remove item from cart';
+        
+        // Check if the error is about the merchandise line not existing
+        if (errorMessage.includes('does not exist') || errorMessage.includes('merchandise line')) {
+          // Refresh the cart state from Shopify to sync with current state
+          try {
+            const refreshResult = await fetch(`/shopify/api/2024-01/graphql.json`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
+              },
+              body: JSON.stringify({
+                query: GET_CART,
+                variables: { cartId: state.cart.id },
+              }),
+            });
+            
+            const refreshData = await refreshResult.json();
+            if (refreshData.data?.cart) {
+              dispatch({ type: 'SET_CART', payload: refreshData.data.cart });
+              toast({
+                title: 'Cart Updated',
+                description: 'Cart has been refreshed.',
+              });
+            } else {
+              // If refresh fails, clear the cart
+              localStorage.removeItem('shopify_cart_id');
+              dispatch({ type: 'SET_CART', payload: null });
+              toast({
+                title: 'Cart Cleared',
+                description: 'Cart has been cleared due to synchronization issues.',
+              });
+            }
+          } catch (refreshError) {
+            // If refresh also fails, clear the cart
+            localStorage.removeItem('shopify_cart_id');
+            dispatch({ type: 'SET_CART', payload: null });
+            toast({
+              title: 'Cart Cleared',
+              description: 'Cart has been cleared due to synchronization issues.',
+            });
+          }
+          return;
+        }
+        
         dispatch({ type: 'SET_ERROR', payload: errorMessage });
         toast({
           title: 'Error',
