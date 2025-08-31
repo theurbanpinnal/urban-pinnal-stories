@@ -208,4 +208,21 @@
     width: 100% !important;
     height: 100% !important;
   }
+
+  /* Ensure toasts are always on top */
+  [data-radix-toast-viewport] {
+    z-index: 9999 !important;
+  }
+
+  /* Additional toast z-index overrides */
+  .toaster,
+  [data-radix-toast-viewport] > * {
+    z-index: 9999 !important;
+  }
+
+  /* Ensure toasts appear on the left side */
+  [data-radix-toast-viewport] {
+    left: 0 !important;
+    right: auto !important;
+  }
 }

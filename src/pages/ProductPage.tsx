@@ -40,6 +40,7 @@ import {
 import LazyImage from '@/components/LazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import ShareButton from '@/components/ShareButton';
 import { formatCurrency } from '@/lib/utils';
 
 const ProductPage: React.FC = () => {
@@ -194,6 +195,8 @@ const ProductPage: React.FC = () => {
             <ArrowLeft className="mr-3 h-5 w-5" />
             Back to Store
           </Button>
+          
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -402,6 +405,16 @@ const ProductPage: React.FC = () => {
                   </>
                 )}
               </Button>
+
+              {/* Share Button */}
+              <div className="flex justify-center pt-2">
+                <ShareButton
+                  productTitle={product.title}
+                  productUrl={window.location.href}
+                  productImage={currentImage?.url}
+                  className="w-full"
+                />
+              </div>
             </div>
 
             {/* Product Tags */}

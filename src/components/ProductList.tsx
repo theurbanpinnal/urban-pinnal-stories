@@ -393,19 +393,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </p>
           )}
 
-          {/* Enhanced Pricing - Same logic as ProductPage */}
+          {/* Enhanced Pricing - Reserve space for consistent alignment */}
           <div className="space-y-2">
-            {/* Compare-at Price (Original Price) */}
-            {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
-              <div className="flex items-center gap-3">
+            {/* Compare-at Price (Original Price) - Always reserve space */}
+            <div className="h-5 flex items-center">
+              {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) ? (
                 <span className="text-sm text-muted-foreground line-through">
                   {formatCurrency(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
                 </span>
-              </div>
-            )}
+              ) : (
+                <div className="h-5"></div>
+              )}
+            </div>
 
-            {/* Current Price */}
-            <div className="flex items-center gap-2">
+            {/* Current Price - Always at the same level */}
+            <div className="flex items-center">
               <span className="text-lg font-bold text-foreground">
                 {formatCurrency(currentPrice.toString(), currencyCode)}
               </span>
