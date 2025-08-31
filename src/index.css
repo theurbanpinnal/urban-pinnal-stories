@@ -210,15 +210,13 @@
   }
 
   /* Ensure toasts are always on top */
-  [data-radix-toast-viewport],
-  [data-sonner-toaster] {
+  [data-radix-toast-viewport] {
     z-index: 9999 !important;
   }
 
   /* Additional toast z-index overrides */
   .toaster,
-  [data-radix-toast-viewport] > *,
-  [data-sonner-toaster] > * {
+  [data-radix-toast-viewport] > * {
     z-index: 9999 !important;
   }
 
