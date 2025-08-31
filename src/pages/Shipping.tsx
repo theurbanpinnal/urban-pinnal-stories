@@ -46,7 +46,7 @@ const Shipping = () => {
                       Ready Stock Items
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      Products with readily available stock are dispatched within <strong>2 working days</strong> 
+                      Products with readily available stock are dispatched within <strong>2 working days </strong> 
                       of order confirmation. This includes most of our standard handmade products that are 
                       already crafted and ready for shipping.
                     </p>
