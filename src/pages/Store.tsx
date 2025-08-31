@@ -6,6 +6,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
 import ShopifyDebug from '@/components/ShopifyDebug';
+import { FilterOptions } from '@/components/FilterSortDrawer';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,13 @@ const Store: React.FC = () => {
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
     searchParams.get('collection') || null
   );
+  
+  // State for filter drawer filters
+  const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
+    categories: [],
+    priceRange: { min: 0, max: 10000 },
+    availability: 'all',
+  });
   
   // Get search query from URL parameters
   const searchQuery = searchParams.get('search');
@@ -267,23 +275,47 @@ const Store: React.FC = () => {
               that bring beauty and authenticity to your everyday life.
             </p>
             
-            {/* Collection Filter Indicator */}
-            {(selectedCollection || searchQuery) && (
-              <div className="flex items-center justify-center gap-3 mb-6">
+            {/* Active Filters Indicator */}
+            {(selectedCollection || searchQuery || currentFilters.categories.length > 0 || currentFilters.availability !== 'all' || currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
+              <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
                 <span className="text-sm text-muted-foreground">
-                  {selectedCollection ? 'Showing products from:' : 'Search results for:'}
+                  Showing:
                 </span>
-                <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                  {selectedCollection || searchQuery}
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClearAllFilters}
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Clear
-                </Button>
+                
+                {/* Collection Filter */}
+                {selectedCollection && (
+                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                    Collection: {selectedCollection}
+                  </Badge>
+                )}
+                
+                {/* Search Query */}
+                {searchQuery && (
+                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                    Search: {searchQuery}
+                  </Badge>
+                )}
+                
+                {/* Category Filters */}
+                {currentFilters.categories.map((category) => (
+                  <Badge key={category} variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                    {category}
+                  </Badge>
+                ))}
+                
+                {/* Availability Filter */}
+                {currentFilters.availability !== 'all' && (
+                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                    In Stock
+                  </Badge>
+                )}
+                
+                {/* Price Range Filter */}
+                {(currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
+                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                    ₹{currentFilters.priceRange.min} - ₹{currentFilters.priceRange.max}
+                  </Badge>
+                )}
               </div>
             )}
             
@@ -315,7 +347,7 @@ const Store: React.FC = () => {
             <ShopifyDebug />
           </div> */}
           
-          <ProductList limit={24} initialCollection={selectedCollection} searchQuery={searchQuery} />
+          <ProductList limit={24} initialCollection={selectedCollection} searchQuery={searchQuery} onClearAllFilters={handleClearAllFilters} onFiltersChange={setCurrentFilters} />
         </div>
       </section>
 
