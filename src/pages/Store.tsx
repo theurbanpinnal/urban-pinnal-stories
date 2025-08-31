@@ -181,8 +181,8 @@ const Store: React.FC = () => {
             </div>
             
             {fetchingCollections ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {Array.from({ length: 4 }).map((_, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 3 }).map((_, index) => (
                   <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
                     <Skeleton className="h-8 w-3/4 mb-3" />
                     <Skeleton className="h-4 w-full mb-2" />
@@ -193,6 +193,32 @@ const Store: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* All Collections Card */}
+                <div 
+                  className={`bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 ${
+                    selectedCollection === null 
+                      ? 'border-craft-terracotta shadow-md' 
+                      : 'border-transparent'
+                  }`}
+                  onClick={() => handleCollectionSelect(null)}
+                >
+                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-craft-terracotta transition-colors">
+                    All Collections
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                    Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs">
+                      View All
+                    </Badge>
+                    <div className="flex items-center text-craft-terracotta text-sm font-medium group-hover:translate-x-1 transition-transform">
+                      Explore
+                      <Zap className="w-4 h-4 ml-1" />
+                    </div>
+                  </div>
+                </div>
+                
                 {featuredCollections.map(({ node: collection }) => (
                   <div 
                     key={collection.id} 
