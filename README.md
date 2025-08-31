@@ -1,24 +1,16 @@
-# Welcome to your Lovable project
+# The Urban Pinnal - Handmade Collective from Chennai
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/f71c2cb6-d28e-453e-8b4b-94daa996a095
+The Urban Pinnal is a premium handmade collective showcasing authentic Indian craftsmanship from Tamil Nadu. This project features a modern e-commerce platform built with contemporary design principles and sustainable practices.
 
-## How can I edit this code?
+## How to Edit This Code
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/f71c2cb6-d28e-453e-8b4b-94daa996a095) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
+There are several ways to edit your application:
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Clone this repo and work locally with your own IDE. The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
 Follow these steps:
 
@@ -50,7 +42,7 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
+## Technologies Used
 
 This project is built with:
 
@@ -59,15 +51,28 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Shopify API
+- Sanity CMS
 
-## How can I deploy this project?
+## Development
 
-Simply open [Lovable](https://lovable.dev/projects/f71c2cb6-d28e-453e-8b4b-94daa996a095) and click on Share -> Publish.
+To start the development server:
 
-## Can I connect a custom domain to my Lovable project?
+```sh
+npm run dev
+```
 
-Yes, you can!
+To build for production:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sh
+npm run build
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Features
+
+- Modern e-commerce platform
+- Handmade artisan products
+- Responsive design
+- SEO optimized
+- Performance optimized
+- Custom domain support
