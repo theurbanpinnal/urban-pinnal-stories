@@ -32,16 +32,16 @@ import { Clock, Package, Star, Zap } from 'lucide-react';
 interface ProductListProps {
   limit?: number;
   showFilters?: boolean;
-  initialCollection?: string | null;
   searchQuery?: string | null;
   onClearAllFilters?: () => void;
   onFiltersChange?: (filters: FilterOptions) => void;
+  initialFilters?: FilterOptions;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, initialCollection = null, searchQuery = null, onClearAllFilters, onFiltersChange }) => {
+const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, searchQuery = null, onClearAllFilters, onFiltersChange, initialFilters }) => {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [filters, setFilters] = useState<FilterOptions>({
-    categories: initialCollection ? [initialCollection] : [],
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {
+    categories: [],
     priceRange: { min: 0, max: 10000 },
     availability: 'all',
   });
@@ -52,6 +52,13 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
       onFiltersChange(filters);
     }
   }, [filters, onFiltersChange]);
+
+  // Update filters when initialFilters changes (from parent component)
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
 
   // Convert sortBy to Shopify sortKey
   const getSortKey = (sortBy: SortOption) => {
@@ -99,15 +106,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
 
 
 
-  // Update filters when initialCollection changes
-  useEffect(() => {
-    if (initialCollection) {
-      setFilters(prev => ({
-        ...prev,
-        categories: [initialCollection]
-      }));
-    }
-  }, [initialCollection]);
+
 
   // Get available categories from collections with fallback to productType
   const availableCategories = useMemo(() => {

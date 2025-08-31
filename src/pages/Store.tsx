@@ -32,10 +32,22 @@ const Store: React.FC = () => {
 
 
   
-  // State for collection filtering - initialize from URL parameter
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    searchParams.get('collection') || null
-  );
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const collectionParam = searchParams.get('collection');
+    if (collectionParam) {
+      setCurrentFilters(prev => ({
+        ...prev,
+        categories: [collectionParam]
+      }));
+    } else {
+      // Clear collection filter if no collection param
+      setCurrentFilters(prev => ({
+        ...prev,
+        categories: []
+      }));
+    }
+  }, [searchParams]);
   
   // State for filter drawer filters
   const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
@@ -48,11 +60,26 @@ const Store: React.FC = () => {
   const searchQuery = searchParams.get('search');
 
   // Handle collection selection and scroll to products
-  const handleCollectionSelect = (collectionTitle: string) => {
-    setSelectedCollection(collectionTitle);
+  const handleCollectionSelect = (collectionTitle: string | null) => {
+    // Update filter drawer categories instead of separate collection state
+    if (collectionTitle) {
+      setCurrentFilters(prev => ({
+        ...prev,
+        categories: [collectionTitle]
+      }));
+    } else {
+      setCurrentFilters(prev => ({
+        ...prev,
+        categories: []
+      }));
+    }
     
     // Update URL parameter
-    setSearchParams({ collection: collectionTitle });
+    if (collectionTitle) {
+      setSearchParams({ collection: collectionTitle });
+    } else {
+      setSearchParams({});
+    }
     
     // Scroll to products section
     const productsSection = document.getElementById('products');
@@ -63,8 +90,7 @@ const Store: React.FC = () => {
 
   // Handle clearing all filters (collection and search)
   const handleClearAllFilters = () => {
-    setSelectedCollection(null);
-    setSearchParams({});
+    handleCollectionSelect(null);
   };
 
   // Set SEO metadata
@@ -204,20 +230,26 @@ const Store: React.FC = () => {
                 {/* All Collections Card */}
                 <div 
                   className={`bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 ${
-                    selectedCollection === null 
-                      ? 'border-craft-terracotta shadow-md' 
+                    currentFilters.categories.length === 0 
+                      ? 'border-craft-terracotta shadow-md bg-craft-terracotta/5' 
                       : 'border-transparent'
                   }`}
                   onClick={() => handleCollectionSelect(null)}
                 >
-                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-craft-terracotta transition-colors">
+                  <h3 className={`font-serif text-xl font-semibold mb-3 transition-colors ${
+                    currentFilters.categories.length === 0 
+                      ? 'text-craft-terracotta' 
+                      : 'text-foreground group-hover:text-craft-terracotta'
+                  }`}>
                     All Collections
                   </h3>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                     Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
                   </p>
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant={currentFilters.categories.length === 0 ? "default" : "outline"} className={`text-xs ${
+                      currentFilters.categories.length === 0 ? 'bg-craft-terracotta text-white' : ''
+                    }`}>
                       View All
                     </Badge>
                     <div className="flex items-center text-craft-terracotta text-sm font-medium group-hover:translate-x-1 transition-transform">
@@ -227,35 +259,44 @@ const Store: React.FC = () => {
                   </div>
                 </div>
                 
-                {featuredCollections.map(({ node: collection }) => (
-                  <div 
-                    key={collection.id} 
-                    className={`bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 ${
-                      selectedCollection === collection.title 
-                        ? 'border-craft-terracotta shadow-md' 
-                        : 'border-transparent'
-                    }`}
-                    onClick={() => handleCollectionSelect(collection.title)}
-                  >
-                    <h3 className="font-serif text-xl font-semibold text-foreground mb-3 group-hover:text-craft-terracotta transition-colors">
-                      {collection.title}
-                    </h3>
-                    {collection.description && (
-                      <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                        {collection.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
-                        View Products
-                      </Badge>
-                      <div className="flex items-center text-craft-terracotta text-sm font-medium group-hover:translate-x-1 transition-transform">
-                        Explore
-                        <Zap className="w-4 h-4 ml-1" />
+                {featuredCollections.map(({ node: collection }) => {
+                  const isSelected = currentFilters.categories.includes(collection.title);
+                  return (
+                    <div 
+                      key={collection.id} 
+                      className={`bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 ${
+                        isSelected
+                          ? 'border-craft-terracotta shadow-md bg-craft-terracotta/5' 
+                          : 'border-transparent'
+                      }`}
+                      onClick={() => handleCollectionSelect(collection.title)}
+                    >
+                      <h3 className={`font-serif text-xl font-semibold mb-3 transition-colors ${
+                        isSelected 
+                          ? 'text-craft-terracotta' 
+                          : 'text-foreground group-hover:text-craft-terracotta'
+                      }`}>
+                        {collection.title}
+                      </h3>
+                      {collection.description && (
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                          {collection.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <Badge variant={isSelected ? "default" : "outline"} className={`text-xs ${
+                          isSelected ? 'bg-craft-terracotta text-white' : ''
+                        }`}>
+                          View Products
+                        </Badge>
+                        <div className="flex items-center text-craft-terracotta text-sm font-medium group-hover:translate-x-1 transition-transform">
+                          Explore
+                          <Zap className="w-4 h-4 ml-1" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -276,18 +317,11 @@ const Store: React.FC = () => {
             </p>
             
             {/* Active Filters Indicator */}
-            {(selectedCollection || searchQuery || currentFilters.categories.length > 0 || currentFilters.availability !== 'all' || currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
+            {(searchQuery || currentFilters.categories.length > 0 || currentFilters.availability !== 'all' || currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
               <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
                 <span className="text-sm text-muted-foreground">
                   Showing:
                 </span>
-                
-                {/* Collection Filter */}
-                {selectedCollection && (
-                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                    Collection: {selectedCollection}
-                  </Badge>
-                )}
                 
                 {/* Search Query */}
                 {searchQuery && (
@@ -347,7 +381,13 @@ const Store: React.FC = () => {
             <ShopifyDebug />
           </div> */}
           
-          <ProductList limit={24} initialCollection={selectedCollection} searchQuery={searchQuery} onClearAllFilters={handleClearAllFilters} onFiltersChange={setCurrentFilters} />
+          <ProductList 
+            limit={24} 
+            searchQuery={searchQuery} 
+            onClearAllFilters={handleClearAllFilters} 
+            onFiltersChange={setCurrentFilters}
+            initialFilters={currentFilters}
+          />
         </div>
       </section>
 
