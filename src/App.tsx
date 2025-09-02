@@ -22,6 +22,7 @@ const Terms = lazy(() => import(/* webpackChunkName: "page-terms" */ "./pages/Te
 const Shipping = lazy(() => import(/* webpackChunkName: "page-shipping" */ "./pages/Shipping"));
 const Store = lazy(() => import(/* webpackChunkName: "page-store" */ "./pages/Store"));
 const ProductPage = lazy(() => import(/* webpackChunkName: "page-product" */ "./pages/ProductPage"));
+const CartPage = lazy(() => import(/* webpackChunkName: "page-cart" */ "./pages/CartPage"));
 const NotFound = lazy(() => import(/* webpackChunkName: "page-not-found" */ "./pages/NotFound"));
 
 // Create QueryClient with optimized defaults
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/shipping" element={<Shipping />} />
               <Route path="/store" element={<Store />} />
               <Route path="/store/products/:handle" element={<ProductPage />} />
+              <Route path="/cart" element={<CartPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
