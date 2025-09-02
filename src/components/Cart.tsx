@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -252,12 +252,12 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
       </div>
 
       {/* Column 2: Product Name and Variant Info */}
-      <div className="min-w-0 col-span-2 sm:col-span-1">
+      <Link to={`/store/products/${product.handle}`} className="min-w-0 col-span-2 sm:col-span-1 hover:opacity-80 transition-opacity cursor-pointer">
         <h4 className="font-medium text-sm sm:text-base text-foreground truncate">{product.title}</h4>
         {variant.title !== 'Default Title' && (
           <p className="text-sm text-gray-500">{variant.title}</p>
         )}
-      </div>
+      </Link>
 
       {/* Column 3: Compare at Price and Price */}
       <div className="text-center col-span-1 sm:col-span-1">
