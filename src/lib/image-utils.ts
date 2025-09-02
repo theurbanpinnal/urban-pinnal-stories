@@ -8,6 +8,82 @@ export interface ProductImageAnalysis {
   detectedFeatures: string[];
 }
 
+export interface ImageOptimizationConfig {
+  priority: boolean;
+  loading: 'lazy' | 'eager';
+  fetchPriority: 'high' | 'low' | 'auto';
+  sizes: string;
+  decoding: 'async' | 'sync' | 'auto';
+}
+
+/**
+ * Get optimized image configuration based on context
+ */
+export function getImageOptimizationConfig(
+  context: 'hero' | 'product-main' | 'product-thumbnail' | 'product-card' | 'cart-item' | 'artisan' | 'journal' | 'general'
+): ImageOptimizationConfig {
+  const configs: Record<string, ImageOptimizationConfig> = {
+    hero: {
+      priority: true,
+      loading: 'eager',
+      fetchPriority: 'high',
+      sizes: '100vw',
+      decoding: 'async'
+    },
+    'product-main': {
+      priority: true,
+      loading: 'eager',
+      fetchPriority: 'high',
+      sizes: '(max-width: 768px) 100vw, 50vw',
+      decoding: 'async'
+    },
+    'product-thumbnail': {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'low',
+      sizes: '(max-width: 768px) 25vw, 12.5vw',
+      decoding: 'async'
+    },
+    'product-card': {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'low',
+      sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+      decoding: 'async'
+    },
+    'cart-item': {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'low',
+      sizes: '64px',
+      decoding: 'async'
+    },
+    artisan: {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'low',
+      sizes: '(max-width: 768px) 100vw, 33vw',
+      decoding: 'async'
+    },
+    journal: {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'low',
+      sizes: '(max-width: 768px) 100vw, 33vw',
+      decoding: 'async'
+    },
+    general: {
+      priority: false,
+      loading: 'lazy',
+      fetchPriority: 'auto',
+      sizes: '100vw',
+      decoding: 'async'
+    }
+  };
+
+  return configs[context] || configs.general;
+}
+
 /**
  * Analyzes product type and suggests optimal object positioning
  */
@@ -170,4 +246,73 @@ export function getSmartObjectPosition(
 ): string {
   const analysis = analyzeProductImage(productTitle, imageUrl, productType, tags);
   return analysis.optimalPosition;
+}
+
+/**
+ * Generate optimized image URL with Shopify transformations
+ */
+export function getOptimizedImageUrl(
+  originalUrl: string,
+  width?: number,
+  height?: number,
+  format: 'webp' | 'jpg' | 'png' = 'webp',
+  quality: number = 80
+): string {
+  if (!originalUrl || !originalUrl.includes('shopify')) {
+    return originalUrl;
+  }
+
+  const url = new URL(originalUrl);
+  
+  // Add width parameter if specified
+  if (width) {
+    url.searchParams.set('w', width.toString());
+  }
+  
+  // Add height parameter if specified
+  if (height) {
+    url.searchParams.set('h', height.toString());
+  }
+  
+  // Add format parameter
+  url.searchParams.set('fm', format);
+  
+  // Add quality parameter
+  url.searchParams.set('q', quality.toString());
+  
+  // Add fit parameter for better cropping
+  url.searchParams.set('fit', 'crop');
+  
+  return url.toString();
+}
+
+/**
+ * Preload critical images for better performance
+ */
+export function preloadCriticalImages(imageUrls: string[]): void {
+  imageUrls.forEach(url => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = url;
+    document.head.appendChild(link);
+  });
+}
+
+/**
+ * Get responsive image sizes for different contexts
+ */
+export function getResponsiveSizes(context: string): string {
+  const sizesMap: Record<string, string> = {
+    hero: '100vw',
+    'product-main': '(max-width: 768px) 100vw, 50vw',
+    'product-thumbnail': '(max-width: 768px) 25vw, 12.5vw',
+    'product-card': '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+    'cart-item': '64px',
+    artisan: '(max-width: 768px) 100vw, 33vw',
+    journal: '(max-width: 768px) 100vw, 33vw',
+    general: '100vw'
+  };
+
+  return sizesMap[context] || sizesMap.general;
 }

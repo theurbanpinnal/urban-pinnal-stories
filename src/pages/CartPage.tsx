@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShoppingCart, Minus, Plus, Trash2, Loader2, ArrowLeft, Package, Truck, Shield, AlertTriangle, Edit3, Check } from 'lucide-react';
-import LazyImage from '@/components/LazyImage';
+import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import { formatCurrency } from '@/lib/utils';
 import { getSmartObjectPosition } from '@/lib/image-utils';
 import Navigation from '@/components/Navigation';
@@ -478,21 +478,19 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
       {/* Column 1: Product Image */}
       <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 cart-item-image">
         {image ? (
-          <LazyImage
+          <OptimizedLazyImage
             src={image.url}
             alt={image.altText || product.title}
+            context="cart-item"
             className="w-full h-full object-cover transition-transform duration-300"
             placeholderClassName="w-full h-full"
-            objectPosition={getSmartObjectPosition(
-              product.title,
-              image.url,
-              product.productType,
-              product.tags
-            )}
+            productTitle={product.title}
+            productType={product.productType}
+            productTags={product.tags}
           />
         ) : (
-          <div className="placeholder">
-            <span>No Image</span>
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-sm">
+            <Package className="w-6 h-6 text-gray-400" />
           </div>
         )}
       </div>

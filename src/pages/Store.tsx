@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap } from 'lucide-react';
+import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import heroWeavingImage from '@/assets/hero-weaving-3.jpg';
 
 const Store: React.FC = () => {
@@ -157,12 +158,11 @@ const Store: React.FC = () => {
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <img
+          <OptimizedLazyImage
             src={heroWeavingImage}
             alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
+            context="hero"
             className="w-full h-full object-cover"
-            loading="eager"
-            {...({ fetchpriority: "high" } as any)}
           />
           <div className="absolute inset-0 bg-black/40" />
         </div>

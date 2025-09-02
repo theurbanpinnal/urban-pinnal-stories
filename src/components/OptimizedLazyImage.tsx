@@ -1,45 +1,70 @@
 import { useState, useRef, useEffect } from 'react';
+import { useOptimizedImage } from '@/hooks/use-optimized-image';
 
-interface LazyImageProps {
+interface OptimizedLazyImageProps {
   src: string;
   alt: string;
+  context: 'hero' | 'product-main' | 'product-thumbnail' | 'product-card' | 'cart-item' | 'artisan' | 'journal' | 'general';
   className?: string;
   placeholderClassName?: string;
-  loading?: 'lazy' | 'eager';
-  priority?: boolean;
+  productTitle?: string;
+  productType?: string;
+  productTags?: string[];
   width?: number;
   height?: number;
-  objectPosition?: string;
-  fetchPriority?: 'high' | 'low' | 'auto';
-  decoding?: 'async' | 'sync' | 'auto';
-  sizes?: string;
+  format?: 'webp' | 'jpg' | 'png';
+  quality?: number;
   onLoad?: () => void;
   onError?: () => void;
 }
 
-const LazyImage = ({ 
+const OptimizedLazyImage = ({ 
   src, 
   alt, 
+  context,
   className = '', 
   placeholderClassName = '',
-  loading = 'lazy',
-  priority = false,
+  productTitle,
+  productType,
+  productTags = [],
   width,
   height,
-  objectPosition = 'center center',
-  fetchPriority = 'auto',
-  decoding = 'async',
-  sizes,
+  format,
+  quality,
   onLoad,
   onError
-}: LazyImageProps) => {
+}: OptimizedLazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(priority);
+  const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  const {
+    src: optimizedSrc,
+    priority,
+    loading,
+    fetchPriority,
+    sizes,
+    decoding,
+    objectPosition
+  } = useOptimizedImage({
+    src,
+    alt,
+    context,
+    productTitle,
+    productType,
+    productTags,
+    width,
+    height,
+    format,
+    quality
+  });
+
   useEffect(() => {
-    if (priority) return; // Don't use intersection observer for priority images
+    if (priority) {
+      setIsInView(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -50,7 +75,7 @@ const LazyImage = ({
       },
       { 
         threshold: 0.1, 
-        rootMargin: '100px' // Increased root margin for earlier loading
+        rootMargin: '100px'
       }
     );
 
@@ -110,7 +135,7 @@ const LazyImage = ({
       
       {(isInView || priority) && !hasError && (
         <img
-          src={src}
+          src={optimizedSrc}
           alt={alt}
           className={`${className} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
           loading={loading}
@@ -139,4 +164,4 @@ const LazyImage = ({
   );
 };
 
-export default LazyImage;
+export default OptimizedLazyImage;

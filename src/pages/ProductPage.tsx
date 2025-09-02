@@ -38,7 +38,7 @@ import {
   BarChart3,
   Info
 } from 'lucide-react';
-import LazyImage from '@/components/LazyImage';
+import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
@@ -239,10 +239,14 @@ const ProductPage: React.FC = () => {
             {/* Main Image */}
             <div className="overflow-hidden rounded-lg bg-white border">
               {currentImage ? (
-                <LazyImage
+                <OptimizedLazyImage
                   src={currentImage.url}
                   alt={currentImage.altText || product.title}
+                  context="product-main"
                   className="w-full h-auto max-w-full object-contain"
+                  productTitle={product.title}
+                  productType={product.productType}
+                  productTags={product.tags}
                 />
               ) : (
                 <div className="w-full h-96 flex items-center justify-center bg-gray-100">
@@ -264,10 +268,14 @@ const ProductPage: React.FC = () => {
                         : 'border-transparent hover:border-gray-300'
                     }`}
                   >
-                    <LazyImage
+                    <OptimizedLazyImage
                       src={image.url}
                       alt={image.altText || `${product.title} ${index + 1}`}
+                      context="product-thumbnail"
                       className="w-full h-auto max-h-24 object-contain"
+                      productTitle={product.title}
+                      productType={product.productType}
+                      productTags={product.tags}
                     />
                   </button>
                 ))}

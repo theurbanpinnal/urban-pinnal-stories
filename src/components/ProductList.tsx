@@ -21,7 +21,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import LazyImage from '@/components/LazyImage';
+import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import StarRating from '@/components/ui/star-rating';
 import { formatCurrency } from '@/lib/utils';
 import { getSmartObjectPosition } from '@/lib/image-utils';
@@ -314,17 +314,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card text-card-foreground relative">
         <div className="aspect-square overflow-hidden relative bg-gray-50">
           {primaryImageUrl ? (
-            <LazyImage
+            <OptimizedLazyImage
               src={primaryImageUrl}
               alt={primaryImage?.altText || product.title}
+              context="product-card"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               placeholderClassName="w-full h-full"
-              objectPosition={getSmartObjectPosition(
-                product.title,
-                primaryImageUrl,
-                product.productType,
-                product.tags
-              )}
+              productTitle={product.title}
+              productType={product.productType}
+              productTags={product.tags}
             />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">
