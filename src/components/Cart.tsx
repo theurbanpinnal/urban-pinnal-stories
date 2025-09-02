@@ -23,6 +23,36 @@ const Cart: React.FC<CartProps> = ({ children }) => {
   const cartLines = cart?.lines?.edges?.map(({ node }) => node) || [];
   const subtotal = cart?.cost?.subtotalAmount;
 
+  // Calculate discount information
+  const calculateDiscountInfo = () => {
+    let subtotalCompareAtPrice = 0;
+    let subtotalActualPrice = 0;
+    let totalDiscount = 0;
+    let currencyCode = 'INR';
+
+    cartLines.forEach((line) => {
+      const variant = line.merchandise;
+      const quantity = line.quantity;
+      const actualPrice = parseFloat(variant.price.amount);
+      const compareAtPrice = variant.compareAtPrice ? parseFloat(variant.compareAtPrice.amount) : actualPrice;
+      
+      subtotalCompareAtPrice += compareAtPrice * quantity;
+      subtotalActualPrice += actualPrice * quantity;
+      currencyCode = variant.price.currencyCode;
+    });
+
+    totalDiscount = subtotalCompareAtPrice - subtotalActualPrice;
+
+    return {
+      subtotalCompareAtPrice,
+      subtotalActualPrice,
+      totalDiscount,
+      currencyCode
+    };
+  };
+
+  const discountInfo = calculateDiscountInfo();
+
   // Don't open sheet if we're on the cart page
   const isOnCartPage = location.pathname === '/cart';
 
@@ -113,14 +143,30 @@ const Cart: React.FC<CartProps> = ({ children }) => {
         {cartLines.length > 0 && (
           <div className="border-t pt-6 space-y-4 shrink-0">
               {/* Subtotal */}
-              {subtotal && (
-                <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Subtotal:</span>
-                  <span>
-                    {formatCurrency(subtotal.amount, subtotal.currencyCode)}
+              <div className="flex justify-between items-center text-lg font-semibold">
+                <span>Subtotal:</span>
+                <span>
+                  {formatCurrency(discountInfo.subtotalCompareAtPrice.toString(), discountInfo.currencyCode)}
+                </span>
+              </div>
+              
+              {/* Discount */}
+              {discountInfo.totalDiscount > 0 && (
+                <div className="flex justify-between items-center text-base">
+                  <span className="text-muted-foreground">Discount:</span>
+                  <span className="text-green-600 font-semibold">
+                    -{formatCurrency(discountInfo.totalDiscount.toString(), discountInfo.currencyCode)}
                   </span>
                 </div>
               )}
+              
+              {/* Total */}
+              <div className="flex justify-between items-center text-lg font-bold border-t pt-2">
+                <span>Total:</span>
+                <span>
+                  {formatCurrency(discountInfo.subtotalActualPrice.toString(), discountInfo.currencyCode)}
+                </span>
+              </div>
               
               <p className="text-sm text-muted-foreground">
                 Shipping and taxes calculated at checkout.
@@ -199,9 +245,16 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
         {variant.title !== 'Default Title' && (
           <p className="text-sm text-gray-500">{variant.title}</p>
         )}
-        <p className="text-base font-medium text-foreground">
-          {formatCurrency(variant.price.amount, variant.price.currencyCode)}
-        </p>
+        <div className="space-y-1">
+          {variant.compareAtPrice && parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount) && (
+            <p className="text-sm text-muted-foreground line-through">
+              {formatCurrency(variant.compareAtPrice.amount, variant.compareAtPrice.currencyCode)}
+            </p>
+          )}
+          <p className="text-base font-medium text-foreground">
+            {formatCurrency(variant.price.amount, variant.price.currencyCode)}
+          </p>
+        </div>
 
         {/* Quantity Controls */}
         <div className="flex items-center gap-2 mt-2">

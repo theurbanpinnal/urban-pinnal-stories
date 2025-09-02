@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ShoppingCart, Minus, Plus, Trash2, Loader2, ArrowLeft, Package, Truck, Shield, AlertTriangle, Edit3, Check } from 'lucide-react';
 import LazyImage from '@/components/LazyImage';
 import { formatCurrency } from '@/lib/utils';
+import { getSmartObjectPosition } from '@/lib/image-utils';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -21,10 +22,42 @@ const CartPage: React.FC = () => {
   const [additionalComments, setAdditionalComments] = useState('');
   const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [selectedUrgencyMessage, setSelectedUrgencyMessage] = useState<number | null>(null);
+  const hasInitializedMessage = useRef(false);
 
   const itemCount = getCartItemCount();
   const cartLines = cart?.lines?.edges?.map(({ node }) => node) || [];
   const subtotal = cart?.cost?.subtotalAmount;
+
+  // Calculate discount information
+  const calculateDiscountInfo = () => {
+    let subtotalCompareAtPrice = 0;
+    let subtotalActualPrice = 0;
+    let totalDiscount = 0;
+    let currencyCode = 'INR';
+
+    cartLines.forEach((line) => {
+      const variant = line.merchandise;
+      const quantity = line.quantity;
+      const actualPrice = parseFloat(variant.price.amount);
+      const compareAtPrice = variant.compareAtPrice ? parseFloat(variant.compareAtPrice.amount) : actualPrice;
+      
+      subtotalCompareAtPrice += compareAtPrice * quantity;
+      subtotalActualPrice += actualPrice * quantity;
+      currencyCode = variant.price.currencyCode;
+    });
+
+    totalDiscount = subtotalCompareAtPrice - subtotalActualPrice;
+
+    return {
+      subtotalCompareAtPrice,
+      subtotalActualPrice,
+      totalDiscount,
+      currencyCode
+    };
+  };
+
+  const discountInfo = calculateDiscountInfo();
 
   // Rotating urgency messages
   const urgencyMessages = [
@@ -123,12 +156,6 @@ const CartPage: React.FC = () => {
   const trustMessages = [
     "Secure Shopping Guarantee",
     "100% Handmade by Artisans",
-    "Free Shipping on Orders Over ₹2000",
-    "30-Day Return Policy",
-    "Ethically Sourced Materials",
-    "Supporting Local Communities",
-    "Eco-Friendly Packaging",
-    "Fair Trade Practices",
     "Quality Assured",
     "Made with Love"
   ];
@@ -145,7 +172,34 @@ const CartPage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Rotate messages every 30 seconds
+  // Initialize urgency message on first load (randomize once)
+  useEffect(() => {
+    if (!hasInitializedMessage.current && cartLines.length > 0) {
+      // Check if we have a stored message
+      const storedMessageIndex = localStorage.getItem('cart_urgency_message_index');
+      
+      if (storedMessageIndex !== null) {
+        // Use stored message
+        setSelectedUrgencyMessage(parseInt(storedMessageIndex));
+      } else {
+        // Randomize and store new message
+        const randomIndex = Math.floor(Math.random() * urgencyMessages.length);
+        setSelectedUrgencyMessage(randomIndex);
+        localStorage.setItem('cart_urgency_message_index', randomIndex.toString());
+      }
+      
+      hasInitializedMessage.current = true;
+    }
+    
+    // Clear stored message when cart becomes empty
+    if (cartLines.length === 0) {
+      localStorage.removeItem('cart_urgency_message_index');
+      setSelectedUrgencyMessage(null);
+      hasInitializedMessage.current = false;
+    }
+  }, [cartLines.length, urgencyMessages.length]);
+
+  // Rotate messages every 30 seconds (only for empty cart and trust messages)
   useEffect(() => {
     const messageTimer = setInterval(() => {
       setCurrentMessageIndex(prev => (prev + 1) % urgencyMessages.length);
@@ -159,6 +213,11 @@ const CartPage: React.FC = () => {
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
+
+  // Use selected urgency message or fallback to rotating message
+  const urgencyMessage = selectedUrgencyMessage !== null 
+    ? urgencyMessages[selectedUrgencyMessage] 
+    : urgencyMessages[currentMessageIndex];
 
   const currentMessage = urgencyMessages[currentMessageIndex];
   const currentEmptyMessage = emptyCartMessages[currentMessageIndex % emptyCartMessages.length];
@@ -213,10 +272,10 @@ const CartPage: React.FC = () => {
         {cartLines.length > 0 && timeLeft > 0 && (
           <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{currentMessage.icon}</span>
+              <span className="text-2xl">{urgencyMessage.icon}</span>
               <div className="flex-1">
                 <p className="font-sans text-sm font-medium text-yellow-800">
-                  {currentMessage.text} We'll keep it for you for <span className="font-bold">{formatTime(timeLeft)}</span> minutes.
+                  {urgencyMessage.text} We'll keep it for you for <span className="font-bold">{formatTime(timeLeft)}</span> minutes.
                 </p>
               </div>
             </div>
@@ -252,14 +311,6 @@ const CartPage: React.FC = () => {
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
                   Cart Items
                 </h2>
-                {/* Cart Table Header */}
-                <div className="hidden md:grid grid-cols-12 gap-4 py-3 border-b font-sans font-medium text-sm text-muted-foreground">
-                  <div className="col-span-4">PRODUCT</div>
-                  <div className="col-span-2 text-center">PRICE</div>
-                  <div className="col-span-2 text-center">QUANTITY</div>
-                  <div className="col-span-2 text-center">TOTAL</div>
-                  <div className="col-span-2"></div>
-                </div>
 
                 {/* Cart Items */}
                 <div className="space-y-4">
@@ -287,10 +338,23 @@ const CartPage: React.FC = () => {
                   />
                 </div>
 
-                {/* Secure Shopping Guarantee */}
-                <div className="flex items-center gap-3 font-sans text-sm text-muted-foreground">
-                  <Check className="h-4 w-4 text-green-600" />
-                  <span>{currentTrustMessage}</span>
+                {/* Trust Indicators */}
+                <div className="space-y-3">
+                  {/* Large screens: Show all trust indicators */}
+                  <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4">
+                    {trustMessages.map((message, index) => (
+                      <div key={index} className="flex items-center gap-3 font-sans text-sm text-muted-foreground">
+                        <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        <span>{message}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Small screens: Show rotating trust indicator */}
+                  <div className="lg:hidden flex items-center gap-3 font-sans text-sm text-muted-foreground">
+                    <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    <span>{currentTrustMessage}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,13 +368,23 @@ const CartPage: React.FC = () => {
                       ORDER SUMMARY
                     </h2>
                     
-                    {/* Subtotal */}
-                    {subtotal && (
+                    {/* Subtotal (Compare at Price) */}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center font-sans text-lg">
+                        <span className="text-muted-foreground">Subtotal:</span>
+                        <span className="font-semibold">
+                          {formatCurrency(discountInfo.subtotalCompareAtPrice.toString(), discountInfo.currencyCode)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Discount */}
+                    {discountInfo.totalDiscount > 0 && (
                       <div className="space-y-3">
                         <div className="flex justify-between items-center font-sans text-lg">
-                          <span className="text-muted-foreground">Subtotal:</span>
-                          <span className="font-semibold">
-                            {formatCurrency(subtotal.amount, subtotal.currencyCode)}
+                          <span className="text-muted-foreground">Discount:</span>
+                          <span className="font-semibold text-green-600">
+                            -{formatCurrency(discountInfo.totalDiscount.toString(), discountInfo.currencyCode)}
                           </span>
                         </div>
                       </div>
@@ -333,17 +407,15 @@ const CartPage: React.FC = () => {
                     </div>
                     
                     {/* Total */}
-                    {subtotal && (
-                      <div className="border-t pt-3">
-                        <div className="flex justify-between items-center font-sans text-xl font-bold">
-                          <span>TOTAL:</span>
-                          <span>{formatCurrency(subtotal.amount, subtotal.currencyCode)}</span>
-                        </div>
-                        <p className="font-sans text-xs text-muted-foreground mt-1">
-                          Tax included and shipping calculated at checkout
-                        </p>
+                    <div className="border-t pt-3">
+                      <div className="flex justify-between items-center font-sans text-xl font-bold">
+                        <span>TOTAL:</span>
+                        <span>{formatCurrency(discountInfo.subtotalActualPrice.toString(), discountInfo.currencyCode)}</span>
                       </div>
-                    )}
+                      <p className="font-sans text-xs text-muted-foreground mt-1">
+                        Tax included and shipping calculated at checkout
+                      </p>
+                    </div>
                     
                     {/* Action Buttons */}
                     <div className="space-y-3">
@@ -402,92 +474,100 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
   const image = product.images.edges[0]?.node;
 
   return (
-    <div className="grid grid-cols-12 gap-4 py-4 border-b items-center">
-      {/* Product */}
-      <div className="col-span-4 md:col-span-4 flex gap-4">
-        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded border">
-          {image ? (
-            <LazyImage
-              src={image.url}
-              alt={image.altText || product.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-muted-foreground text-xs">No Image</span>
-            </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-sans font-medium text-base text-foreground truncate">{product.title}</h3>
-          {variant.title !== 'Default Title' && (
-            <div className="flex items-center gap-2 mt-1">
-              <p className="font-sans text-sm text-muted-foreground">{variant.title}</p>
-              <Edit3 className="h-3 w-3 text-muted-foreground" />
-            </div>
-          )}
-        </div>
+    <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 py-3 sm:py-4 border-b cart-item-compact items-center">
+      {/* Column 1: Product Image */}
+      <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 cart-item-image">
+        {image ? (
+          <LazyImage
+            src={image.url}
+            alt={image.altText || product.title}
+            className="w-full h-full object-cover transition-transform duration-300"
+            placeholderClassName="w-full h-full"
+            objectPosition={getSmartObjectPosition(
+              product.title,
+              image.url,
+              product.productType,
+              product.tags
+            )}
+          />
+        ) : (
+          <div className="placeholder">
+            <span>No Image</span>
+          </div>
+        )}
       </div>
 
-      {/* Price */}
-      <div className="col-span-2 text-center">
-        <div className="font-sans text-sm">
-          <p className="text-muted-foreground line-through">
-            {formatCurrency((parseFloat(variant.price.amount) * 1.17).toString(), variant.price.currencyCode)}
-          </p>
+      {/* Column 2: Product Name and Variant Info */}
+      <div className="min-w-0 col-span-2 sm:col-span-1">
+        <h4 className="font-medium text-sm sm:text-base text-foreground truncate">{product.title}</h4>
+        {variant.title !== 'Default Title' && (
+          <p className="text-xs sm:text-sm text-gray-500">{variant.title}</p>
+        )}
+      </div>
+
+      {/* Column 3: Compare at Price and Price */}
+      <div className="text-center col-span-1 sm:col-span-1">
+        <div className="text-xs sm:text-sm">
+          {variant.compareAtPrice && parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount) ? (
+            <p className="text-muted-foreground line-through">
+              {formatCurrency(variant.compareAtPrice.amount, variant.compareAtPrice.currencyCode)}
+            </p>
+          ) : (
+            <div className="h-4"></div>
+          )}
           <p className="font-semibold text-foreground">
             {formatCurrency(variant.price.amount, variant.price.currencyCode)}
           </p>
         </div>
       </div>
 
-      {/* Quantity */}
-      <div className="col-span-2 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onQuantityChange(line.id, line.quantity - 1)}
-            disabled={isLoading}
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-          
-          <span className="w-8 text-center font-sans font-medium">{line.quantity}</span>
-          
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onQuantityChange(line.id, line.quantity + 1)}
-            disabled={isLoading}
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
-        </div>
-      </div>
+      {/* Column 4: Quantity Controls - Full width on mobile, normal on desktop */}
+      <div className="col-span-4 sm:col-span-1 flex items-center gap-1 sm:gap-2 cart-quantity-controls justify-center sm:justify-center mt-3 sm:mt-0">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-7 w-7 sm:h-8 sm:w-8"
+          onClick={() => onQuantityChange(line.id, line.quantity - 1)}
+          disabled={isLoading}
+        >
+          <Minus className="h-3 w-3" />
+        </Button>
+        
+        <Select
+          value={line.quantity.toString()}
+          onValueChange={(value) => onQuantityChange(line.id, parseInt(value))}
+          disabled={isLoading}
+        >
+          <SelectTrigger className="w-14 sm:w-16 h-7 sm:h-8 text-xs sm:text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+              <SelectItem key={num} value={num.toString()}>
+                {num}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      {/* Total */}
-      <div className="col-span-2 text-center">
-        <p className="font-sans font-semibold text-foreground">
-          {formatCurrency(
-            (parseFloat(variant.price.amount) * line.quantity).toString(),
-            variant.price.currencyCode
-          )}
-        </p>
-      </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-7 w-7 sm:h-8 sm:w-8"
+          onClick={() => onQuantityChange(line.id, line.quantity + 1)}
+          disabled={isLoading}
+        >
+          <Plus className="h-3 w-3" />
+        </Button>
 
-      {/* Remove */}
-      <div className="col-span-2 text-center">
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          className="h-7 w-7 sm:h-8 sm:w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ml-1 sm:ml-2"
           onClick={onRemove}
           disabled={isLoading}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-3 w-3" />
         </Button>
       </div>
     </div>

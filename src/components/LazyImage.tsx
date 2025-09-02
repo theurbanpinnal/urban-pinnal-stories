@@ -21,7 +21,7 @@ const LazyImage = ({
   priority = false,
   width,
   height,
-  objectPosition = 'center'
+  objectPosition = 'center center'
 }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
