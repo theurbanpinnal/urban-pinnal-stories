@@ -27,6 +27,17 @@
   ],
   "redirects": [
     {
+      "source": "/private_access_tokens",
+      "has": [
+        {
+          "type": "host",
+          "value": "shop.theurbanpinnal.com"
+        }
+      ],
+      "destination": "https://theurbanpinnal.com/api/shopify/private_access_tokens",
+      "permanent": false
+    },
+    {
       "source": "/:path*",
       "has": [
         {

@@ -23,6 +23,9 @@ const Cart: React.FC<CartProps> = ({ children }) => {
   const cartLines = cart?.lines?.edges?.map(({ node }) => node) || [];
   const subtotal = cart?.cost?.subtotalAmount;
 
+  // Don't open sheet if we're on the cart page
+  const isOnCartPage = location.pathname === '/cart';
+
   const handleQuantityChange = async (lineId: string, newQuantity: number) => {
     if (newQuantity === 0) {
       await removeFromCart(lineId);
@@ -36,8 +39,13 @@ const Cart: React.FC<CartProps> = ({ children }) => {
     setOpen(false);
   };
 
+  const handleViewCart = () => {
+    navigate('/cart');
+    setOpen(false);
+  };
+
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open && !isOnCartPage} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {children || (
           <Button variant="outline" size="icon" className="relative">
@@ -133,6 +141,16 @@ const Cart: React.FC<CartProps> = ({ children }) => {
                 ) : (
                   'Proceed to Checkout'
                 )}
+              </Button>
+
+              {/* View Cart Button */}
+              <Button 
+                onClick={handleViewCart}
+                variant="outline"
+                className="w-full"
+                size="lg"
+              >
+                View Cart
               </Button>
             </div>
           )}
