@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap } from 'lucide-react';
-import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import heroWeavingImage from '@/assets/hero-weaving-3.jpg';
 
 const Store: React.FC = () => {
@@ -155,47 +154,46 @@ const Store: React.FC = () => {
       <Navigation />
       
       {/* Enhanced Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <OptimizedLazyImage
-            src={heroWeavingImage}
-            alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
-            context="hero"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10 container mx-auto px-6 text-center text-white">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Badge variant="secondary" className="bg-craft-gold/20 text-craft-ivory border-craft-gold/30">
-              <Star className="w-3 h-3 mr-1" />
-              Handcrafted Excellence
-            </Badge>
-            <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-ivory border-craft-terracotta/30">
-              <Package className="w-3 h-3 mr-1" />
-              Authentic Artisan
-            </Badge>
-          </div>
-          
-          <h1 className="font-serif text-4xl md:text-6xl font-bold mb-6">
-            Our Collection
-          </h1>
-          <p className="font-sans text-lg md:text-xl max-w-3xl mx-auto mb-8 leading-relaxed">
-            Discover authentic, handcrafted pieces that tell stories of tradition, 
-            skill, and the artisans who create them with love and dedication. Each product 
-            preserves centuries-old techniques while bringing modern elegance to your life.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a 
-              href="#products" 
-              className="inline-flex items-center justify-center px-8 py-4 bg-craft-terracotta text-craft-ivory hover:bg-craft-clay transition-all duration-300 font-medium tracking-wide rounded-md text-lg"
-            >
-              <Package className="mr-2 w-5 h-5" />
-              Shop Collection
-            </a>          
+      <section className="relative h-[60vh] w-full overflow-hidden">
+        <img
+          src={heroWeavingImage}
+          alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white max-w-4xl px-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Badge variant="secondary" className="bg-craft-gold/20 text-craft-ivory border-craft-gold/30">
+                <Star className="w-3 h-3 mr-1" />
+                Handcrafted Excellence
+              </Badge>
+              <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-ivory border-craft-terracotta/30">
+                <Package className="w-3 h-3 mr-1" />
+                Authentic Artisan
+              </Badge>
+            </div>
+            
+            <h1 className="font-serif text-4xl md:text-6xl font-bold mb-6">
+              Our Collection
+            </h1>
+            <p className="font-sans text-lg md:text-xl max-w-3xl mx-auto mb-8 leading-relaxed opacity-90">
+              Discover authentic, handcrafted pieces that tell stories of tradition, 
+              skill, and the artisans who create them with love and dedication. Each product 
+              preserves centuries-old techniques while bringing modern elegance to your life.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="#products" 
+                className="inline-flex items-center justify-center px-8 py-4 bg-craft-terracotta text-craft-ivory hover:bg-craft-clay transition-all duration-300 font-medium tracking-wide rounded-md text-lg"
+              >
+                <Package className="mr-2 w-5 h-5" />
+                Shop Collection
+              </a>          
+            </div>
           </div>
         </div>
       </section>

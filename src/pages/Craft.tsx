@@ -2,7 +2,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Leaf, Users } from "lucide-react";
 import heroWeavingImage from "@/assets/hero-weaving.jpg";
-import LazyImage from "@/components/LazyImage";
+import villageLandscapeImage from "@/assets/village-landscape.jpg";
 
 const Craft = () => {
   return (
@@ -16,14 +16,25 @@ const Craft = () => {
         <Navigation />
         
         {/* Hero Section */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
-              The Craft
-            </h1>
-            <p className="font-sans text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Where ancient techniques meet contemporary design. Discover the timeless artistry behind every piece in our collection.
-            </p>
+        <section className="relative h-[60vh] w-full overflow-hidden">
+                      <img
+              src={villageLandscapeImage}
+              alt="Traditional Tamil Nadu village landscape showing the natural environment where our artisans work and source materials"
+              className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white max-w-4xl px-6">
+              <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6">
+                The Craft
+              </h1>
+              <p className="font-sans text-lg md:text-xl opacity-90">
+                Where ancient techniques meet contemporary design. Discover the timeless artistry behind every piece in our collection.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -45,11 +56,12 @@ const Craft = () => {
                 <span className="text-base font-medium text-foreground">100% Plastic-Free & Biodegradable</span>
               </div>
             </div>
-            <LazyImage 
+            <img 
               src={heroWeavingImage}
               alt="Artisan weaving with natural cane"
               className="rounded-lg shadow-lg object-cover w-full h-[340px]"
               loading="lazy"
+              decoding="async"
             />
           </div>
         </section>

@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Heart, MapPin, Clock, Users } from "lucide-react";
+import founderArtisanImage from "@/assets/founder-artisan.jpg";
 
 const Artisans = () => {
   return (
@@ -14,14 +15,25 @@ const Artisans = () => {
         <Navigation />
         
         {/* Hero Section */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="font-serif text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Our Artisans
-            </h1>
-            <p className="font-sans text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              The skilled hands and passionate hearts behind every piece. Meet the remarkable women who bring our collections to life.
-            </p>
+        <section className="relative h-[60vh] w-full overflow-hidden">
+          <img
+            src={founderArtisanImage}
+            alt="Skilled artisan working on traditional handcrafted textiles, showcasing the dedication and expertise of our craftswomen"
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white max-w-4xl px-6">
+              <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6">
+                Our Artisans
+              </h1>
+              <p className="font-sans text-lg md:text-xl opacity-90">
+                The skilled hands and passionate hearts behind every piece. Meet the remarkable women who bring our collections to life.
+              </p>
+            </div>
           </div>
         </section>
 
