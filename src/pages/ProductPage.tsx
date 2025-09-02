@@ -85,12 +85,14 @@ const ProductPage: React.FC = () => {
     }
   }, [data]);
 
-  // Set default variant if none selected - moved to top level
+  // Set default variant and auto-select single options
   useEffect(() => {
-    if (data?.productByHandle?.variants?.edges) {
+    if (data?.productByHandle?.variants?.edges && data?.productByHandle?.options) {
       const variants = data.productByHandle.variants.edges.map(({ node }) => node);
-      if (variants.length > 0 && !selectedVariantId) {
-        // Auto-select the first variant if there's only one, or if no variant is selected
+      const options = data.productByHandle.options;
+      
+      if (variants.length > 0) {
+        // Auto-select the first variant if there's only one
         if (variants.length === 1) {
           setSelectedVariantId(variants[0].id);
           // Also set the selected options for single variant products
@@ -101,13 +103,37 @@ const ProductPage: React.FC = () => {
             });
             setSelectedOptions(optionsMap);
           }
-        } else if (variants.length > 1 && !selectedVariantId) {
-          // For multiple variants, don't auto-select but ensure user knows they need to choose
-          console.log('Multiple variants available - user must select one');
+        } else {
+          // For multiple variants, auto-select options that have only one value
+          const newSelectedOptions: Record<string, string> = { ...selectedOptions };
+          let hasChanges = false;
+          
+          options.forEach(option => {
+            // If this option has only one value, auto-select it
+            if (option.values.length === 1 && !selectedOptions[option.name]) {
+              newSelectedOptions[option.name] = option.values[0];
+              hasChanges = true;
+            }
+          });
+          
+          if (hasChanges) {
+            setSelectedOptions(newSelectedOptions);
+            
+            // Find the matching variant based on the auto-selected options
+            const matchingVariant = variants.find(variant => {
+              return variant.selectedOptions?.every(option => 
+                newSelectedOptions[option.name] === option.value
+              );
+            });
+            
+            if (matchingVariant) {
+              setSelectedVariantId(matchingVariant.id);
+            }
+          }
         }
       }
     }
-  }, [data, selectedVariantId]);
+  }, [data]);
 
   if (fetching) return <ProductPageSkeleton />;
   
@@ -373,14 +399,20 @@ const ProductPage: React.FC = () => {
 
 
             {/* Options Selection */}
-            {options.length > 1 && (
-              options.map((option) => (
-                <div key={option.id} className="space-y-4">
-                  <label className="block font-sans text-base font-semibold text-foreground">
-                    {option.name}
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    {option.values.map((value) => {
+            {options.map((option) => (
+              <div key={option.id} className="space-y-4">
+                <label className="block font-sans text-base font-semibold text-foreground">
+                  {option.name}
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {option.values.length === 1 ? (
+                    // Single option value - show as selected
+                    <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md font-sans px-6 py-3 text-base border-2 bg-foreground text-background">
+                      {option.values[0]}
+                    </button>
+                  ) : (
+                    // Multiple option values - show as selectable buttons
+                    option.values.map((value) => {
                       const isSelected = selectedOptions[option.name] === value;
                       return (
                         <Button
@@ -397,25 +429,11 @@ const ProductPage: React.FC = () => {
                           {value}
                         </Button>
                       );
-                    })}
-                  </div>
-                </div>
-              ))
-            )}
-
-            {/* Show selected variant info for single variant products */}
-            {options.length === 1 && selectedVariant && (
-              <div className="space-y-4">
-                <label className="block font-sans text-base font-semibold text-foreground">
-                  {options[0].name}
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-11 rounded-md font-sans px-6 py-3 text-base bg-foreground text-background">
-                    {selectedVariant.title}
-                  </button>
+                    })
+                  )}
                 </div>
               </div>
-            )}
+            ))}
 
             {/* Quantity Selection */}
             <div className="space-y-4">
