@@ -295,6 +295,10 @@ export const CREATE_CART = `
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
                     title
                     handle
@@ -350,6 +354,10 @@ export const ADD_TO_CART = `
                   id
                   title
                   price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
                     amount
                     currencyCode
                   }
@@ -411,6 +419,10 @@ export const UPDATE_CART_LINES = `
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
                     title
                     handle
@@ -469,6 +481,10 @@ export const REMOVE_FROM_CART = `
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   product {
                     title
                     handle
@@ -523,6 +539,10 @@ export const GET_CART = `
                 id
                 title
                 price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
                   amount
                   currencyCode
                 }
@@ -641,6 +661,10 @@ export interface CartLine {
     id: string;
     title: string;
     price: {
+      amount: string;
+      currencyCode: string;
+    };
+    compareAtPrice?: {
       amount: string;
       currencyCode: string;
     };

@@ -38,11 +38,14 @@ import {
   BarChart3,
   Info
 } from 'lucide-react';
-import LazyImage from '@/components/LazyImage';
+import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
 import { formatCurrency } from '@/lib/utils';
+
+// Action status type for UI locking
+type ActionStatus = 'idle' | 'adding' | 'buying';
 
 const ProductPage: React.FC = () => {
   const { handle } = useParams<{ handle: string }>();
@@ -52,7 +55,9 @@ const ProductPage: React.FC = () => {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const [isBuyingNow, setIsBuyingNow] = useState<boolean>(false);
+  
+  // New state-driven UI locking system
+  const [actionStatus, setActionStatus] = useState<ActionStatus>('idle');
 
   const [result] = useQuery({
     query: GET_PRODUCT_BY_HANDLE,
@@ -62,6 +67,8 @@ const ProductPage: React.FC = () => {
 
   const { data, fetching, error } = result;
 
+  // Computed property to check if any action is processing
+  const isProcessing = actionStatus !== 'idle';
 
 
   // Set page title for SEO
@@ -78,12 +85,14 @@ const ProductPage: React.FC = () => {
     }
   }, [data]);
 
-  // Set default variant if none selected - moved to top level
+  // Set default variant and auto-select single options
   useEffect(() => {
-    if (data?.productByHandle?.variants?.edges) {
+    if (data?.productByHandle?.variants?.edges && data?.productByHandle?.options) {
       const variants = data.productByHandle.variants.edges.map(({ node }) => node);
-      if (variants.length > 0 && !selectedVariantId) {
-        // Auto-select the first variant if there's only one, or if no variant is selected
+      const options = data.productByHandle.options;
+      
+      if (variants.length > 0) {
+        // Auto-select the first variant if there's only one
         if (variants.length === 1) {
           setSelectedVariantId(variants[0].id);
           // Also set the selected options for single variant products
@@ -94,13 +103,37 @@ const ProductPage: React.FC = () => {
             });
             setSelectedOptions(optionsMap);
           }
-        } else if (variants.length > 1 && !selectedVariantId) {
-          // For multiple variants, don't auto-select but ensure user knows they need to choose
-          console.log('Multiple variants available - user must select one');
+        } else {
+          // For multiple variants, auto-select options that have only one value
+          const newSelectedOptions: Record<string, string> = { ...selectedOptions };
+          let hasChanges = false;
+          
+          options.forEach(option => {
+            // If this option has only one value, auto-select it
+            if (option.values.length === 1 && !selectedOptions[option.name]) {
+              newSelectedOptions[option.name] = option.values[0];
+              hasChanges = true;
+            }
+          });
+          
+          if (hasChanges) {
+            setSelectedOptions(newSelectedOptions);
+            
+            // Find the matching variant based on the auto-selected options
+            const matchingVariant = variants.find(variant => {
+              return variant.selectedOptions?.every(option => 
+                newSelectedOptions[option.name] === option.value
+              );
+            });
+            
+            if (matchingVariant) {
+              setSelectedVariantId(matchingVariant.id);
+            }
+          }
         }
       }
     }
-  }, [data, selectedVariantId]);
+  }, [data]);
 
   if (fetching) return <ProductPageSkeleton />;
   
@@ -166,11 +199,33 @@ const ProductPage: React.FC = () => {
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {
-      alert('Please select a variant');
+      toast({
+        title: 'Selection Required',
+        description: 'Please select a product variant before proceeding.',
+        variant: 'destructive',
+      });
       return;
     }
     
-    await addToCart(selectedVariant.id, quantity);
+    setActionStatus('adding');
+    try {
+      const success = await addToCart(selectedVariant.id, quantity);
+      if (success) {
+        toast({
+          title: 'Added to Cart',
+          description: 'Item has been added to your cart successfully.',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add item to cart. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setActionStatus('idle');
+    }
   };
 
   const handleBuyNow = async () => {
@@ -183,7 +238,7 @@ const ProductPage: React.FC = () => {
       return;
     }
 
-    setIsBuyingNow(true);
+    setActionStatus('buying');
 
     try {
       const success = await addToCart(selectedVariant.id, quantity);
@@ -191,10 +246,10 @@ const ProductPage: React.FC = () => {
         // Add a small delay to ensure cart state is updated
         setTimeout(() => {
           checkout();
-          setIsBuyingNow(false);
+          setActionStatus('idle');
         }, 800);
       } else {
-        setIsBuyingNow(false);
+        setActionStatus('idle');
       }
     } catch (error) {
       console.error('Failed to buy now:', error);
@@ -203,7 +258,7 @@ const ProductPage: React.FC = () => {
         description: 'Failed to add item to cart. Please try again.',
         variant: 'destructive',
       });
-      setIsBuyingNow(false);
+      setActionStatus('idle');
     }
   };
 
@@ -239,10 +294,14 @@ const ProductPage: React.FC = () => {
             {/* Main Image */}
             <div className="overflow-hidden rounded-lg bg-white border">
               {currentImage ? (
-                <LazyImage
+                <OptimizedLazyImage
                   src={currentImage.url}
                   alt={currentImage.altText || product.title}
+                  context="product-main"
                   className="w-full h-auto max-w-full object-contain"
+                  productTitle={product.title}
+                  productType={product.productType}
+                  productTags={product.tags}
                 />
               ) : (
                 <div className="w-full h-96 flex items-center justify-center bg-gray-100">
@@ -264,10 +323,14 @@ const ProductPage: React.FC = () => {
                         : 'border-transparent hover:border-gray-300'
                     }`}
                   >
-                    <LazyImage
+                    <OptimizedLazyImage
                       src={image.url}
                       alt={image.altText || `${product.title} ${index + 1}`}
+                      context="product-thumbnail"
                       className="w-full h-auto max-h-24 object-contain"
+                      productTitle={product.title}
+                      productType={product.productType}
+                      productTags={product.tags}
                     />
                   </button>
                 ))}
@@ -280,7 +343,7 @@ const ProductPage: React.FC = () => {
             {/* Vendor & Collections */}
             <div className="flex items-center justify-between">
               <div className="font-sans text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                {product.vendor || 'The Urban Pinnal'}
+                The Urban Pinnal
               </div>
             </div>
 
@@ -336,14 +399,20 @@ const ProductPage: React.FC = () => {
 
 
             {/* Options Selection */}
-            {options.length > 1 && (
-              options.map((option) => (
-                <div key={option.id} className="space-y-4">
-                  <label className="block font-sans text-base font-semibold text-foreground">
-                    {option.name}
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    {option.values.map((value) => {
+            {options.map((option) => (
+              <div key={option.id} className="space-y-4">
+                <label className="block font-sans text-base font-semibold text-foreground">
+                  {option.name}
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {option.values.length === 1 ? (
+                    // Single option value - show as selected
+                    <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md font-sans px-6 py-3 text-base border-2 bg-foreground text-background">
+                      {option.values[0]}
+                    </button>
+                  ) : (
+                    // Multiple option values - show as selectable buttons
+                    option.values.map((value) => {
                       const isSelected = selectedOptions[option.name] === value;
                       return (
                         <Button
@@ -360,22 +429,11 @@ const ProductPage: React.FC = () => {
                           {value}
                         </Button>
                       );
-                    })}
-                  </div>
-                </div>
-              ))
-            )}
-
-            {/* Show selected variant info for single variant products */}
-            {options.length === 1 && selectedVariant && (
-              <div className="space-y-4">
-                <div className="p-4 bg-muted/20 rounded-lg">
-                  <p className="font-sans text-sm font-medium text-foreground">
-                    Selected: {selectedVariant.title}
-                  </p>
+                    })
+                  )}
                 </div>
               </div>
-            )}
+            ))}
 
             {/* Quantity Selection */}
             <div className="space-y-4">
@@ -418,11 +476,11 @@ const ProductPage: React.FC = () => {
             <div className="space-y-4 pt-6">
               <Button
                 onClick={handleAddToCart}
-                disabled={outOfStock || cartLoading || (variants.length > 1 && !selectedVariantId)}
+                disabled={outOfStock || cartLoading || (variants.length > 1 && !selectedVariantId) || isProcessing}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-background text-foreground border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
                 variant="outline"
               >
-                {cartLoading ? (
+                {actionStatus === 'adding' ? (
                   <>
                     <Loader2 className="mr-3 h-6 w-6 animate-spin" />
                     Adding to Cart...
@@ -439,10 +497,10 @@ const ProductPage: React.FC = () => {
 
               <Button
                 onClick={handleBuyNow}
-                disabled={outOfStock || cartLoading || isBuyingNow || (variants.length > 1 && !selectedVariantId)}
+                disabled={outOfStock || cartLoading || isProcessing || (variants.length > 1 && !selectedVariantId)}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300"
               >
-                {isBuyingNow ? (
+                {actionStatus === 'buying' ? (
                   <>
                     <Loader2 className="mr-3 h-6 w-6 animate-spin" />
                     Processing...

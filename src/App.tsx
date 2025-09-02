@@ -8,7 +8,7 @@ import { Suspense, lazy } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ResourcePreloader from "@/components/ResourcePreloader";
 import FloatingWhatsAppButton from "@/components/FloatingWhatsAppButton";
-import heroImage from "@/assets/hero-weaving-3.jpg";
+import heroImage from "@/assets/hero_3.png";
 
 const Index = lazy(() => import(/* webpackChunkName: "page-index" */ "./pages/Index"));
 const OurStory = lazy(() => import(/* webpackChunkName: "page-our-story" */ "./pages/OurStory"));
