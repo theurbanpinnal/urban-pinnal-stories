@@ -18,7 +18,7 @@ interface CartState {
 }
 
 interface CartContextType extends CartState {
-  addToCart: (variantId: string, quantity: number) => Promise<void>;
+  addToCart: (variantId: string, quantity: number) => Promise<boolean>;
   updateCartLine: (lineId: string, quantity: number) => Promise<void>;
   removeFromCart: (lineId: string) => Promise<void>;
   getCartItemCount: () => number;
@@ -101,9 +101,32 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Load cart on component mount if cartId exists
   useEffect(() => {
     if (cartQueryResult.data?.cart) {
-      dispatch({ type: 'SET_CART', payload: cartQueryResult.data.cart });
+      // Validate cart data before setting it
+      const cart = cartQueryResult.data.cart;
+      if (cart.lines && cart.lines.edges) {
+        // Filter out any invalid or ghost cart lines
+        const validLines = cart.lines.edges.filter(edge =>
+          edge.node &&
+          edge.node.merchandise &&
+          edge.node.merchandise.id &&
+          edge.node.quantity > 0
+        );
+
+        const cleanedCart = {
+          ...cart,
+          lines: {
+            ...cart.lines,
+            edges: validLines
+          }
+        };
+
+        dispatch({ type: 'SET_CART', payload: cleanedCart });
+      } else {
+        dispatch({ type: 'SET_CART', payload: cart });
+      }
     } else if (cartQueryResult.error && storedCartId) {
       // If cart query fails, clear the stored cart ID
+      console.warn('Failed to load cart from Shopify:', cartQueryResult.error);
       localStorage.removeItem('shopify_cart_id');
       dispatch({ type: 'SET_CART', payload: null });
     }
@@ -142,7 +165,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return null;
   };
 
-  const addToCart = async (variantId: string, quantity: number): Promise<void> => {
+  const addToCart = async (variantId: string, quantity: number): Promise<boolean> => {
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
@@ -152,7 +175,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       // If no cart exists, create one
       if (!currentCart) {
         currentCart = await createCart(variantId, quantity);
-        if (!currentCart) return;
+        if (!currentCart) return false;
       } else {
         // Add to existing cart
         const result = await addToCartMutation({
@@ -173,7 +196,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             description: errorMessage,
             variant: 'destructive',
           });
-          return;
+          return false;
         }
 
         const updatedCart = result.data?.cartLinesAdd?.cart;
@@ -186,6 +209,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         title: 'Added to Cart',
         description: 'Item has been added to your cart successfully.',
       });
+      return true;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
@@ -194,6 +218,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         description: errorMessage,
         variant: 'destructive',
       });
+      return false;
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -391,7 +416,26 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const checkout = (): void => {
     if (state.cart?.checkoutUrl) {
-      window.location.href = state.cart.checkoutUrl;
+      try {
+        // Validate checkout URL before redirecting
+        const url = new URL(state.cart.checkoutUrl);
+        // Allow both Shopify domains and your custom domain
+        if (url.protocol === 'https:' && 
+            (url.hostname.includes('shopify') || 
+             url.hostname.includes('theurbanpinnal') ||
+             url.hostname.includes('myshopify'))) {
+          window.location.href = state.cart.checkoutUrl;
+        } else {
+          throw new Error('Invalid checkout URL');
+        }
+      } catch (error) {
+        console.error('Invalid checkout URL:', state.cart.checkoutUrl);
+        toast({
+          title: 'Error',
+          description: 'Unable to proceed to checkout. Please try again.',
+          variant: 'destructive',
+        });
+      }
     } else {
       toast({
         title: 'Error',

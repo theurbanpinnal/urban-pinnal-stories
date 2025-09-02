@@ -15,6 +15,7 @@ import {
 } from '@/lib/shopify';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -77,6 +78,30 @@ const ProductPage: React.FC = () => {
     }
   }, [data]);
 
+  // Set default variant if none selected - moved to top level
+  useEffect(() => {
+    if (data?.productByHandle?.variants?.edges) {
+      const variants = data.productByHandle.variants.edges.map(({ node }) => node);
+      if (variants.length > 0 && !selectedVariantId) {
+        // Auto-select the first variant if there's only one, or if no variant is selected
+        if (variants.length === 1) {
+          setSelectedVariantId(variants[0].id);
+          // Also set the selected options for single variant products
+          if (variants[0].selectedOptions) {
+            const optionsMap: Record<string, string> = {};
+            variants[0].selectedOptions.forEach(option => {
+              optionsMap[option.name] = option.value;
+            });
+            setSelectedOptions(optionsMap);
+          }
+        } else if (variants.length > 1 && !selectedVariantId) {
+          // For multiple variants, don't auto-select but ensure user knows they need to choose
+          console.log('Multiple variants available - user must select one');
+        }
+      }
+    }
+  }, [data, selectedVariantId]);
+
   if (fetching) return <ProductPageSkeleton />;
   
   if (error || !data?.productByHandle) {
@@ -101,11 +126,6 @@ const ProductPage: React.FC = () => {
   const images = product.images?.edges?.map(({ node }) => node) || [];
   const options = product.options || [];
   const badges = getProductBadges(product);
-
-  // Set default variant if none selected
-  if (!selectedVariantId && variants.length > 0) {
-    setSelectedVariantId(variants[0].id);
-  }
 
   // Find variant based on selected options
   const findVariantByOptions = () => {
@@ -155,20 +175,34 @@ const ProductPage: React.FC = () => {
 
   const handleBuyNow = async () => {
     if (!selectedVariant?.id) {
-      alert('Please select a variant');
+      toast({
+        title: 'Selection Required',
+        description: 'Please select a product variant before proceeding.',
+        variant: 'destructive',
+      });
       return;
     }
-    
+
     setIsBuyingNow(true);
-    
+
     try {
-      await addToCart(selectedVariant.id, quantity);
-      setTimeout(() => {
-        checkout();
+      const success = await addToCart(selectedVariant.id, quantity);
+      if (success !== false) {
+        // Add a small delay to ensure cart state is updated
+        setTimeout(() => {
+          checkout();
+          setIsBuyingNow(false);
+        }, 800);
+      } else {
         setIsBuyingNow(false);
-      }, 500);
+      }
     } catch (error) {
       console.error('Failed to buy now:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add item to cart. Please try again.',
+        variant: 'destructive',
+      });
       setIsBuyingNow(false);
     }
   };
@@ -302,33 +336,46 @@ const ProductPage: React.FC = () => {
 
 
             {/* Options Selection */}
-            {options.map((option) => (
-              <div key={option.id} className="space-y-4">
-                <label className="block font-sans text-base font-semibold text-foreground">
-                  {option.name}
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  {option.values.map((value) => {
-                    const isSelected = selectedOptions[option.name] === value;
-                    return (
-                      <Button
-                        key={value}
-                        variant={isSelected ? "default" : "outline"}
-                        size="lg"
-                        onClick={() => handleOptionChange(option.name, value)}
-                        className={`font-sans px-6 py-3 text-base ${
-                          isSelected 
-                            ? "bg-foreground text-background" 
-                            : "border-2 hover:border-foreground"
-                        }`}
-                      >
-                        {value}
-                      </Button>
-                    );
-                  })}
+            {options.length > 1 && (
+              options.map((option) => (
+                <div key={option.id} className="space-y-4">
+                  <label className="block font-sans text-base font-semibold text-foreground">
+                    {option.name}
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {option.values.map((value) => {
+                      const isSelected = selectedOptions[option.name] === value;
+                      return (
+                        <Button
+                          key={value}
+                          variant={isSelected ? "default" : "outline"}
+                          size="lg"
+                          onClick={() => handleOptionChange(option.name, value)}
+                          className={`font-sans px-6 py-3 text-base ${
+                            isSelected 
+                              ? "bg-foreground text-background" 
+                              : "border-2 hover:border-foreground"
+                          }`}
+                        >
+                          {value}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {/* Show selected variant info for single variant products */}
+            {options.length === 1 && selectedVariant && (
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/20 rounded-lg">
+                  <p className="font-sans text-sm font-medium text-foreground">
+                    Selected: {selectedVariant.title}
+                  </p>
                 </div>
               </div>
-            ))}
+            )}
 
             {/* Quantity Selection */}
             <div className="space-y-4">
@@ -371,7 +418,7 @@ const ProductPage: React.FC = () => {
             <div className="space-y-4 pt-6">
               <Button
                 onClick={handleAddToCart}
-                disabled={outOfStock || cartLoading}
+                disabled={outOfStock || cartLoading || (variants.length > 1 && !selectedVariantId)}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-background text-foreground border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
                 variant="outline"
               >
@@ -383,14 +430,16 @@ const ProductPage: React.FC = () => {
                 ) : (
                   <>
                     <ShoppingCart className="mr-3 h-6 w-6" />
-                    {outOfStock ? 'Out of Stock' : 'Add to cart'}
+                    {outOfStock ? 'Out of Stock' : 
+                     variants.length > 1 && !selectedVariantId ? 'Select Variant' : 
+                     'Add to cart'}
                   </>
                 )}
               </Button>
 
               <Button
                 onClick={handleBuyNow}
-                disabled={outOfStock || cartLoading || isBuyingNow}
+                disabled={outOfStock || cartLoading || isBuyingNow || (variants.length > 1 && !selectedVariantId)}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300"
               >
                 {isBuyingNow ? (
@@ -401,7 +450,9 @@ const ProductPage: React.FC = () => {
                 ) : (
                   <>
                     <Zap className="mr-3 h-6 w-6" />
-                    Buy it now
+                    {outOfStock ? 'Out of Stock' : 
+                     variants.length > 1 && !selectedVariantId ? 'Select Variant' : 
+                     'Buy it now'}
                   </>
                 )}
               </Button>
