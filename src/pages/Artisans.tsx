@@ -21,7 +21,7 @@ const Artisans = () => {
             alt="Skilled artisan working on traditional handcrafted textiles, showcasing the dedication and expertise of our craftswomen"
             className="w-full h-full object-cover"
             loading="eager"
-            fetchPriority="high"
+            {...{ fetchpriority: "high" }}
             decoding="async"
           />
           <div className="absolute inset-0 bg-black/30" />

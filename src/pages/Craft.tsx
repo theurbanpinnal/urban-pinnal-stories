@@ -22,7 +22,7 @@ const Craft = () => {
               alt="Traditional Tamil Nadu village landscape showing the natural environment where our artisans work and source materials"
               className="w-full h-full object-cover"
               loading="eager"
-              fetchPriority="high"
+              {...{ fetchpriority: "high" }}
               decoding="async"
             />
           <div className="absolute inset-0 bg-black/30" />

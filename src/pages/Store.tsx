@@ -155,14 +155,14 @@ const Store: React.FC = () => {
       
       {/* Enhanced Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden">
-        <img
-          src={heroWeavingImage}
-          alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
-          className="w-full h-full object-cover"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
+                  <img
+            src={heroWeavingImage}
+            alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
+            className="w-full h-full object-cover"
+            loading="eager"
+            {...{ fetchpriority: "high" }}
+            decoding="async"
+          />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white max-w-4xl px-6">
