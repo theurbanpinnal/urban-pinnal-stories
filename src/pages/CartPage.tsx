@@ -223,29 +223,31 @@ const CartPage: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            {cartLines.length === 0 ? (
-              <div className="flex justify-center items-center min-h-[60vh] w-full">
-                <div className="text-center py-16 bg-muted/20 rounded-lg w-full max-w-2xl mx-4">
-                  <ShoppingCart className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-                  <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
-                    Your cart is empty
-                  </h2>
-                  <p className="font-sans text-muted-foreground max-w-2xl mx-auto mb-6">
-                    {currentEmptyMessage}
-                  </p>
-                  <Button
-                    onClick={handleContinueShopping}
-                    className="font-sans text-lg px-8 py-3"
-                    size="lg"
-                  >
-                    Start Shopping
-                  </Button>
-                </div>
-              </div>
-            ) : (
+        {cartLines.length === 0 ? (
+          // Empty cart - full width centered layout
+          <div className="flex justify-center items-center min-h-[60vh] w-full">
+            <div className="text-center py-16 bg-muted/20 rounded-lg w-full max-w-2xl mx-4">
+              <ShoppingCart className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
+              <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
+                Your cart is empty
+              </h2>
+              <p className="font-sans text-muted-foreground max-w-2xl mx-auto mb-6">
+                {currentEmptyMessage}
+              </p>
+              <Button
+                onClick={handleContinueShopping}
+                className="font-sans text-lg px-8 py-3"
+                size="lg"
+              >
+                Start Shopping
+              </Button>
+            </div>
+          </div>
+        ) : (
+          // Cart with items - grid layout
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
+            <div className="lg:col-span-2">
               <div className="space-y-6">
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
                   Cart Items
@@ -291,90 +293,90 @@ const CartPage: React.FC = () => {
                   <span>{currentTrustMessage}</span>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Order Summary */}
-          {cartLines.length > 0 && (
-            <div className="lg:col-span-1">
-              <div className="sticky top-8">
-                <div className="bg-muted/20 rounded-lg p-6 space-y-6">
-                  <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
-                    ORDER SUMMARY
-                  </h2>
-                  
-                  {/* Subtotal */}
-                  {subtotal && (
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center font-sans text-lg">
-                        <span className="text-muted-foreground">Subtotal:</span>
-                        <span className="font-semibold">
-                          {formatCurrency(subtotal.amount, subtotal.currencyCode)}
-                        </span>
+            {/* Order Summary */}
+            {cartLines.length > 0 && (
+              <div className="lg:col-span-1">
+                <div className="sticky top-8">
+                  <div className="bg-muted/20 rounded-lg p-6 space-y-6">
+                    <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
+                      ORDER SUMMARY
+                    </h2>
+                    
+                    {/* Subtotal */}
+                    {subtotal && (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center font-sans text-lg">
+                          <span className="text-muted-foreground">Subtotal:</span>
+                          <span className="font-semibold">
+                            {formatCurrency(subtotal.amount, subtotal.currencyCode)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  
-                  {/* Coupon Code */}
-                  <div className="space-y-2">
-                    <label className="block font-sans text-sm font-medium text-foreground">
-                      Coupon Code
-                    </label>
-                    <Input
-                      placeholder="Enter Coupon Code"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      className="w-full font-sans"
-                    />
-                    <p className="font-sans text-xs text-muted-foreground">
-                      Coupon code will be applied on the checkout page
-                    </p>
-                  </div>
-                  
-                  {/* Total */}
-                  {subtotal && (
-                    <div className="border-t pt-3">
-                      <div className="flex justify-between items-center font-sans text-xl font-bold">
-                        <span>TOTAL:</span>
-                        <span>{formatCurrency(subtotal.amount, subtotal.currencyCode)}</span>
-                      </div>
-                      <p className="font-sans text-xs text-muted-foreground mt-1">
-                        Tax included and shipping calculated at checkout
+                    )}
+                    
+                    {/* Coupon Code */}
+                    <div className="space-y-2">
+                      <label className="block font-sans text-sm font-medium text-foreground">
+                        Coupon Code
+                      </label>
+                      <Input
+                        placeholder="Enter Coupon Code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        className="w-full font-sans"
+                      />
+                      <p className="font-sans text-xs text-muted-foreground">
+                        Coupon code will be applied on the checkout page
                       </p>
                     </div>
-                  )}
-                  
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    <Button 
-                      onClick={handleCheckout}
-                      className="w-full font-sans text-lg py-4 h-14 bg-foreground text-background hover:bg-foreground/90"
-                      size="lg"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        'PROCEED TO CHECKOUT'
-                      )}
-                    </Button>
                     
-                    <Button 
-                      onClick={handleContinueShopping}
-                      variant="outline"
-                      className="w-full font-sans text-base py-3 border-2"
-                    >
-                      CONTINUE SHOPPING
-                    </Button>
+                    {/* Total */}
+                    {subtotal && (
+                      <div className="border-t pt-3">
+                        <div className="flex justify-between items-center font-sans text-xl font-bold">
+                          <span>TOTAL:</span>
+                          <span>{formatCurrency(subtotal.amount, subtotal.currencyCode)}</span>
+                        </div>
+                        <p className="font-sans text-xs text-muted-foreground mt-1">
+                          Tax included and shipping calculated at checkout
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={handleCheckout}
+                        className="w-full font-sans text-lg py-4 h-14 bg-foreground text-background hover:bg-foreground/90"
+                        size="lg"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          'PROCEED TO CHECKOUT'
+                        )}
+                      </Button>
+                      
+                      <Button 
+                        onClick={handleContinueShopping}
+                        variant="outline"
+                        className="w-full font-sans text-base py-3 border-2"
+                      >
+                        CONTINUE SHOPPING
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       <Footer />
