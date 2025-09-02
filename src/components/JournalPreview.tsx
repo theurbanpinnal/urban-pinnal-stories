@@ -35,6 +35,8 @@ const JournalPreview = () => {
                     alt={post.coverAlt || post.title}
                     context="journal"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    width={400}
+                    height={300}
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-craft-terracotta/30 to-craft-clay/20 group-hover:from-craft-terracotta/40 group-hover:to-craft-clay/30 transition-all duration-500" />
