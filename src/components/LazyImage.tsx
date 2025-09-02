@@ -39,7 +39,8 @@ const LazyImage = ({
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (priority) return; // Don't use intersection observer for priority images
+    // Only use intersection observer for lazy loading (not for eager loading)
+    if (priority || loading === 'eager') return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -59,7 +60,7 @@ const LazyImage = ({
     }
 
     return () => observer.disconnect();
-  }, [priority]);
+  }, [priority, loading]);
 
   const handleLoad = () => {
     setIsLoaded(true);

@@ -5,11 +5,12 @@ This document outlines the comprehensive image optimization strategy implemented
 ## Overview
 
 The image optimization system consists of several components working together to provide:
-- **Fast loading** through lazy loading and priority loading
+- **Fast loading** through strategic loading strategies (eager for non-products, lazy for products)
 - **Consistent rendering** across all components
 - **Smart positioning** based on product type
 - **Responsive sizing** for different screen sizes
 - **Error handling** with graceful fallbacks
+- **Selective lazy loading** - only for product images to improve user experience
 
 ## Components
 
@@ -59,6 +60,32 @@ Comprehensive utilities for:
   priority={true}
   fetchPriority="high"
   sizes="100vw"
+/>
+```
+
+### For Artisan Images
+```tsx
+<LazyImage
+  src={artisanImage}
+  alt="Artisan description"
+  className="w-full h-full object-cover"
+  loading="eager"
+  priority={true}
+  fetchPriority="high"
+  sizes="(max-width: 768px) 100vw, 33vw"
+/>
+```
+
+### For Journal Images
+```tsx
+<LazyImage
+  src={journalImage}
+  alt="Journal description"
+  className="w-full h-full object-cover"
+  loading="eager"
+  priority={true}
+  fetchPriority="high"
+  sizes="(max-width: 768px) 100vw, 33vw"
 />
 ```
 
@@ -126,15 +153,20 @@ The system automatically determines optimal object positioning based on product 
 
 ## Performance Optimizations
 
-### 1. Lazy Loading
-- Uses Intersection Observer with 100px root margin
-- Loads images before they enter viewport
-- Disables observer for priority images
+## Performance Optimizations
 
-### 2. Priority Loading
-- Hero images: `priority={true}`, `loading="eager"`, `fetchPriority="high"`
-- Product main images: Same as hero
-- Other images: `priority={false}`, `loading="lazy"`, `fetchPriority="low"`
+### 1. Loading Strategy
+- **Hero images**: `priority={true}`, `loading="eager"`, `fetchPriority="high"` (no lazy loading)
+- **Artisan/Journal images**: `priority={true}`, `loading="eager"`, `fetchPriority="high"` (no lazy loading)
+- **Product main images**: `priority={true}`, `loading="eager"`, `fetchPriority="high"` (no lazy loading)
+- **Product thumbnails**: `priority={false}`, `loading="lazy"`, `fetchPriority="low"` (lazy loading)
+- **Product cards**: `priority={false}`, `loading="lazy"`, `fetchPriority="low"` (lazy loading)
+- **Cart items**: `priority={false}`, `loading="lazy"`, `fetchPriority="low"` (lazy loading)
+
+### 2. Lazy Loading Logic
+- **Non-product images** (hero, artisan, journal): Load immediately without intersection observer
+- **Product images**: Use intersection observer with 100px root margin for lazy loading
+- **Critical images**: Always load immediately regardless of context
 
 ### 3. Responsive Sizing
 - Hero: `100vw`
@@ -169,6 +201,9 @@ The system automatically determines optimal object positioning based on product 
 5. **Set priority correctly** for above-the-fold images
 6. **Include sizes attribute** for responsive loading
 7. **Handle errors gracefully** with fallback states
+8. **Use eager loading for non-product images** (hero, artisan, journal)
+9. **Use lazy loading only for product images** (product cards, thumbnails, cart items)
+10. **Prioritize critical images** that are above the fold
 
 ## Monitoring and Analytics
 

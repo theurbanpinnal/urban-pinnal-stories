@@ -59,23 +59,23 @@ export function getImageOptimizationConfig(
       decoding: 'async'
     },
     artisan: {
-      priority: false,
-      loading: 'lazy',
-      fetchPriority: 'low',
+      priority: true,
+      loading: 'eager',
+      fetchPriority: 'high',
       sizes: '(max-width: 768px) 100vw, 33vw',
       decoding: 'async'
     },
     journal: {
-      priority: false,
-      loading: 'lazy',
-      fetchPriority: 'low',
+      priority: true,
+      loading: 'eager',
+      fetchPriority: 'high',
       sizes: '(max-width: 768px) 100vw, 33vw',
       decoding: 'async'
     },
     general: {
-      priority: false,
-      loading: 'lazy',
-      fetchPriority: 'auto',
+      priority: true,
+      loading: 'eager',
+      fetchPriority: 'high',
       sizes: '100vw',
       decoding: 'async'
     }

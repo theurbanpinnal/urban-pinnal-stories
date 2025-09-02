@@ -61,7 +61,10 @@ const OptimizedLazyImage = ({
   });
 
   useEffect(() => {
-    if (priority) {
+    // Only use intersection observer for product images (lazy loading)
+    const isProductImage = context.includes('product') || context === 'cart-item';
+    
+    if (priority || !isProductImage) {
       setIsInView(true);
       return;
     }
@@ -84,7 +87,7 @@ const OptimizedLazyImage = ({
     }
 
     return () => observer.disconnect();
-  }, [priority]);
+  }, [priority, context]);
 
   const handleLoad = () => {
     setIsLoaded(true);

@@ -288,7 +288,7 @@ const ProductPage: React.FC = () => {
             {/* Vendor & Collections */}
             <div className="flex items-center justify-between">
               <div className="font-sans text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                {product.vendor || 'The Urban Pinnal'}
+                The Urban Pinnal
               </div>
             </div>
 
@@ -377,10 +377,13 @@ const ProductPage: React.FC = () => {
             {/* Show selected variant info for single variant products */}
             {options.length === 1 && selectedVariant && (
               <div className="space-y-4">
-                <div className="p-4 bg-muted/20 rounded-lg">
-                  <p className="font-sans text-sm font-medium text-foreground">
-                    Selected: {selectedVariant.title}
-                  </p>
+                <label className="block font-sans text-base font-semibold text-foreground">
+                  {options[0].name}
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-11 rounded-md font-sans px-6 py-3 text-base bg-foreground text-background">
+                    {selectedVariant.title}
+                  </button>
                 </div>
               </div>
             )}
