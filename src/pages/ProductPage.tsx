@@ -44,6 +44,9 @@ import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
 import { formatCurrency } from '@/lib/utils';
 
+// Action status type for UI locking
+type ActionStatus = 'idle' | 'adding' | 'buying';
+
 const ProductPage: React.FC = () => {
   const { handle } = useParams<{ handle: string }>();
   const navigate = useNavigate();
@@ -52,7 +55,9 @@ const ProductPage: React.FC = () => {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const [isBuyingNow, setIsBuyingNow] = useState<boolean>(false);
+  
+  // New state-driven UI locking system
+  const [actionStatus, setActionStatus] = useState<ActionStatus>('idle');
 
   const [result] = useQuery({
     query: GET_PRODUCT_BY_HANDLE,
@@ -62,6 +67,8 @@ const ProductPage: React.FC = () => {
 
   const { data, fetching, error } = result;
 
+  // Computed property to check if any action is processing
+  const isProcessing = actionStatus !== 'idle';
 
 
   // Set page title for SEO
@@ -166,11 +173,33 @@ const ProductPage: React.FC = () => {
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {
-      alert('Please select a variant');
+      toast({
+        title: 'Selection Required',
+        description: 'Please select a product variant before proceeding.',
+        variant: 'destructive',
+      });
       return;
     }
     
-    await addToCart(selectedVariant.id, quantity);
+    setActionStatus('adding');
+    try {
+      const success = await addToCart(selectedVariant.id, quantity);
+      if (success) {
+        toast({
+          title: 'Added to Cart',
+          description: 'Item has been added to your cart successfully.',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add item to cart. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setActionStatus('idle');
+    }
   };
 
   const handleBuyNow = async () => {
@@ -183,7 +212,7 @@ const ProductPage: React.FC = () => {
       return;
     }
 
-    setIsBuyingNow(true);
+    setActionStatus('buying');
 
     try {
       const success = await addToCart(selectedVariant.id, quantity);
@@ -191,10 +220,10 @@ const ProductPage: React.FC = () => {
         // Add a small delay to ensure cart state is updated
         setTimeout(() => {
           checkout();
-          setIsBuyingNow(false);
+          setActionStatus('idle');
         }, 800);
       } else {
-        setIsBuyingNow(false);
+        setActionStatus('idle');
       }
     } catch (error) {
       console.error('Failed to buy now:', error);
@@ -203,7 +232,7 @@ const ProductPage: React.FC = () => {
         description: 'Failed to add item to cart. Please try again.',
         variant: 'destructive',
       });
-      setIsBuyingNow(false);
+      setActionStatus('idle');
     }
   };
 
@@ -429,11 +458,11 @@ const ProductPage: React.FC = () => {
             <div className="space-y-4 pt-6">
               <Button
                 onClick={handleAddToCart}
-                disabled={outOfStock || cartLoading || (variants.length > 1 && !selectedVariantId)}
+                disabled={outOfStock || cartLoading || (variants.length > 1 && !selectedVariantId) || isProcessing}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-background text-foreground border-2 border-foreground hover:bg-foreground hover:text-background transition-all duration-300"
                 variant="outline"
               >
-                {cartLoading ? (
+                {actionStatus === 'adding' ? (
                   <>
                     <Loader2 className="mr-3 h-6 w-6 animate-spin" />
                     Adding to Cart...
@@ -450,10 +479,10 @@ const ProductPage: React.FC = () => {
 
               <Button
                 onClick={handleBuyNow}
-                disabled={outOfStock || cartLoading || isBuyingNow || (variants.length > 1 && !selectedVariantId)}
+                disabled={outOfStock || cartLoading || isProcessing || (variants.length > 1 && !selectedVariantId)}
                 className="w-full font-sans text-lg font-semibold py-4 h-14 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300"
               >
-                {isBuyingNow ? (
+                {actionStatus === 'buying' ? (
                   <>
                     <Loader2 className="mr-3 h-6 w-6 animate-spin" />
                     Processing...
