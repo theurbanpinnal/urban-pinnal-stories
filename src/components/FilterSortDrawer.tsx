@@ -121,13 +121,18 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               )}
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="max-h-[80vh]">
+          <DrawerContent className="max-h-[80vh] z-[99999]">
             <DrawerHeader>
               <div className="flex items-center justify-between">
                 <DrawerTitle>Filter Products</DrawerTitle>
                 <DrawerClose asChild>
-                  <Button variant="ghost" size="icon">
-                    <X className="h-4 w-4" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-12 w-12 touch-manipulation"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
                   </Button>
                 </DrawerClose>
               </div>
@@ -141,15 +146,16 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                     <p className="text-sm text-muted-foreground">No categories available</p>
                   ) : (
                     availableCategories.map((category) => (
-                    <div key={category} className="flex items-center space-x-2">
+                    <div key={category} className="flex items-center space-x-2 py-2">
                       <Checkbox
                         id={category}
                         checked={filters.categories.includes(category)}
                         onCheckedChange={(checked) => 
                           handleCategoryChange(category, checked as boolean)
                         }
+                        className="h-5 w-5 touch-manipulation"
                       />
-                      <Label htmlFor={category} className="capitalize">
+                      <Label htmlFor={category} className="capitalize text-base cursor-pointer touch-manipulation">
                         {category}
                       </Label>
                     </div>
@@ -207,7 +213,11 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 
               {/* Clear Filters */}
               {activeFiltersCount > 0 && (
-                <Button variant="outline" onClick={clearFilters} className="w-full">
+                <Button 
+                  variant="outline" 
+                  onClick={clearFilters} 
+                  className="w-full h-12 text-base touch-manipulation"
+                >
                   Clear All Filters
                 </Button>
               )}
@@ -223,7 +233,11 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
         
         {/* Clear Filters Button - shown when filters are active */}
         {activeFiltersCount > 0 && (
-          <Button variant="ghost" onClick={clearFilters} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+          <Button 
+            variant="ghost" 
+            onClick={clearFilters} 
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
+          >
             <X className="h-4 w-4" />
             Clear Filters
           </Button>
@@ -244,13 +258,18 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               )}
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="max-h-[90vh]">
+          <DrawerContent className="max-h-[90vh] z-[99999]">
             <DrawerHeader>
               <div className="flex items-center justify-between">
                 <DrawerTitle>Filter & Sort</DrawerTitle>
                 <DrawerClose asChild>
-                  <Button variant="ghost" size="icon">
-                    <X className="h-4 w-4" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-12 w-12 touch-manipulation"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
                   </Button>
                 </DrawerClose>
               </div>
@@ -281,15 +300,16 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                     <p className="text-sm text-muted-foreground">No categories available</p>
                   ) : (
                     availableCategories.map((category) => (
-                      <div key={category} className="flex items-center space-x-2">
+                      <div key={category} className="flex items-center space-x-2 py-2">
                         <Checkbox
                           id={`mobile-${category}`}
                           checked={filters.categories.includes(category)}
                           onCheckedChange={(checked) => 
                             handleCategoryChange(category, checked as boolean)
                           }
+                          className="h-5 w-5 touch-manipulation"
                         />
-                        <Label htmlFor={`mobile-${category}`} className="capitalize">
+                        <Label htmlFor={`mobile-${category}`} className="capitalize text-base cursor-pointer touch-manipulation">
                           {category}
                         </Label>
                       </div>
@@ -347,7 +367,11 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 
               {/* Clear Filters */}
               {activeFiltersCount > 0 && (
-                <Button variant="outline" onClick={clearFilters} className="w-full">
+                <Button 
+                  variant="outline" 
+                  onClick={clearFilters} 
+                  className="w-full h-12 text-base touch-manipulation"
+                >
                   Clear All Filters
                 </Button>
               )}
