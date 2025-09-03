@@ -4,7 +4,7 @@ import { Search, X, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "urql";
-import { GET_PRODUCTS } from "@/lib/shopify";
+import { SEARCH_PRODUCTS } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import OptimizedLazyImage from "@/components/OptimizedLazyImage";
@@ -31,7 +31,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
 
   // Search products when debounced term changes with enhanced search
   const [searchResult] = useQuery({
-    query: GET_PRODUCTS,
+    query: SEARCH_PRODUCTS,
     variables: { 
       first: 10,
       query: debouncedTerm.length > 2 ? `title:*${debouncedTerm}* OR tag:*${debouncedTerm}* OR vendor:*${debouncedTerm}* OR product_type:*${debouncedTerm}*` : "",

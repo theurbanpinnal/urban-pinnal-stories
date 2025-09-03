@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap } from 'lucide-react';
-import heroWeavingImage from '@/assets/hero-weaving-3.jpg';
+import heroWeavingImage from '@/assets/hero-weaving-3.png';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

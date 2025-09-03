@@ -4,7 +4,7 @@ import { Search, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "urql";
-import { GET_PRODUCTS } from "@/lib/shopify";
+import { SEARCH_PRODUCTS } from "@/lib/shopify";
 
 interface SearchBarProps {
   className?: string;
@@ -34,10 +34,11 @@ const SearchBar = ({
 
   // Search products when debounced term changes
   const [searchResult] = useQuery({
-    query: GET_PRODUCTS,
+    query: SEARCH_PRODUCTS,
     variables: { 
       first: 6,
-      query: debouncedTerm.length > 2 ? `title:*${debouncedTerm}* OR tag:*${debouncedTerm}*` : ""
+      query: debouncedTerm.length > 2 ? `title:*${debouncedTerm}* OR tag:*${debouncedTerm}*` : "",
+      sortKey: 'RELEVANCE'
     },
     pause: debouncedTerm.length <= 2
   });

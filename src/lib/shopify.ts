@@ -70,6 +70,76 @@ export const GET_PRODUCTS = `
   }
 `;
 
+export const SEARCH_PRODUCTS = `
+  query searchProducts($first: Int!, $query: String, $sortKey: ProductSortKeys) {
+    products(first: $first, query: $query, sortKey: $sortKey) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          productType
+          vendor
+          tags
+          createdAt
+          updatedAt
+          publishedAt
+          totalInventory
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 3) {
+            edges {
+              node {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                quantityAvailable
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+          collections(first: 10) {
+            edges {
+              node {
+                id
+                title
+                handle
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_COLLECTIONS = `
   query getCollections($first: Int!) {
     collections(first: $first) {
