@@ -285,4 +285,35 @@
     left: 0 !important;
     right: auto !important;
   }
+
+  /* Filter Drawer Touch Improvements */
+  [data-radix-drawer-content] {
+    z-index: 99999 !important;
+  }
+
+  /* Improve touch targets for filter drawer */
+  [data-radix-drawer-content] button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  [data-radix-drawer-content] input[type="number"] {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  [data-radix-drawer-content] .checkbox {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ensure drawer overlay is properly positioned */
+  [data-radix-drawer-overlay] {
+    z-index: 99998 !important;
+  }
+
+  /* Improve touch interaction for close button */
+  [data-radix-drawer-content] [data-radix-drawer-close] {
+    touch-action: manipulation;
+  }
 }

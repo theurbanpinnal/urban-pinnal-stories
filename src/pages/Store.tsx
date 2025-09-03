@@ -11,8 +11,8 @@ import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, Star, Zap } from 'lucide-react';
-import heroWeavingImage from '@/assets/hero-weaving-3.jpg';
+import { Package, Star, Zap, X } from 'lucide-react';
+import heroWeavingImage from '@/assets/hero-weaving-3.png';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -90,7 +90,20 @@ const Store: React.FC = () => {
 
   // Handle clearing all filters (collection and search)
   const handleClearAllFilters = () => {
+    // Clear collection filter
     handleCollectionSelect(null);
+    
+    // Clear search query from URL
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('search');
+    setSearchParams(newSearchParams);
+    
+    // Reset all filters to default values
+    setCurrentFilters({
+      categories: [],
+      priceRange: { min: 0, max: 10000 },
+      availability: 'all',
+    });
   };
 
   // Set SEO metadata
@@ -316,38 +329,50 @@ const Store: React.FC = () => {
             
             {/* Active Filters Indicator */}
             {(searchQuery || currentFilters.categories.length > 0 || currentFilters.availability !== 'all' || currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
-              <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
-                <span className="text-sm text-muted-foreground">
-                  Showing:
-                </span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                <div className="flex items-center gap-3 flex-wrap justify-center">
+                  <span className="text-sm text-muted-foreground">
+                    Showing:
+                  </span>
+                  
+                  {/* Search Query */}
+                  {searchQuery && (
+                    <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                      Search: {searchQuery}
+                    </Badge>
+                  )}
+                  
+                  {/* Category Filters */}
+                  {currentFilters.categories.map((category) => (
+                    <Badge key={category} variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                      {category}
+                    </Badge>
+                  ))}
+                  
+                  {/* Availability Filter */}
+                  {currentFilters.availability !== 'all' && (
+                    <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                      In Stock
+                    </Badge>
+                  )}
+                  
+                  {/* Price Range Filter */}
+                  {(currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
+                    <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
+                      ₹{currentFilters.priceRange.min} - ₹{currentFilters.priceRange.max}
+                    </Badge>
+                  )}
+                </div>
                 
-                {/* Search Query */}
-                {searchQuery && (
-                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                    Search: {searchQuery}
-                  </Badge>
-                )}
-                
-                {/* Category Filters */}
-                {currentFilters.categories.map((category) => (
-                  <Badge key={category} variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                    {category}
-                  </Badge>
-                ))}
-                
-                {/* Availability Filter */}
-                {currentFilters.availability !== 'all' && (
-                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                    In Stock
-                  </Badge>
-                )}
-                
-                {/* Price Range Filter */}
-                {(currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
-                  <Badge variant="secondary" className="bg-craft-terracotta/20 text-craft-terracotta border-craft-terracotta/30">
-                    ₹{currentFilters.priceRange.min} - ₹{currentFilters.priceRange.max}
-                  </Badge>
-                )}
+                {/* Clear Filters Button - Responsive across all screen sizes */}
+                <Button 
+                  variant="ghost" 
+                  onClick={handleClearAllFilters}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-10 px-4 py-2"
+                >
+                  <X className="h-4 w-4" />
+                  Clear Filters
+                </Button>
               </div>
             )}
             

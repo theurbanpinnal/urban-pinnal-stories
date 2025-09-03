@@ -2,6 +2,7 @@ import { useQuery } from 'urql';
 import { Link } from 'react-router-dom';
 import { 
   GET_PRODUCTS, 
+  SEARCH_PRODUCTS,
   GET_COLLECTIONS,
   GET_PRODUCTS_COUNT,
   ShopifyProduct, 
@@ -78,11 +79,11 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
   };
 
   const [result] = useQuery({
-    query: GET_PRODUCTS,
+    query: searchQuery && searchQuery.length > 2 ? SEARCH_PRODUCTS : GET_PRODUCTS,
     variables: { 
       first: limit,
       sortKey: getSortKey(sortBy),
-      query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
+      ...(searchQuery && searchQuery.length > 2 && { query: `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` })
     },
   });
 
