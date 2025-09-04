@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -9,13 +9,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShoppingCart, Minus, Plus, Trash2, Loader2, ArrowLeft, Package, Truck, Shield, AlertTriangle, Edit3, Check } from 'lucide-react';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
+import CartLineItem from '@/components/CartLineItem';
+import { useCartCalculations } from '@/hooks/use-cart-calculations';
 import { formatCurrency } from '@/lib/utils';
 import { getSmartObjectPosition } from '@/lib/image-utils';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
 const CartPage: React.FC = () => {
-  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCart();
+  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
@@ -26,38 +28,7 @@ const CartPage: React.FC = () => {
   const hasInitializedMessage = useRef(false);
 
   const itemCount = getCartItemCount();
-  const cartLines = cart?.lines?.edges?.map(({ node }) => node) || [];
-  const subtotal = cart?.cost?.subtotalAmount;
-
-  // Calculate discount information
-  const calculateDiscountInfo = () => {
-    let subtotalCompareAtPrice = 0;
-    let subtotalActualPrice = 0;
-    let totalDiscount = 0;
-    let currencyCode = 'INR';
-
-    cartLines.forEach((line) => {
-      const variant = line.merchandise;
-      const quantity = line.quantity;
-      const actualPrice = parseFloat(variant.price.amount);
-      const compareAtPrice = variant.compareAtPrice ? parseFloat(variant.compareAtPrice.amount) : actualPrice;
-      
-      subtotalCompareAtPrice += compareAtPrice * quantity;
-      subtotalActualPrice += actualPrice * quantity;
-      currencyCode = variant.price.currencyCode;
-    });
-
-    totalDiscount = subtotalCompareAtPrice - subtotalActualPrice;
-
-    return {
-      subtotalCompareAtPrice,
-      subtotalActualPrice,
-      totalDiscount,
-      currencyCode
-    };
-  };
-
-  const discountInfo = calculateDiscountInfo();
+  const { subtotalCompareAtPrice, subtotalActualPrice, totalDiscount, currencyCode, cartLines } = useCartCalculations(cart);
 
   // Rotating urgency messages
   const urgencyMessages = [
@@ -223,13 +194,6 @@ const CartPage: React.FC = () => {
   const currentEmptyMessage = emptyCartMessages[currentMessageIndex % emptyCartMessages.length];
   const currentTrustMessage = trustMessages[currentMessageIndex % trustMessages.length];
 
-  const handleQuantityChange = async (lineId: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      await removeFromCart(lineId);
-    } else {
-      await updateCartLine(lineId, newQuantity);
-    }
-  };
 
   const handleCheckout = () => {
     checkout();
@@ -314,13 +278,13 @@ const CartPage: React.FC = () => {
 
                 {/* Cart Items */}
                 <div className="space-y-4">
-                  {cartLines.map((line) => (
-                    <CartLineItem 
-                      key={line.id} 
+                  {cartLines.map((line, index) => (
+                    <CartLineItem
+                      key={line.id}
                       line={line}
-                      onQuantityChange={handleQuantityChange}
-                      onRemove={() => removeFromCart(line.id)}
-                      isLoading={isLoading}
+                      index={index}
+                      compact={false}
+                      showLink={true}
                     />
                   ))}
                 </div>
@@ -373,23 +337,23 @@ const CartPage: React.FC = () => {
                       <div className="flex justify-between items-center font-sans text-lg">
                         <span className="text-muted-foreground">Subtotal:</span>
                         <span className="font-semibold">
-                          {formatCurrency(discountInfo.subtotalCompareAtPrice.toString(), discountInfo.currencyCode)}
+                          {formatCurrency(subtotalCompareAtPrice.toString(), currencyCode)}
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Discount */}
-                    {discountInfo.totalDiscount > 0 && (
+                    {totalDiscount > 0 && (
                       <div className="space-y-3">
                         <div className="flex justify-between items-center font-sans text-lg">
                           <span className="text-muted-foreground">Discount:</span>
                           <span className="font-semibold text-green-600">
-                            -{formatCurrency(discountInfo.totalDiscount.toString(), discountInfo.currencyCode)}
+                            -{formatCurrency(totalDiscount.toString(), currencyCode)}
                           </span>
                         </div>
                       </div>
                     )}
-                    
+
                     {/* Coupon Code */}
                     <div className="space-y-2">
                       <label className="block font-sans text-sm font-medium text-foreground">
@@ -405,12 +369,12 @@ const CartPage: React.FC = () => {
                         Coupon code will be applied on the checkout page
                       </p>
                     </div>
-                    
+
                     {/* Total */}
                     <div className="border-t pt-3">
                       <div className="flex justify-between items-center font-sans text-xl font-bold">
                         <span>TOTAL:</span>
-                        <span>{formatCurrency(discountInfo.subtotalActualPrice.toString(), discountInfo.currencyCode)}</span>
+                        <span>{formatCurrency(subtotalActualPrice.toString(), currencyCode)}</span>
                       </div>
                       <p className="font-sans text-xs text-muted-foreground mt-1">
                         Tax included and shipping calculated at checkout
@@ -456,120 +420,5 @@ const CartPage: React.FC = () => {
   );
 };
 
-interface CartLineItemProps {
-  line: any;
-  onQuantityChange: (lineId: string, quantity: number) => void;
-  onRemove: () => void;
-  isLoading: boolean;
-}
-
-const CartLineItem: React.FC<CartLineItemProps> = ({ 
-  line, 
-  onQuantityChange, 
-  onRemove, 
-  isLoading 
-}) => {
-  const product = line.merchandise.product;
-  const variant = line.merchandise;
-  const image = product.images.edges[0]?.node;
-
-  return (
-    <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 py-3 sm:py-4 border-b cart-item-compact items-center">
-      {/* Column 1: Product Image */}
-      <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 cart-item-image">
-        {image ? (
-          <OptimizedLazyImage
-            src={image.url}
-            alt={image.altText || product.title}
-            context="cart-item"
-            className="w-full h-full object-cover transition-transform duration-300"
-            placeholderClassName="w-full h-full"
-            productTitle={product.title}
-            productType={product.productType}
-            productTags={product.tags}
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-sm">
-            <Package className="w-6 h-6 text-gray-400" />
-          </div>
-        )}
-      </div>
-
-      {/* Column 2: Product Name and Variant Info */}
-      <Link to={`/store/products/${product.handle}`} className="min-w-0 col-span-2 sm:col-span-1 hover:opacity-80 transition-opacity cursor-pointer">
-        <h4 className="font-medium text-sm sm:text-base text-foreground truncate">{product.title}</h4>
-        {variant.title !== 'Default Title' && (
-          <p className="text-xs sm:text-sm text-gray-500">{variant.title}</p>
-        )}
-      </Link>
-
-      {/* Column 3: Compare at Price and Price */}
-      <div className="text-center col-span-1 sm:col-span-1">
-        <div className="text-xs sm:text-sm">
-          {variant.compareAtPrice && parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount) ? (
-            <p className="text-muted-foreground line-through">
-              {formatCurrency(variant.compareAtPrice.amount, variant.compareAtPrice.currencyCode)}
-            </p>
-          ) : (
-            <div className="h-4"></div>
-          )}
-          <p className="font-semibold text-foreground">
-            {formatCurrency(variant.price.amount, variant.price.currencyCode)}
-          </p>
-        </div>
-      </div>
-
-      {/* Column 4: Quantity Controls - Full width on mobile, normal on desktop */}
-      <div className="col-span-4 sm:col-span-1 flex items-center gap-1 sm:gap-2 cart-quantity-controls justify-center sm:justify-center mt-3 sm:mt-0">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8"
-          onClick={() => onQuantityChange(line.id, line.quantity - 1)}
-          disabled={isLoading}
-        >
-          <Minus className="h-3 w-3" />
-        </Button>
-        
-        <Select
-          value={line.quantity.toString()}
-          onValueChange={(value) => onQuantityChange(line.id, parseInt(value))}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="w-14 sm:w-16 h-7 sm:h-8 text-xs sm:text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-              <SelectItem key={num} value={num.toString()}>
-                {num}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8"
-          onClick={() => onQuantityChange(line.id, line.quantity + 1)}
-          disabled={isLoading}
-        >
-          <Plus className="h-3 w-3" />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ml-1 sm:ml-2"
-          onClick={onRemove}
-          disabled={isLoading}
-        >
-          <Trash2 className="h-3 w-3" />
-        </Button>
-      </div>
-    </div>
-  );
-};
 
 export default CartPage;

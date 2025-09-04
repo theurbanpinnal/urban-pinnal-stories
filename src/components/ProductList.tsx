@@ -8,7 +8,6 @@ import {
   ShopifyProduct, 
   ShopifyCollection,
   getProductBadges,
-  formatDateRelative,
   getPrimaryMedia,
   hasMultipleVariants,
   isProductOnSale,
@@ -28,38 +27,30 @@ import { formatCurrency } from '@/lib/utils';
 import { getSmartObjectPosition } from '@/lib/image-utils';
 import FilterSortDrawer, { FilterOptions, SortOption } from '@/components/FilterSortDrawer';
 import { useState, useMemo, useEffect } from 'react';
+import { useFilterStore } from '@/stores';
 import { Clock, Package, Star, Zap } from 'lucide-react';
 
 interface ProductListProps {
   limit?: number;
   showFilters?: boolean;
-  searchQuery?: string | null;
   onClearAllFilters?: () => void;
-  onFiltersChange?: (filters: FilterOptions) => void;
-  initialFilters?: FilterOptions;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, searchQuery = null, onClearAllFilters, onFiltersChange, initialFilters }) => {
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {
-    categories: [],
-    priceRange: { min: 0, max: 10000 },
-    availability: 'all',
-  });
+const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = true, onClearAllFilters }) => {
+  // Get filter store state and functions
+  const {
+    filters,
+    sortBy,
+    searchQuery,
+    updateFilters,
+    setSortBy,
+    updateURL
+  } = useFilterStore();
 
-  // Notify parent component when filters change
+  // Update URL when filters or sort change
   useEffect(() => {
-    if (onFiltersChange) {
-      onFiltersChange(filters);
-    }
-  }, [filters, onFiltersChange]);
-
-  // Update filters when initialFilters changes (from parent component)
-  useEffect(() => {
-    if (initialFilters) {
-      setFilters(initialFilters);
-    }
-  }, [initialFilters]);
+    updateURL();
+  }, [filters, sortBy, updateURL]);
 
   // Convert sortBy to Shopify sortKey
   const getSortKey = (sortBy: SortOption) => {
@@ -224,7 +215,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
           sortBy={sortBy}
           onSortChange={setSortBy}
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={updateFilters}
           availableCategories={availableCategories}
           productCount={products.length}
           onClearAllFilters={onClearAllFilters}

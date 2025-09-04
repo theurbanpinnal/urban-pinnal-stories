@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createClient, Provider, fetchExchange } from 'urql';
-import { CartProvider } from './contexts/CartContext.tsx';
+import { CartProvider } from './components/CartProvider';
 import App from './App.tsx';
 import './index.css';
 

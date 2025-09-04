@@ -1,7 +1,6 @@
 import artisan1 from "@/assets/artisan-1.jpg";
 import artisan2 from "@/assets/artisan-2.jpg";
 import artisan3 from "@/assets/artisan-3.jpg";
-import LazyImage from "@/components/LazyImage";
 import OptimizedLazyImage from "@/components/OptimizedLazyImage";
 
 const FeaturedArtisans = () => {
