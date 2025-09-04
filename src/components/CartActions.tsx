@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Minus, Trash2, Loader2 } from 'lucide-react';
@@ -22,6 +23,7 @@ const CartActions: React.FC<CartActionsProps> = ({
   isLoading 
 }) => {
   const [actionStatus, setActionStatus] = useState<CartActionStatus>('idle');
+  const navigate = useNavigate();
   
   // Computed property to check if any action is processing
   const isProcessing = actionStatus !== 'idle' || isLoading;
@@ -52,6 +54,10 @@ const CartActions: React.FC<CartActionsProps> = ({
     }
   };
 
+  const handleProductClick = () => {
+    navigate(`/products/${product.handle}`);
+  };
+
   const product = line.merchandise.product;
   const variant = line.merchandise;
   const image = product.images.edges[0]?.node;
@@ -74,10 +80,13 @@ const CartActions: React.FC<CartActionsProps> = ({
       </div>
 
       {/* Column 2: Product Name and Variant Info */}
-      <div className="min-w-0 col-span-2 sm:col-span-1">
-        <h4 className="font-medium text-sm sm:text-base text-foreground truncate">{product.title}</h4>
+      <div 
+        className="min-w-0 col-span-2 sm:col-span-1 cursor-pointer rounded-sm p-1 transition-all duration-200 group"
+        onClick={handleProductClick}
+      >
+        <h4 className="font-medium text-sm sm:text-base text-foreground truncate group-hover:text-primary group-hover:font-semibold transition-all duration-200">{product.title}</h4>
         {variant.title !== 'Default Title' && (
-          <p className="text-sm text-gray-500">{variant.title}</p>
+          <p className="text-sm text-gray-500 group-hover:text-muted-foreground transition-colors duration-200">{variant.title}</p>
         )}
       </div>
 

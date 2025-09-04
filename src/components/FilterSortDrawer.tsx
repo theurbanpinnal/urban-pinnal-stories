@@ -236,7 +236,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <Button 
             variant="ghost" 
             onClick={clearFilters} 
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
+            className="hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
           >
             <X className="h-4 w-4" />
             Clear Filters
