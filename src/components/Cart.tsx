@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCartStore } from '@/stores';
+import { useCartCalculations } from '@/hooks/use-cart-calculations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ShoppingCart, Loader2 } from 'lucide-react';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
-import CartActions from '@/components/CartActions';
+import CartLineItem from '@/components/CartLineItem';
 import { formatCurrency } from '@/lib/utils';
 
 interface CartProps {
@@ -20,38 +21,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   const itemCount = getCartItemCount();
-  const cartLines = cart?.lines?.edges?.map(({ node }) => node) || [];
-  const subtotal = cart?.cost?.subtotalAmount;
-
-  // Calculate discount information
-  const calculateDiscountInfo = () => {
-    let subtotalCompareAtPrice = 0;
-    let subtotalActualPrice = 0;
-    let totalDiscount = 0;
-    let currencyCode = 'INR';
-
-    cartLines.forEach((line) => {
-      const variant = line.merchandise;
-      const quantity = line.quantity;
-      const actualPrice = parseFloat(variant.price.amount);
-      const compareAtPrice = variant.compareAtPrice ? parseFloat(variant.compareAtPrice.amount) : actualPrice;
-      
-      subtotalCompareAtPrice += compareAtPrice * quantity;
-      subtotalActualPrice += actualPrice * quantity;
-      currencyCode = variant.price.currencyCode;
-    });
-
-    totalDiscount = subtotalCompareAtPrice - subtotalActualPrice;
-
-    return {
-      subtotalCompareAtPrice,
-      subtotalActualPrice,
-      totalDiscount,
-      currencyCode
-    };
-  };
-
-  const discountInfo = calculateDiscountInfo();
+  const { subtotalCompareAtPrice, subtotalActualPrice, totalDiscount, currencyCode, cartLines } = useCartCalculations(cart);
 
   // Don't open sheet if we're on the cart page
   const isOnCartPage = location.pathname === '/cart';
@@ -121,23 +91,25 @@ const Cart: React.FC<CartProps> = ({ children }) => {
               </Button>
             </div>
           ) : (
-            <div className="space-y-2">
-              {cartLines.map((line, index) => (
-                <div
-                  key={line.id}
-                  className="transition-all duration-300 ease-out"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animation: 'slideInFromBottom 0.4s ease-out forwards'
-                  }}
-                >
-                  <CartActions
-                    line={line}
-                    index={index}
-                  />
+                            <div className="space-y-2">
+                  {cartLines.map((line, index) => (
+                    <div
+                      key={line.id}
+                      className="transition-all duration-300 ease-out"
+                      style={{
+                        animationDelay: `${index * 100}ms`,
+                        animation: 'slideInFromBottom 0.4s ease-out forwards'
+                      }}
+                    >
+                      <CartLineItem
+                        line={line}
+                        index={index}
+                        compact={true}
+                        showLink={false}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
           )}
         </div>
 
@@ -148,25 +120,25 @@ const Cart: React.FC<CartProps> = ({ children }) => {
             <div className="flex justify-between items-center text-lg font-semibold">
               <span>Subtotal:</span>
               <span>
-                {formatCurrency(discountInfo.subtotalCompareAtPrice.toString(), discountInfo.currencyCode)}
+                {formatCurrency(subtotalCompareAtPrice.toString(), currencyCode)}
               </span>
             </div>
             
             {/* Discount */}
-            {discountInfo.totalDiscount > 0 && (
+            {totalDiscount > 0 && (
               <div className="flex justify-between items-center text-base">
                 <span className="text-muted-foreground">Discount:</span>
                 <span className="text-green-600 font-semibold">
-                  -{formatCurrency(discountInfo.totalDiscount.toString(), discountInfo.currencyCode)}
+                  -{formatCurrency(totalDiscount.toString(), currencyCode)}
                 </span>
               </div>
             )}
-            
+
             {/* Total */}
             <div className="flex justify-between items-center text-lg font-bold border-t pt-2">
               <span>Total:</span>
               <span>
-                {formatCurrency(discountInfo.subtotalActualPrice.toString(), discountInfo.currencyCode)}
+                {formatCurrency(subtotalActualPrice.toString(), currencyCode)}
               </span>
             </div>
             
