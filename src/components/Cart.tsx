@@ -85,9 +85,9 @@ const Cart: React.FC<CartProps> = ({ children }) => {
         )}
       </SheetTrigger>
       
-      <SheetContent className="w-full sm:max-w-md flex flex-col h-[100dvh] max-h-[100dvh] p-0 cart-drawer-content">
+      <SheetContent className="w-full sm:max-w-xl lg:max-w-2xl flex flex-col h-[100dvh] max-h-[100dvh] p-0 cart-drawer-content">
         {/* Header - Fixed at top */}
-        <div className="flex-shrink-0 border-b bg-background p-4 sm:p-6">
+        <div className="flex-shrink-0 border-b bg-background p-2 sm:p-3">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
@@ -103,9 +103,9 @@ const Cart: React.FC<CartProps> = ({ children }) => {
         </div>
 
         {/* Cart Items - Scrollable area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 sm:p-3">
           {cartLines.length === 0 ? (
-            <div className="text-center py-8 sm:py-12">
+            <div className="text-center py-4 sm:py-6">
               <ShoppingCart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 mb-4">Your cart is empty</p>
               <Button
@@ -121,7 +121,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {cartLines.map((line, index) => (
                 <div
                   key={line.id}
@@ -143,7 +143,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
 
         {/* Cart Footer - Fixed at bottom */}
         {cartLines.length > 0 && (
-          <div className="flex-shrink-0 border-t bg-background p-4 sm:p-6 space-y-4 cart-footer">
+          <div className="flex-shrink-0 border-t bg-background p-2 sm:p-3 space-y-2 cart-footer">
             {/* Subtotal */}
             <div className="flex justify-between items-center text-lg font-semibold">
               <span>Subtotal:</span>

@@ -32,7 +32,6 @@ export interface CartStore extends CartState {
   checkout: () => void;
   clearCart: () => void;
   loadCart: () => Promise<void>;
-  debugCart: () => CartState;
 }
 
 // Filter Store Types

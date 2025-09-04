@@ -74,7 +74,7 @@ const CartActions: React.FC<CartActionsProps> = ({
 
   return (
     <div
-      className={`grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 py-3 sm:py-4 border-b cart-item-compact items-center transition-all duration-300 ease-in-out ${
+      className={`grid grid-cols-4 sm:grid-cols-4 gap-1.5 sm:gap-2 py-1.5 sm:py-2 border-b cart-item-compact items-center transition-all duration-300 ease-in-out ${
         actionStatus === 'removing'
           ? 'opacity-0 transform -translate-y-2 scale-95 pointer-events-none'
           : actionStatus === 'success'
@@ -100,8 +100,8 @@ const CartActions: React.FC<CartActionsProps> = ({
       </div>
 
       {/* Column 2: Product Name and Variant Info */}
-      <div 
-        className="min-w-0 col-span-2 sm:col-span-1 cursor-pointer rounded-sm p-1 transition-all duration-200 group"
+      <div
+        className="min-w-0 col-span-2 sm:col-span-1 cursor-pointer rounded-sm p-0.5 transition-all duration-200 group"
         onClick={handleProductClick}
       >
         <h4 className="font-medium text-sm sm:text-base text-foreground truncate group-hover:text-primary group-hover:font-semibold transition-all duration-200">{product.title}</h4>
@@ -118,7 +118,7 @@ const CartActions: React.FC<CartActionsProps> = ({
               {formatCurrency(variant.compareAtPrice.amount, variant.compareAtPrice.currencyCode)}
             </p>
           ) : (
-            <div className="h-4"></div>
+            <div className="h-2"></div>
           )}
           <p className="font-semibold text-foreground">
             {formatCurrency(variant.price.amount, variant.price.currencyCode)}
@@ -127,7 +127,7 @@ const CartActions: React.FC<CartActionsProps> = ({
       </div>
 
       {/* Column 4: Quantity Controls with State-Driven UI Locking */}
-      <div className="col-span-4 sm:col-span-1 flex items-center gap-1 sm:gap-2 cart-quantity-controls justify-center sm:justify-center mt-3 sm:mt-0">
+      <div className="col-span-4 sm:col-span-1 flex items-center gap-0.5 sm:gap-1 cart-quantity-controls justify-center sm:justify-center mt-1.5 sm:mt-0">
         <Button
           variant="outline"
           size="icon"

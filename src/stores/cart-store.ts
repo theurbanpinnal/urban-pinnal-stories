@@ -12,52 +12,139 @@ import {
 import { toast } from '@/hooks/use-toast';
 import type { CartStore } from './types';
 
-// Helper functions for localStorage
+// Robust localStorage helpers with fallback and validation
 const getStoredCartId = (): string | null => {
   try {
-    return localStorage.getItem('shopify_cart_id');
-  } catch {
+    // Check if localStorage is available
+    if (typeof Storage === 'undefined' || !window.localStorage) {
+      console.warn('[Cart Sync] localStorage not available');
+      return null;
+    }
+
+    const cartId = localStorage.getItem('shopify_cart_id');
+
+    // Validate cart ID format (Shopify cart IDs are typically long strings)
+    if (cartId && typeof cartId === 'string' && cartId.length > 10) {
+      return cartId;
+    }
+
+    return null;
+  } catch (error) {
+    console.warn('[Cart Sync] Failed to read cart ID from localStorage:', error);
     return null;
   }
 };
 
 const storeCartId = (cartId: string) => {
   try {
+    if (typeof Storage === 'undefined' || !window.localStorage) {
+      console.warn('[Cart Sync] localStorage not available');
+      return;
+    }
+
+    if (!cartId || typeof cartId !== 'string') {
+      console.warn('[Cart Sync] Invalid cart ID provided');
+      return;
+    }
+
     localStorage.setItem('shopify_cart_id', cartId);
+    console.log('[Cart Sync] Cart ID stored successfully');
   } catch (error) {
-    console.warn('Failed to store cart ID in localStorage:', error);
+    console.error('[Cart Sync] Failed to store cart ID in localStorage:', error);
+
+    // Try alternative storage methods
+    try {
+      sessionStorage.setItem('shopify_cart_id', cartId);
+      console.log('[Cart Sync] Cart ID stored in sessionStorage as fallback');
+    } catch (fallbackError) {
+      console.error('[Cart Sync] Fallback storage also failed:', fallbackError);
+    }
   }
 };
 
 const clearStoredCartId = () => {
   try {
+    if (typeof Storage === 'undefined') {
+      return;
+    }
+
     localStorage.removeItem('shopify_cart_id');
+    sessionStorage.removeItem('shopify_cart_id');
+    console.log('[Cart Sync] Cart ID cleared from storage');
   } catch (error) {
-    console.warn('Failed to clear cart ID from localStorage:', error);
+    console.warn('[Cart Sync] Failed to clear cart ID from storage:', error);
   }
 };
 
-// Helper function to perform GraphQL mutations using fetch (since we can't use hooks in stores)
-const performMutation = async (query: string, variables: any) => {
-  try {
-    const response = await fetch('/shopify/api/2024-01/graphql.json', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('GraphQL mutation error:', error);
-    throw error;
+// Helper function to perform GraphQL mutations with retry logic
+const performMutation = async (query: string, variables: any, maxRetries = 3) => {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const apiToken = import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN;
+      if (!apiToken) {
+        throw new Error('Missing Shopify API token');
+      }
+
+      const response = await fetch('/shopify/api/2024-01/graphql.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': apiToken,
+          'Accept': 'application/json',
+          'User-Agent': 'UrbanPinnal/1.0',
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+        signal: AbortSignal.timeout(10000), // 10 second timeout
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        // Don't retry on client errors (4xx)
+        if (response.status >= 400 && response.status < 500) {
+          throw new Error(`Client error: ${response.status} ${errorText}`);
+        }
+
+        // Retry on server errors (5xx) or network issues
+        lastError = new Error(`Server error: ${response.status} ${errorText}`);
+        continue;
+      }
+
+      const data = await response.json();
+
+      // Validate response structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format');
+      }
+
+      // Check for GraphQL errors
+      if (data.errors && data.errors.length > 0) {
+        throw new Error(`GraphQL error: ${data.errors[0].message}`);
+      }
+
+      return data;
+
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry on the last attempt
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      // Wait before retry (exponential backoff)
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   }
+
+  throw lastError || new Error('Network request failed');
 };
 
 export const useCartStore = create<CartStore>()(
@@ -145,9 +232,17 @@ export const useCartStore = create<CartStore>()(
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to add item to cart';
           set({ error: errorMessage });
+
+          // Show user-friendly error messages
+          const userFriendlyMessage = errorMessage.includes('Network') || errorMessage.includes('timeout')
+            ? 'Network error. Please check your connection and try again.'
+            : errorMessage.includes('Missing Shopify API token')
+            ? 'Service temporarily unavailable. Please try again later.'
+            : 'Unable to add item to cart. Please try again.';
+
           toast({
             title: 'Error',
-            description: errorMessage,
+            description: userFriendlyMessage,
             variant: 'destructive',
           });
           return false;
@@ -384,51 +479,27 @@ export const useCartStore = create<CartStore>()(
         set({ cart: null, cartId: null });
       },
 
-      // Debug method to inspect current cart state
-      debugCart: () => {
-        const state = get();
-        console.log('🛒 Cart Debug Info:', {
-          cartId: state.cartId,
-          hasCart: !!state.cart,
-          itemCount: state.cart ? state.cart.lines.edges.reduce((total, { node }) => total + node.quantity, 0) : 0,
-          items: state.cart?.lines.edges.map(({ node }) => ({
-            title: node.merchandise.product.title,
-            quantity: node.quantity,
-            variant: node.merchandise.title
-          })) || []
-        });
-        return state;
-      },
 
       loadCart: async (): Promise<void> => {
         const storedCartId = getStoredCartId();
         if (!storedCartId) return;
 
-        try {
-          const result = await fetch('/shopify/api/2024-01/graphql.json', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
-            },
-            body: JSON.stringify({
-              query: GET_CART,
-              variables: { cartId: storedCartId },
-            }),
-          });
+        set({ isLoading: true, error: null });
 
-          const data = await result.json();
+        try {
+          const data = await performMutation(GET_CART, { cartId: storedCartId });
+
           if (data.data?.cart) {
-            // Validate cart data before setting it
             const cart = data.data.cart;
+
             if (cart.lines && cart.lines.edges) {
               // Filter out any invalid or ghost cart lines
-              const validLines = cart.lines.edges.filter((edge: any) =>
-                edge.node &&
-                edge.node.merchandise &&
-                edge.node.merchandise.id &&
-                edge.node.quantity > 0
-              );
+              const validLines = cart.lines.edges.filter((edge: any) => {
+                return edge.node &&
+                  edge.node.merchandise &&
+                  edge.node.merchandise.id &&
+                  edge.node.quantity > 0;
+              });
 
               const cleanedCart = {
                 ...cart,
@@ -438,22 +509,35 @@ export const useCartStore = create<CartStore>()(
                 }
               };
 
-              set({ cart: cleanedCart, cartId: storedCartId });
+              set({ cart: cleanedCart, cartId: storedCartId, isLoading: false });
             } else {
-              set({ cart: cart, cartId: storedCartId });
+              set({ cart: cart, cartId: storedCartId, isLoading: false });
             }
           } else {
-            // If cart query fails, clear the stored cart ID
-            console.warn('Failed to load cart from Shopify');
             clearStoredCartId();
-            set({ cart: null, cartId: null });
+            set({ cart: null, cartId: null, isLoading: false });
           }
         } catch (error) {
-          console.warn('Failed to load cart:', error);
-          clearStoredCartId();
-          set({ cart: null, cartId: null });
+          const errorMessage = error instanceof Error ? error.message : 'Failed to load cart';
+
+          // Don't clear cart ID on network errors - might be temporary
+          if (errorMessage.includes('Network') || errorMessage.includes('timeout')) {
+            set({ error: 'Network error - cart may not be fully synced', isLoading: false });
+          } else {
+            // Clear cart ID for authentication or data errors
+            clearStoredCartId();
+            set({ cart: null, cartId: null, isLoading: false });
+          }
+
+          // Show user-friendly error
+          toast({
+            title: 'Cart Sync Issue',
+            description: 'Unable to load your cart. Please refresh the page.',
+            variant: 'destructive',
+          });
         }
       },
+
     }),
     {
       name: 'cart-storage',
