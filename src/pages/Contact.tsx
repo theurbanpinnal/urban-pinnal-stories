@@ -190,7 +190,7 @@ const Contact = () => {
                       type="email"
                       {...register("email")}
                       className={`w-full ${errors.email ? "border-red-500" : ""}`}
-                      placeholder="your.email@example.com"
+                      placeholder="example@email.com"
                     />
                     {errors.email && (
                       <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
