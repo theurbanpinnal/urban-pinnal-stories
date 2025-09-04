@@ -4,11 +4,10 @@ import { useCartStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { ShoppingCart, Package, Loader2 } from 'lucide-react';
+import { ShoppingCart, Loader2 } from 'lucide-react';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import CartActions from '@/components/CartActions';
 import { formatCurrency } from '@/lib/utils';
-import { getSmartObjectPosition } from '@/lib/image-utils';
 
 interface CartProps {
   children?: React.ReactNode;

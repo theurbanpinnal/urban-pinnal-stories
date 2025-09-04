@@ -8,7 +8,6 @@ import {
   ShopifyProduct, 
   ShopifyCollection,
   getProductBadges,
-  formatDateRelative,
   getPrimaryMedia,
   hasMultipleVariants,
   isProductOnSale,

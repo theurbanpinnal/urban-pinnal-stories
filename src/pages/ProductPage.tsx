@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
-import { 
-  GET_PRODUCT_BY_HANDLE, 
+import {
+  GET_PRODUCT_BY_HANDLE,
   ShopifyProduct,
   getProductBadges,
-  formatDateRelative,
   hasMultipleVariants,
   isProductOnSale,
   isLowStock,
