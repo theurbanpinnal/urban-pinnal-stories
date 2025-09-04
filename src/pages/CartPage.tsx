@@ -33,90 +33,40 @@ const CartPage: React.FC = () => {
   // Rotating urgency messages
   const urgencyMessages = [
     {
-      icon: "🔥",
-      text: "Hot item alert! Someone just added this to their cart. Secure yours now!",
-      time: "10 minutes"
-    },
-    {
-      icon: "⚡",
-      text: "Quick! Another customer is viewing this item. Don't miss out!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🎯",
-      text: "Limited stock alert! This item is in high demand. Reserve yours!",
-      time: "10 minutes"
-    },
-    {
-      icon: "💎",
-      text: "Exclusive offer! This handmade piece won't last long. Grab it now!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🌟",
-      text: "Popular choice! This artisan creation is flying off the shelves!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🏆",
-      text: "Best seller alert! Everyone loves this piece. Get yours before it's gone!",
-      time: "10 minutes"
-    },
-    {
-      icon: "✨",
-      text: "Handcrafted beauty! This unique piece deserves a home. Make it yours!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🎨",
-      text: "Artisan masterpiece! This one-of-a-kind creation is waiting for you!",
-      time: "10 minutes"
-    },
-    {
-      icon: "💫",
-      text: "Trending now! This piece is getting lots of attention. Don't wait!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🎁",
-      text: "Perfect gift alert! Someone else might gift this first. Secure it!",
+      icon: "🏺",
+      text: "This artisan piece carries the stories of generations",
       time: "10 minutes"
     },
     {
       icon: "🌿",
-      text: "Sustainable luxury! This eco-friendly piece is in demand. Act fast!",
+      text: "A unique creation from skilled Tamil Nadu craftswomen awaits",
       time: "10 minutes"
     },
     {
-      icon: "🏺",
-      text: "Heritage craft! This traditional piece is disappearing fast!",
+      icon: "💫",
+      text: "Support rural artisans - this handcrafted treasure is ready for you",
       time: "10 minutes"
     },
     {
-      icon: "🎪",
-      text: "Showstopper alert! This piece is stealing the show. Claim it!",
+      icon: "🎨",
+      text: "Your cart holds a piece of Tamil Nadu's rich heritage",
       time: "10 minutes"
     },
     {
-      icon: "💎",
-      text: "Premium quality! This artisan piece is worth every penny. Get it!",
-      time: "10 minutes"
-    },
-    {
-      icon: "🌟",
-      text: "Customer favorite! This piece has glowing reviews. Join the fans!",
+      icon: "✨",
+      text: "This carefully crafted item reflects the skill of master artisans",
       time: "10 minutes"
     }
   ];
 
   // Empty cart messages
   const emptyCartMessages = [
-    "Discover our handcrafted collection of artisan treasures",
+    "Discover handcrafted treasures from Tamil Nadu artisans",
+    "Explore authentic craftsmanship from rural villages",
+    "Find meaningful pieces crafted by skilled women artisans",
     "Each piece tells a story of tradition and craftsmanship",
     "Support local artisans with every purchase",
-    "Find the perfect gift for someone special",
     "Explore sustainable luxury handmade with care",
-    "Join thousands of happy customers worldwide",
     "Every item is unique - just like you",
     "Quality craftsmanship meets contemporary design",
     "From our artisans to your home",
@@ -125,9 +75,9 @@ const CartPage: React.FC = () => {
 
   // Trust indicator messages
   const trustMessages = [
-    "Secure Shopping Guarantee",
-    "100% Handmade by Artisans",
-    "Quality Assured",
+    "Authentic Tamil Nadu Craftsmanship",
+    "Fair Wages for Rural Artisans",
+    "Sustainable Heritage Preservation",
     "Made with Love"
   ];
 

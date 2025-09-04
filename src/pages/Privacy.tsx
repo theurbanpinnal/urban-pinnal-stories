@@ -378,12 +378,12 @@ const Privacy = () => {
                     
                     <div className="bg-muted/20 p-6 rounded-lg">
                       <p className="font-medium text-foreground mb-2">The Urban Pinnal</p>
-                      <p>Email: privacy@theurbanpinnal.com</p>
+                      <p>Email: support@theurbanpinnal.com</p>
                       <p>Website: www.theurbanpinnal.com</p>
                       <p>Address: Chennai, Tamil Nadu, India</p>
                       <p className="mt-4 text-sm">
                         <strong>Data Protection Officer:</strong> For GDPR-related inquiries, 
-                        please contact our Data Protection Officer at dpo@theurbanpinnal.com
+                        please contact our Data Protection Officer at support@theurbanpinnal.com
                       </p>
                     </div>
                     

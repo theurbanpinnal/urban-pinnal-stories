@@ -178,7 +178,7 @@ const Shipping = () => {
                     <h4 className="font-serif text-lg font-semibold text-foreground mb-3">How to Cancel:</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground">
                       <div>
-                        <p><strong>Email:</strong> hello@theurbanpinnal.com</p>
+                        <p><strong>Email:</strong> support@theurbanpinnal.com</p>
                         <p><strong>Phone:</strong> +91-XXXXXXXXXX</p>
                         <p><strong>Subject:</strong> "Order Cancellation - [Order Number]"</p>
                       </div>

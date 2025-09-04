@@ -160,7 +160,7 @@ inspectCartStorage()
 
 ## Emergency Contacts
 
-- Development Team: [team@urbanpinnal.com]
+- Development Team: [support@theurbanpinnal.com]
 - Shopify Support: [support@shopify.com]
 - Hosting Support: [support@vercel.com]
 

@@ -316,7 +316,7 @@ const Terms = () => {
                     </p>
                     <div className="bg-muted/20 p-6 rounded-lg">
                       <p className="font-medium text-foreground mb-2">The Urban Pinnal</p>
-                      <p>Email: hello@theurbanpinnal.com</p>
+                      <p>Email: support@theurbanpinnal.com</p>
                       <p>Website: www.theurbanpinnal.com</p>
                       <p>Location: Chennai, Tamil Nadu, India</p>
                     </div>
