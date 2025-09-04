@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
 const CartPage: React.FC = () => {
-  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCart();
+  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
@@ -223,13 +223,6 @@ const CartPage: React.FC = () => {
   const currentEmptyMessage = emptyCartMessages[currentMessageIndex % emptyCartMessages.length];
   const currentTrustMessage = trustMessages[currentMessageIndex % trustMessages.length];
 
-  const handleQuantityChange = async (lineId: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      await removeFromCart(lineId);
-    } else {
-      await updateCartLine(lineId, newQuantity);
-    }
-  };
 
   const handleCheckout = () => {
     checkout();
@@ -315,12 +308,9 @@ const CartPage: React.FC = () => {
                 {/* Cart Items */}
                 <div className="space-y-4">
                   {cartLines.map((line) => (
-                    <CartLineItem 
-                      key={line.id} 
+                    <CartLineItem
+                      key={line.id}
                       line={line}
-                      onQuantityChange={handleQuantityChange}
-                      onRemove={() => removeFromCart(line.id)}
-                      isLoading={isLoading}
                     />
                   ))}
                 </div>
@@ -458,17 +448,12 @@ const CartPage: React.FC = () => {
 
 interface CartLineItemProps {
   line: any;
-  onQuantityChange: (lineId: string, quantity: number) => void;
-  onRemove: () => void;
-  isLoading: boolean;
 }
 
-const CartLineItem: React.FC<CartLineItemProps> = ({ 
-  line, 
-  onQuantityChange, 
-  onRemove, 
-  isLoading 
+const CartLineItem: React.FC<CartLineItemProps> = ({
+  line
 }) => {
+  const { updateCartLine, removeFromCart, isLoading } = useCartStore();
   const product = line.merchandise.product;
   const variant = line.merchandise;
   const image = product.images.edges[0]?.node;
@@ -525,7 +510,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
           variant="outline"
           size="icon"
           className="h-7 w-7 sm:h-8 sm:w-8"
-          onClick={() => onQuantityChange(line.id, line.quantity - 1)}
+          onClick={() => updateCartLine(line.id, line.quantity - 1)}
           disabled={isLoading}
         >
           <Minus className="h-3 w-3" />
@@ -533,7 +518,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
         
         <Select
           value={line.quantity.toString()}
-          onValueChange={(value) => onQuantityChange(line.id, parseInt(value))}
+          onValueChange={(value) => updateCartLine(line.id, parseInt(value))}
           disabled={isLoading}
         >
           <SelectTrigger className="w-14 sm:w-16 h-7 sm:h-8 text-xs sm:text-sm">
@@ -552,7 +537,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
           variant="outline"
           size="icon"
           className="h-7 w-7 sm:h-8 sm:w-8"
-          onClick={() => onQuantityChange(line.id, line.quantity + 1)}
+          onClick={() => updateCartLine(line.id, line.quantity + 1)}
           disabled={isLoading}
         >
           <Plus className="h-3 w-3" />
@@ -562,7 +547,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
           variant="ghost"
           size="icon"
           className="h-7 w-7 sm:h-8 sm:w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ml-1 sm:ml-2"
-          onClick={onRemove}
+          onClick={() => removeFromCart(line.id)}
           disabled={isLoading}
         >
           <Trash2 className="h-3 w-3" />

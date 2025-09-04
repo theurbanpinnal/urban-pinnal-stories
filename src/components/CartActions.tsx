@@ -1,52 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Minus, Trash2, Loader2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { CartLine } from '@/lib/shopify';
+import { useCartStore } from '@/stores';
 
 // Action status type for cart operations
-type CartActionStatus = 'idle' | 'updating' | 'removing';
+type CartActionStatus = 'idle' | 'updating' | 'removing' | 'success';
 
 interface CartActionsProps {
   line: CartLine;
-  onQuantityChange: (lineId: string, newQuantity: number) => Promise<void>;
-  onRemove: (lineId: string) => Promise<void>;
-  isLoading: boolean;
+  index?: number;
 }
 
-const CartActions: React.FC<CartActionsProps> = ({ 
-  line, 
-  onQuantityChange, 
-  onRemove, 
-  isLoading 
+const CartActions: React.FC<CartActionsProps> = ({
+  line,
+  index = 0
 }) => {
   const [actionStatus, setActionStatus] = useState<CartActionStatus>('idle');
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
-  
+
+  // Get cart store functions and state
+  const { updateCartLine, removeFromCart, isLoading } = useCartStore();
+
   // Computed property to check if any action is processing
   const isProcessing = actionStatus !== 'idle' || isLoading;
 
+  // Entrance animation with staggered timing
+  useEffect(() => {
+    const delay = index * 100; // 100ms delay between each item
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [index]);
+
   const handleQuantityChange = async (lineId: string, newQuantity: number) => {
-    if (isProcessing) return; // Extra safeguard
-    
+    if (isProcessing || newQuantity < 1) return; // Extra safeguard
+
     setActionStatus('updating');
     try {
-      await onQuantityChange(lineId, newQuantity);
+      await updateCartLine(lineId, newQuantity);
+      // Show success state briefly
+      setActionStatus('success');
+      setTimeout(() => setActionStatus('idle'), 500);
     } catch (error) {
       console.error('Failed to update quantity:', error);
-    } finally {
       setActionStatus('idle');
     }
   };
 
   const handleRemove = async (lineId: string) => {
     if (isProcessing) return; // Extra safeguard
-    
+
     setActionStatus('removing');
     try {
-      await onRemove(lineId);
+      await removeFromCart(lineId);
     } catch (error) {
       console.error('Failed to remove item:', error);
     } finally {
@@ -63,7 +73,17 @@ const CartActions: React.FC<CartActionsProps> = ({
   const image = product.images.edges[0]?.node;
 
   return (
-    <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 py-3 sm:py-4 border-b cart-item-compact items-center">
+    <div
+      className={`grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 py-3 sm:py-4 border-b cart-item-compact items-center transition-all duration-300 ease-in-out ${
+        actionStatus === 'removing'
+          ? 'opacity-0 transform -translate-y-2 scale-95 pointer-events-none'
+          : actionStatus === 'success'
+            ? 'bg-green-50/50 border-green-200/50'
+            : isVisible
+              ? 'opacity-100 transform translate-y-0 scale-100'
+              : 'opacity-0 transform translate-y-1 scale-98'
+      }`}
+    >
       {/* Column 1: Product Image */}
       <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 cart-item-image">
         {image ? (
@@ -111,12 +131,20 @@ const CartActions: React.FC<CartActionsProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8"
+          className={`h-7 w-7 sm:h-8 sm:w-8 transition-all duration-200 ${
+            actionStatus === 'success'
+              ? 'scale-110 bg-green-100 border-green-300 text-green-700'
+              : isProcessing
+                ? 'scale-95 opacity-75'
+                : 'scale-100 opacity-100 hover:scale-105 hover:shadow-sm'
+          }`}
           onClick={() => handleQuantityChange(line.id, line.quantity - 1)}
           disabled={isProcessing}
         >
           {actionStatus === 'updating' ? (
             <Loader2 className="h-3 w-3 animate-spin" />
+          ) : actionStatus === 'success' ? (
+            <Minus className="h-3 w-3 text-green-700" />
           ) : (
             <Minus className="h-3 w-3" />
           )}
@@ -142,12 +170,20 @@ const CartActions: React.FC<CartActionsProps> = ({
         <Button
           variant="outline"
           size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8"
+          className={`h-7 w-7 sm:h-8 sm:w-8 transition-all duration-200 ${
+            actionStatus === 'success'
+              ? 'scale-110 bg-green-100 border-green-300 text-green-700'
+              : isProcessing
+                ? 'scale-95 opacity-75'
+                : 'scale-100 opacity-100 hover:scale-105 hover:shadow-sm'
+          }`}
           onClick={() => handleQuantityChange(line.id, line.quantity + 1)}
           disabled={isProcessing}
         >
           {actionStatus === 'updating' ? (
             <Loader2 className="h-3 w-3 animate-spin" />
+          ) : actionStatus === 'success' ? (
+            <Plus className="h-3 w-3 text-green-700" />
           ) : (
             <Plus className="h-3 w-3" />
           )}
@@ -156,12 +192,14 @@ const CartActions: React.FC<CartActionsProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 sm:h-8 sm:w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ml-1 sm:ml-2"
+          className={`h-7 w-7 sm:h-8 sm:w-8 text-red-500 hover:text-red-700 hover:bg-red-50 ml-1 sm:ml-2 transition-all duration-200 ${
+            actionStatus === 'removing' ? 'scale-90 opacity-75' : 'scale-100 opacity-100 hover:scale-105'
+          }`}
           onClick={() => handleRemove(line.id)}
           disabled={isProcessing}
         >
           {actionStatus === 'removing' ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Loader2 className="h-3 w-3 animate-spin text-red-600" />
           ) : (
             <Trash2 className="h-3 w-3" />
           )}

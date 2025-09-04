@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from 'urql';
+import { useFilterStore } from '@/stores';
 import LaunchBanner from '@/components/LaunchBanner';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
 import ShopifyDebug from '@/components/ShopifyDebug';
-import { FilterOptions } from '@/components/FilterSortDrawer';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,16 @@ import heroWeavingImage from '@/assets/hero-weaving-3.png';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
+  // Get filter store functions and state
+  const {
+    filters: currentFilters,
+    searchQuery,
+    syncWithURL,
+    updateURL,
+    clearFilters
+  } = useFilterStore();
+
   // Get shop info for SEO
   const [shopResult] = useQuery({
     query: GET_SHOP_INFO,
@@ -30,57 +39,27 @@ const Store: React.FC = () => {
   const { data: shopData } = shopResult;
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
 
-
-  
-  // Initialize filters from URL parameters
+  // Sync with URL on mount and when URL changes
   useEffect(() => {
-    const collectionParam = searchParams.get('collection');
-    if (collectionParam) {
-      setCurrentFilters(prev => ({
-        ...prev,
-        categories: [collectionParam]
-      }));
-    } else {
-      // Clear collection filter if no collection param
-      setCurrentFilters(prev => ({
-        ...prev,
-        categories: []
-      }));
-    }
-  }, [searchParams]);
-  
-  // State for filter drawer filters
-  const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
-    categories: [],
-    priceRange: { min: 0, max: 10000 },
-    availability: 'all',
-  });
-  
-  // Get search query from URL parameters
-  const searchQuery = searchParams.get('search');
+    syncWithURL();
+  }, [searchParams, syncWithURL]);
 
   // Handle collection selection and scroll to products
   const handleCollectionSelect = (collectionTitle: string | null) => {
-    // Update filter drawer categories instead of separate collection state
+    // Update filter store
     if (collectionTitle) {
-      setCurrentFilters(prev => ({
-        ...prev,
-        categories: [collectionTitle]
-      }));
+      useFilterStore.getState().updateFilters({ categories: [collectionTitle] });
     } else {
-      setCurrentFilters(prev => ({
-        ...prev,
-        categories: []
-      }));
+      useFilterStore.getState().updateFilters({ categories: [] });
     }
-    
+
     // Update URL parameter
     if (collectionTitle) {
       setSearchParams({ collection: collectionTitle });
     } else {
       setSearchParams({});
     }
-    
+
     // Scroll to products section
     const productsSection = document.getElementById('products');
     if (productsSection) {
@@ -90,20 +69,17 @@ const Store: React.FC = () => {
 
   // Handle clearing all filters (collection and search)
   const handleClearAllFilters = () => {
-    // Clear collection filter
-    handleCollectionSelect(null);
-    
-    // Clear search query from URL
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.delete('search');
-    setSearchParams(newSearchParams);
-    
-    // Reset all filters to default values
-    setCurrentFilters({
-      categories: [],
-      priceRange: { min: 0, max: 10000 },
-      availability: 'all',
-    });
+    // Clear all filters using store
+    clearFilters();
+
+    // Clear URL parameters
+    setSearchParams({});
+
+    // Scroll to products section
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Set SEO metadata
@@ -404,12 +380,9 @@ const Store: React.FC = () => {
             <ShopifyDebug />
           </div> */}
           
-          <ProductList 
-            limit={24} 
-            searchQuery={searchQuery} 
-            onClearAllFilters={handleClearAllFilters} 
-            onFiltersChange={setCurrentFilters}
-            initialFilters={currentFilters}
+          <ProductList
+            limit={24}
+            onClearAllFilters={handleClearAllFilters}
           />
         </div>
       </section>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -15,7 +15,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ children }) => {
-  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCart();
+  const { cart, updateCartLine, removeFromCart, getCartItemCount, checkout, isLoading } = useCartStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -57,13 +57,6 @@ const Cart: React.FC<CartProps> = ({ children }) => {
   // Don't open sheet if we're on the cart page
   const isOnCartPage = location.pathname === '/cart';
 
-  const handleQuantityChange = async (lineId: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      await removeFromCart(lineId);
-    } else {
-      await updateCartLine(lineId, newQuantity);
-    }
-  };
 
   const handleCheckout = () => {
     checkout();
@@ -130,14 +123,20 @@ const Cart: React.FC<CartProps> = ({ children }) => {
             </div>
           ) : (
             <div className="space-y-4">
-              {cartLines.map((line) => (
-                <CartActions 
-                  key={line.id} 
-                  line={line}
-                  onQuantityChange={handleQuantityChange}
-                  onRemove={removeFromCart}
-                  isLoading={isLoading}
-                />
+              {cartLines.map((line, index) => (
+                <div
+                  key={line.id}
+                  className="transition-all duration-300 ease-out"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: 'slideInFromBottom 0.4s ease-out forwards'
+                  }}
+                >
+                  <CartActions
+                    line={line}
+                    index={index}
+                  />
+                </div>
               ))}
             </div>
           )}

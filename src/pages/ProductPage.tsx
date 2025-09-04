@@ -13,7 +13,7 @@ import {
   isNewProduct,
   calculateDiscountPercentage
 } from '@/lib/shopify';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore } from '@/stores';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +50,7 @@ type ActionStatus = 'idle' | 'adding' | 'buying';
 const ProductPage: React.FC = () => {
   const { handle } = useParams<{ handle: string }>();
   const navigate = useNavigate();
-  const { addToCart, checkout, isLoading: cartLoading } = useCart();
+  const { addToCart, checkout, isLoading: cartLoading } = useCartStore();
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState<number>(1);
