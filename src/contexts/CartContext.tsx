@@ -248,11 +248,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         if (errorMessage.includes('does not exist') || errorMessage.includes('merchandise line')) {
           // Refresh the cart state from Shopify to sync with current state
           try {
-            const refreshResult = await fetch(`/shopify/api/2024-01/graphql.json`, {
+            const refreshResult = await fetch(`/api/shopify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
               },
               body: JSON.stringify({
                 query: GET_CART,
@@ -338,11 +337,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         if (errorMessage.includes('does not exist') || errorMessage.includes('merchandise line')) {
           // Refresh the cart state from Shopify to sync with current state
           try {
-            const refreshResult = await fetch(`/shopify/api/2024-01/graphql.json`, {
+            const refreshResult = await fetch(`/api/shopify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
               },
               body: JSON.stringify({
                 query: GET_CART,

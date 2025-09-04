@@ -368,7 +368,7 @@ const Store: React.FC = () => {
                 <Button 
                   variant="ghost" 
                   onClick={handleClearAllFilters}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-10 px-4 py-2"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-10 px-4 py-2 md:hidden"
                 >
                   <X className="h-4 w-4" />
                   Clear Filters
