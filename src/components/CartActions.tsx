@@ -55,7 +55,7 @@ const CartActions: React.FC<CartActionsProps> = ({
   };
 
   const handleProductClick = () => {
-    navigate(`/products/${product.handle}`);
+    navigate(`/store/products/${product.handle}`);
   };
 
   const product = line.merchandise.product;
