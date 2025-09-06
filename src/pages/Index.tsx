@@ -83,7 +83,7 @@ const Index = () => {
                 (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
                 (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
                 (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
               }`}>
                 {/* All Collections Card */}
                 <Link 
@@ -144,7 +144,7 @@ const Index = () => {
             )}
             
             {fetchingCollections && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {[...Array(2)].map((_, i) => (
                   <div key={i} className="bg-white rounded-lg p-6 shadow-sm animate-pulse h-full">
                     <div className="h-6 bg-gray-200 rounded mb-3"></div>
