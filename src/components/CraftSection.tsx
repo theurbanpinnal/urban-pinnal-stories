@@ -1,7 +1,8 @@
 const CraftSection = () => {
   return (
-    <section className="py-12 lg:py-18 px-4 sm:px-6 lg:px-8 bg-craft-terracotta text-craft-ivory">
-      <div className="max-w-6xl mx-auto text-center">
+    <section className="py-12 lg:py-18 bg-craft-terracotta text-craft-ivory">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto text-center">
         <h2 className="font-serif text-4xl lg:text-5xl font-semibold mb-12">
           Rooted in Tradition. Crafted from Nature.
         </h2>
@@ -47,6 +48,7 @@ const CraftSection = () => {
             <h3 className="font-serif text-xl font-medium mb-3">Timeless Techniques</h3>
             <p className="text-craft-ivory/80">Methods passed down through generations</p>
           </div>
+        </div>
         </div>
       </div>
     </section>

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Minus, Trash2, Loader2, Package } from 'lucide-react';
-import { formatCurrency, capitalizeWords } from '@/lib/utils';
+import { formatCurrency, capitalizeWords, titleToHandle } from '@/lib/utils';
 import { CartLine } from '@/lib/shopify';
 import { useCartStore } from '@/stores';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
@@ -70,7 +70,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
   };
 
   const handleProductClick = () => {
-    navigate(`/store/products/${product.handle}`);
+    navigate(`/store/products/${titleToHandle(product.title)}`);
   };
 
   const product = line.merchandise.product;
@@ -121,8 +121,6 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
               className="w-full h-full object-cover transition-transform duration-300"
               placeholderClassName="w-full h-full"
               productTitle={product.title}
-              productType={product.productType}
-              productTags={product.tags}
             />
           ) : (
             <img
@@ -140,7 +138,7 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
 
       {/* Column 2: Product Name and Variant Info */}
       {showLink ? (
-        <Link to={`/store/products/${product.handle}`} className="min-w-0 col-span-2 sm:col-span-1 hover:opacity-80 transition-opacity">
+        <Link to={`/store/products/${titleToHandle(product.title)}`} className="min-w-0 col-span-2 sm:col-span-1 hover:opacity-80 transition-opacity">
           <h4 className="font-medium text-sm sm:text-base text-foreground truncate">{product.title}</h4>
           {variant.title !== 'Default Title' && (
             <p className="text-xs sm:text-sm text-gray-500">{variant.title}</p>

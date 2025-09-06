@@ -58,6 +58,18 @@ export const invalidateCollectionsQuery = () => {
 };
 
 /**
+ * Force refresh collections data - useful for production cache issues
+ * This completely bypasses cache and fetches fresh data
+ */
+export const refreshCollectionsData = () => {
+  // Clear collections from cache and refetch
+  client.reexecuteQuery({
+    query: (query) => query.query.includes('getCollections'),
+    requestPolicy: 'network-only'
+  });
+};
+
+/**
  * Invalidate specific product GraphQL query by handle
  * @param handle - Product handle to invalidate
  */

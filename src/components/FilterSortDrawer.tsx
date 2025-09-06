@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Filter, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
-export type SortOption = 'newest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
+export type SortOption = 'newest' | 'oldest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
 
 export interface FilterOptions {
   categories: string[];
@@ -26,6 +26,8 @@ interface FilterSortDrawerProps {
   availableCategories: string[];
   productCount?: number;
   onClearAllFilters?: () => void;
+  searchQuery?: string;
+  onClearSearch?: () => void;
   className?: string;
 }
 
@@ -37,24 +39,29 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   availableCategories,
   productCount,
   onClearAllFilters,
+  searchQuery,
+  onClearSearch,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const sortOptions = [
+  // Memoize static options to prevent unnecessary re-renders
+  const sortOptions = useMemo(() => [
     { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
     { value: 'best-selling', label: 'Best Selling' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'alphabetical', label: 'Alphabetical' },
-  ];
+  ], []);
 
-  const availabilityOptions = [
+  const availabilityOptions = useMemo(() => [
     { value: 'all', label: 'All Products' },
     { value: 'in-stock', label: 'In Stock' },
-  ];
+  ], []);
 
-  const handleCategoryChange = (category: string, checked: boolean) => {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleCategoryChange = useCallback((category: string, checked: boolean) => {
     const newCategories = checked
       ? [...filters.categories, category]
       : filters.categories.filter(c => c !== category);
@@ -63,9 +70,9 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
       ...filters,
       categories: newCategories,
     });
-  };
+  }, [filters, onFiltersChange]);
 
-  const handlePriceRangeChange = (field: 'min' | 'max', value: string) => {
+  const handlePriceRangeChange = useCallback((field: 'min' | 'max', value: string) => {
     const numValue = parseFloat(value) || 0;
     onFiltersChange({
       ...filters,
@@ -74,9 +81,9 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
         [field]: numValue,
       },
     });
-  };
+  }, [filters, onFiltersChange]);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     onFiltersChange({
       categories: [],
       priceRange: { min: 0, max: 10000 },
@@ -86,11 +93,15 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
     if (onClearAllFilters) {
       onClearAllFilters();
     }
-  };
+  }, [onFiltersChange, onClearAllFilters]);
 
-  const activeFiltersCount = filters.categories.length + 
+  // Memoize active filters count calculation
+  const activeFiltersCount = useMemo(() => 
+    filters.categories.length + 
     (filters.availability !== 'all' ? 1 : 0) +
-    (filters.priceRange.min > 0 || filters.priceRange.max < 10000 ? 1 : 0);
+    (filters.priceRange.min > 0 || filters.priceRange.max < 10000 ? 1 : 0),
+    [filters]
+  );
 
   return (
     <div className={className}>
@@ -100,7 +111,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[100000]">
             {sortOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
@@ -113,7 +124,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <DrawerTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
               <Filter className="h-4 w-4" />
-              Filters
+              Filter & Sort
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-1">
                   {activeFiltersCount}
@@ -124,7 +135,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <DrawerContent className="max-h-[80vh] z-[99999]">
             <DrawerHeader>
               <div className="flex items-center justify-between">
-                <DrawerTitle>Filter Products</DrawerTitle>
+                <DrawerTitle>Filter & Sort Products</DrawerTitle>
                 <DrawerClose asChild>
                   <Button 
                     variant="ghost" 
@@ -138,6 +149,23 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               </div>
             </DrawerHeader>
             <div className="p-6 space-y-6 overflow-y-auto">
+              {/* Sort Section */}
+              <div>
+                <h3 className="font-semibold mb-3">Sort By</h3>
+                <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100000]">
+                    {sortOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Categories */}
               <div>
                 <h3 className="font-semibold mb-3">Categories</h3>
@@ -201,7 +229,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {availabilityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -229,6 +257,18 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <div className="text-sm text-muted-foreground">
             <span>{productCount} product{productCount !== 1 ? 's' : ''}</span>
           </div>
+        )}
+        
+        {/* Clear Search Button - shown when there's a search query */}
+        {searchQuery && searchQuery.trim() && onClearSearch && (
+          <Button 
+            variant="ghost" 
+            onClick={onClearSearch} 
+            className="hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
+          >
+            <X className="h-4 w-4" />
+            Clear Search
+          </Button>
         )}
         
         {/* Clear Filters Button - shown when filters are active */}
@@ -282,7 +322,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {sortOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -355,7 +395,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {availabilityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -364,6 +404,17 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Clear Search */}
+              {searchQuery && searchQuery.trim() && onClearSearch && (
+                <Button 
+                  variant="outline" 
+                  onClick={onClearSearch} 
+                  className="w-full h-12 text-base touch-manipulation"
+                >
+                  Clear Search
+                </Button>
+              )}
 
               {/* Clear Filters */}
               {activeFiltersCount > 0 && (

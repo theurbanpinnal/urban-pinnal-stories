@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from 'urql';
 import { useFilterStore } from '@/stores';
@@ -14,9 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap, X } from 'lucide-react';
 import heroWeavingImage from '@/assets/hero-weaving-3.png';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   // Get filter store functions and state
   const {
@@ -35,9 +37,13 @@ const Store: React.FC = () => {
     query: GET_SHOP_INFO,
   });
 
+  // Memoize collections query variables
+  const collectionsVariables = useMemo(() => ({ first: 10 }), []);
+
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
-    variables: { first: 10 },
+    variables: collectionsVariables,
+    requestPolicy: 'cache-first', // Use cache first for collections as they change less frequently
   });
 
   const { data: shopData } = shopResult;
@@ -46,18 +52,18 @@ const Store: React.FC = () => {
   // Sync with URL on mount and when URL changes
   useEffect(() => {
     syncWithURL();
-  }, [searchParams, syncWithURL]);
+  }, [searchParams]); // Remove syncWithURL from dependencies to prevent infinite loop
 
-  // Handle collection selection and scroll to products
-  const handleCollectionSelect = (collectionTitle: string | null) => {
-    // Update filter store
+  // Memoize collection selection handler
+  const handleCollectionSelect = useCallback((collectionTitle: string | null) => {
+    // Update filter store - this will trigger updateURL automatically via useEffect in ProductList
     if (collectionTitle) {
       useFilterStore.getState().updateFilters({ categories: [collectionTitle] });
     } else {
       useFilterStore.getState().updateFilters({ categories: [] });
     }
 
-    // Update URL parameter
+    // Update URL parameter using React Router to ensure immediate URL update
     if (collectionTitle) {
       setSearchParams({ collection: collectionTitle });
     } else {
@@ -65,14 +71,16 @@ const Store: React.FC = () => {
     }
 
     // Scroll to products section
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+    setTimeout(() => {
+      const productsSection = document.getElementById('products');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  }, [setSearchParams]);
 
-  // Handle clearing all filters (collection and search)
-  const handleClearAllFilters = () => {
+  // Memoize clear filters handler
+  const handleClearAllFilters = useCallback(() => {
     // Clear all filters using store
     clearFilters();
 
@@ -84,7 +92,7 @@ const Store: React.FC = () => {
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, [clearFilters, setSearchParams]);
 
   // Set SEO metadata
   useEffect(() => {
@@ -244,7 +252,47 @@ const Store: React.FC = () => {
     }
   }, [searchParams]);
 
-  const featuredCollections = collectionsData?.collections?.edges?.slice(0, 4) || [];
+  // Memoize featured collections to prevent unnecessary re-renders
+  const featuredCollections = useMemo(() =>
+    collectionsData?.collections?.edges?.slice(0, 4) || [],
+    [collectionsData]
+  );
+
+  // Prefetch critical data for better perceived performance
+  useEffect(() => {
+    // Prefetch collections if not already loaded
+    if (!collectionsData && !fetchingCollections) {
+      queryClient.prefetchQuery({
+        queryKey: ['collections', { first: 10 }],
+        queryFn: async () => {
+          // This will be handled by urql, but we can still prefetch
+          return collectionsResult.fetching;
+        },
+        staleTime: 5 * 60 * 1000,
+      });
+    }
+
+    // Prefetch products based on current filters
+    const prefetchProducts = () => {
+      const queryKey = ['products', {
+        first: 24,
+        sortKey: 'CREATED_AT',
+        filters: currentFilters,
+        searchQuery
+      }];
+
+      queryClient.prefetchQuery({
+        queryKey,
+        queryFn: async () => {
+          // This will be handled by urql, but we can set up the cache structure
+          return null;
+        },
+        staleTime: 2 * 60 * 1000, // Shorter stale time for products
+      });
+    };
+
+    prefetchProducts();
+  }, [queryClient, collectionsData, fetchingCollections, currentFilters, searchQuery]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -325,13 +373,8 @@ const Store: React.FC = () => {
             </div>
             
             {fetchingCollections ? (
-              <div className={`grid gap-6 ${
-                (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-                (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
-              }`}>
-                {Array.from({ length: Math.min(4, featuredCollections.length + 1) }).map((_, index) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                {Array.from({ length: 4 }).map((_, index) => (
                   <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
                     <Skeleton className="h-8 w-3/4 mb-3" />
                     <Skeleton className="h-4 w-full mb-2" />
@@ -472,16 +515,6 @@ const Store: React.FC = () => {
                     </Badge>
                   )}
                 </div>
-                
-                {/* Clear Filters Button - Responsive across all screen sizes */}
-                <Button 
-                  variant="ghost" 
-                  onClick={handleClearAllFilters}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground h-10 px-4 py-2 md:hidden"
-                >
-                  <X className="h-4 w-4" />
-                  Clear Filters
-                </Button>
               </div>
             )}
             

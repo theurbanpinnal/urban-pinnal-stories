@@ -77,25 +77,28 @@ export const useFilterStore = create<FilterStore>()(
         if (typeof window === 'undefined') return;
 
         const { filters, searchQuery } = get();
-        const urlParams = new URLSearchParams(window.location.search);
+        const currentUrlParams = new URLSearchParams(window.location.search);
+        const newUrlParams = new URLSearchParams();
 
         // Update collection parameter
         if (filters.categories.length > 0) {
-          urlParams.set('collection', filters.categories[0]);
-        } else {
-          urlParams.delete('collection');
+          newUrlParams.set('collection', filters.categories[0]);
         }
 
         // Update search parameter
         if (searchQuery.trim()) {
-          urlParams.set('search', searchQuery.trim());
-        } else {
-          urlParams.delete('search');
+          newUrlParams.set('search', searchQuery.trim());
         }
 
-        // Update URL without triggering navigation
-        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
-        window.history.replaceState({}, '', newUrl);
+        // Only update URL if parameters have actually changed
+        const currentParamsString = currentUrlParams.toString();
+        const newParamsString = newUrlParams.toString();
+
+        if (currentParamsString !== newParamsString) {
+          // Update URL without triggering navigation
+          const newUrl = `${window.location.pathname}${newParamsString ? '?' + newParamsString : ''}`;
+          window.history.replaceState({}, '', newUrl);
+        }
       },
     }),
     {

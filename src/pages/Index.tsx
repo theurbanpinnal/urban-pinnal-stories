@@ -17,13 +17,15 @@ const JournalPreview = lazy(() => import("@/components/JournalPreview"));
 const NewsletterCTA = lazy(() => import("@/components/NewsletterCTA"));
 
 const ComponentSkeleton = () => (
-  <div className="animate-pulse py-20 px-4 sm:px-6 lg:px-8">
-    <div className="max-w-6xl mx-auto">
-      <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
-      <div className="space-y-4">
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-        <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+  <div className="animate-pulse py-20">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-8"></div>
+        <div className="space-y-4">
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -39,6 +41,7 @@ const Index = () => {
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
     variables: { first: 4 },
+    requestPolicy: 'cache-and-network', // Ensure fresh data while using cache when available
   });
 
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
@@ -209,11 +212,11 @@ const Index = () => {
             </div>
             
             {!fetchingCollections && featuredCollections.length > 0 && (
-              <div className={`grid gap-6 ${
+              <div className={`grid gap-8 ${
                 (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
                 (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
+                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-3 max-w-5xl mx-auto' :
+                'grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto'
               }`}>
                 {/* All Collections Card */}
                 <Link 
@@ -274,9 +277,14 @@ const Index = () => {
             )}
             
             {fetchingCollections && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {[...Array(2)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm animate-pulse h-full">
+              <div className={`grid gap-8 ${
+                (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-3 max-w-5xl mx-auto' :
+                'grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto'
+              }`}>
+                {Array.from({ length: Math.min(4, featuredCollections.length + 1) }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-lg p-6 shadow-sm animate-pulse h-full">
                     <div className="h-6 bg-gray-200 rounded mb-3"></div>
                     <div className="space-y-2 mb-4">
                       <div className="h-4 bg-gray-200 rounded"></div>

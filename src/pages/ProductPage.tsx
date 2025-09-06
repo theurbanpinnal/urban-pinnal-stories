@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
 import {
   GET_PRODUCT_BY_HANDLE,
+  GET_PRODUCT_BY_TITLE,
   ShopifyProduct,
   getProductBadges,
   hasMultipleVariants,
@@ -42,7 +43,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
 import Breadcrumb from '@/components/Breadcrumb';
-import { formatCurrency, capitalizeWords } from '@/lib/utils';
+import { formatCurrency, capitalizeWords, titleToHandle, handleToTitle } from '@/lib/utils';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 // Action status type for UI locking
@@ -63,10 +64,13 @@ const ProductPage: React.FC = () => {
   // Set canonical URL for product page
   useCanonicalUrl();
 
+  // Convert handle back to title for searching
+  const productTitle = handle ? handleToTitle(handle) : '';
+  
   const [result] = useQuery({
-    query: GET_PRODUCT_BY_HANDLE,
-    variables: { handle: handle || '' },
-    pause: !handle,
+    query: GET_PRODUCT_BY_TITLE,
+    variables: { title: productTitle },
+    pause: !productTitle,
   });
 
   const { data, fetching, error } = result;
@@ -77,8 +81,8 @@ const ProductPage: React.FC = () => {
 
   // Set page title and structured data for SEO
   useEffect(() => {
-    if (data?.productByHandle) {
-      const product = data.productByHandle;
+    if (data?.products?.edges?.[0]?.node) {
+      const product = data.products.edges[0].node;
       document.title = `${product.title} | The Urban Pinnal`;
       
       // Set meta description
@@ -117,7 +121,7 @@ const ProductPage: React.FC = () => {
             "@type": "Organization",
             "name": "The Urban Pinnal"
           },
-          "url": `https://theurbanpinnal.com/store/products/${product.handle}`
+          "url": `https://theurbanpinnal.com/store/products/${titleToHandle(product.title)}`
         },
         "creator": {
           "@type": "Person",
@@ -127,7 +131,7 @@ const ProductPage: React.FC = () => {
         "category": product.productType || "Handmade Crafts",
         "keywords": product.tags?.join(", ") || "",
         "sku": product.variants?.edges?.[0]?.node?.sku || "",
-        "url": `https://theurbanpinnal.com/store/products/${product.handle}`,
+        "url": `https://theurbanpinnal.com/store/products/${titleToHandle(product.title)}`,
         "dateCreated": product.createdAt,
         "dateModified": product.updatedAt
       };
@@ -141,9 +145,9 @@ const ProductPage: React.FC = () => {
 
   // Set default variant and auto-select single options
   useEffect(() => {
-    if (data?.productByHandle?.variants?.edges && data?.productByHandle?.options) {
-      const variants = data.productByHandle.variants.edges.map(({ node }) => node);
-      const options = data.productByHandle.options;
+    if (data?.products?.edges?.[0]?.node?.variants?.edges && data?.products?.edges?.[0]?.node?.options) {
+      const variants = data.products.edges[0].node.variants.edges.map(({ node }) => node);
+      const options = data.products.edges[0].node.options;
       
       if (variants.length > 0) {
         // Auto-select the first variant if there's only one
@@ -191,7 +195,7 @@ const ProductPage: React.FC = () => {
 
   if (fetching) return <ProductPageSkeleton />;
   
-  if (error || !data?.productByHandle) {
+  if (error || !data?.products?.edges?.[0]?.node) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -208,7 +212,7 @@ const ProductPage: React.FC = () => {
     );
   }
 
-  const product: ShopifyProduct = data.productByHandle;
+  const product: ShopifyProduct = data.products.edges[0].node;
   const variants = product.variants?.edges?.map(({ node }) => node) || [];
   const images = product.images?.edges?.map(({ node }) => node) || [];
   const options = product.options || [];
@@ -333,7 +337,7 @@ const ProductPage: React.FC = () => {
           <Breadcrumb 
             items={[
               { name: 'Store', url: '/store' },
-              { name: product.title, url: `/store/products/${product.handle}` }
+              { name: capitalizeWords(product.title), url: `/store/products/${titleToHandle(product.title)}` }
             ]} 
           />
         </div>

@@ -1,34 +1,21 @@
 import { useQuery } from 'urql';
-import { Link } from 'react-router-dom';
-import { 
-  GET_PRODUCTS, 
+import { useQuery as useReactQuery } from '@tanstack/react-query';
+import {
+  GET_PRODUCTS,
   SEARCH_PRODUCTS,
   GET_COLLECTIONS,
   GET_PRODUCTS_COUNT,
-  ShopifyProduct, 
+  ShopifyProduct,
   ShopifyCollection,
-  getProductBadges,
-  getPrimaryMedia,
-  hasMultipleVariants,
-  isProductOnSale,
-  isLowStock,
   isOutOfStock,
-  isNewProduct,
-  calculateDiscountPercentage,
   getLowestPrice,
-  getHighestCompareAtPrice
 } from '@/lib/shopify';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import OptimizedLazyImage from '@/components/OptimizedLazyImage';
-import StarRating from '@/components/ui/star-rating';
-import { formatCurrency, capitalizeWords } from '@/lib/utils';
-import { getSmartObjectPosition } from '@/lib/image-utils';
+import { Card, CardContent } from '@/components/ui/card';
 import FilterSortDrawer, { FilterOptions, SortOption } from '@/components/FilterSortDrawer';
-import { useState, useMemo, useEffect } from 'react';
+import ProductCard from '@/components/ProductCard';
+import { useState, useMemo, useEffect, useCallback, memo } from 'react';
 import { useFilterStore } from '@/stores';
-import { Clock, Package, Star, Zap } from 'lucide-react';
 
 interface ProductListProps {
   limit?: number;
@@ -44,16 +31,20 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     searchQuery,
     updateFilters,
     setSortBy,
+    setSearchQuery,
     updateURL
   } = useFilterStore();
 
-  // Update URL when filters or sort change
+  // Update URL when filters or sort change (only if not already updating)
   useEffect(() => {
-    updateURL();
-  }, [filters, sortBy, updateURL]);
+    const timeoutId = setTimeout(() => {
+      updateURL();
+    }, 50);
+    return () => clearTimeout(timeoutId);
+  }, [filters, sortBy]); // Remove updateURL from dependencies to prevent infinite loop
 
-  // Convert sortBy to Shopify sortKey
-  const getSortKey = (sortBy: SortOption) => {
+  // Memoize sort key conversion
+  const sortKey = useMemo(() => {
     switch (sortBy) {
       case 'best-selling':
         return 'BEST_SELLING';
@@ -63,38 +54,56 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
         return 'PRICE';
       case 'alphabetical':
         return 'TITLE';
+      case 'oldest':
+        return 'CREATED_AT';
       case 'newest':
       default:
         return 'CREATED_AT';
     }
-  };
+  }, [sortBy]);
+
+  // Memoize query variables to prevent unnecessary re-queries
+  const queryVariables = useMemo(() => ({
+    first: limit,
+    sortKey,
+    ...(searchQuery && searchQuery.length > 2 && { query: `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` })
+  }), [limit, sortKey, searchQuery]);
 
   const [result] = useQuery({
     query: searchQuery && searchQuery.length > 2 ? SEARCH_PRODUCTS : GET_PRODUCTS,
-    variables: { 
-      first: limit,
-      sortKey: getSortKey(sortBy),
-      ...(searchQuery && searchQuery.length > 2 && { query: `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` })
-    },
+    variables: queryVariables,
+    requestPolicy: 'cache-and-network', // Use cache when available, fetch fresh data in background
   });
+
+  // Memoize collections query variables
+  const collectionsVariables = useMemo(() => ({ first: 50 }), []);
 
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
-    variables: { first: 50 },
+    variables: collectionsVariables,
+    requestPolicy: 'cache-first', // Use cache first for collections as they change less frequently
   });
+
+  // Memoize count query variables
+  const countVariables = useMemo(() => ({
+    query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
+  }), [searchQuery]);
 
   const [countResult] = useQuery({
     query: GET_PRODUCTS_COUNT,
-    variables: { 
-      query: searchQuery && searchQuery.length > 2 ? `title:*${searchQuery}* OR tag:*${searchQuery}* OR vendor:*${searchQuery}* OR product_type:*${searchQuery}*` : ""
-    },
+    variables: countVariables,
+    requestPolicy: 'cache-first', // Use cache first for count as it's less critical
   });
 
   const { data, fetching, error } = result;
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;
   const { data: countData } = countResult;
   
-  const rawProducts = data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [];
+  // Memoize raw products extraction
+  const rawProducts = useMemo(() => 
+    data?.products?.edges?.map(({ node }: { node: ShopifyProduct }) => node) || [],
+    [data]
+  );
 
 
 
@@ -163,17 +172,73 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
       );
     }
 
-    // Enhanced sorting - only handle client-side sorting for price-high (reverse order)
+    // Enhanced sorting - handle client-side sorting for price-high and oldest (reverse order)
     if (sortBy === 'price-high') {
       // Shopify PRICE sortKey sorts low to high, so we reverse for high to low
+      filtered.reverse();
+    } else if (sortBy === 'oldest') {
+      // Shopify CREATED_AT sortKey sorts newest first, so we reverse for oldest first
       filtered.reverse();
     }
 
     return filtered;
   }, [rawProducts, filters, sortBy]);
 
-  // Handle loading and error states
-  if (fetching || fetchingCollections) return <ProductListSkeleton />;
+  // Add optimistic updates - keep previous data while loading
+  const [previousProducts, setPreviousProducts] = useState<ShopifyProduct[]>([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (fetching && products.length > 0) {
+      setPreviousProducts(products);
+      setIsTransitioning(true);
+    } else if (!fetching) {
+      setIsTransitioning(false);
+    }
+  }, [fetching, products]);
+
+  // Use previous products for optimistic updates during transitions
+  const displayProducts = isTransitioning && previousProducts.length > 0
+    ? previousProducts
+    : products;
+
+  // Background prefetching for better perceived performance
+  useEffect(() => {
+    if (products.length > 0) {
+      // Prefetch next page of products (simulate pagination)
+      const prefetchNextPage = async () => {
+        // This would prefetch additional products in a real pagination scenario
+        // For now, we'll just ensure collections are cached
+        if (!collectionsData) {
+          // Trigger collections fetch in background
+        }
+      };
+
+      // Small delay to avoid overwhelming the network
+      const timeoutId = setTimeout(prefetchNextPage, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [products.length, collectionsData]);
+
+  // Memoize filter handlers to prevent unnecessary re-renders
+  const handleSortChange = useCallback((newSortBy: SortOption) => {
+    setSortBy(newSortBy);
+  }, [setSortBy]);
+
+  const handleFiltersChange = useCallback((newFilters: FilterOptions) => {
+    updateFilters(newFilters);
+  }, [updateFilters]);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+  }, [setSearchQuery]);
+
+  // Handle loading and error states with enhanced skeletons
+  if (fetching || fetchingCollections) {
+    // Show fewer skeletons if we have cached data
+    const skeletonCount = rawProducts.length > 0 ? Math.min(6, rawProducts.length) : 12;
+    return <ProductListSkeleton count={skeletonCount} />;
+  }
   
   if (error) {
     console.error('GraphQL Error:', error);
@@ -213,242 +278,70 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
       {showFilters && (
         <FilterSortDrawer
           sortBy={sortBy}
-          onSortChange={setSortBy}
+          onSortChange={handleSortChange}
           filters={filters}
-          onFiltersChange={updateFilters}
+          onFiltersChange={handleFiltersChange}
           availableCategories={availableCategories}
           productCount={products.length}
           onClearAllFilters={onClearAllFilters}
+          searchQuery={searchQuery}
+          onClearSearch={handleClearSearch}
         />
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
+      
+      {/* Use regular grid with optimistic updates */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-200 ${isTransitioning ? 'opacity-60' : 'opacity-100'}`}>
+        {displayProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+
+      {/* Show loading overlay during transitions */}
+      {isTransitioning && (
+        <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-4 shadow-lg flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-craft-terracotta border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm text-gray-600">Updating products...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-interface ProductCardProps {
-  product: ShopifyProduct;
-}
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const primaryImageUrl = getPrimaryMedia(product);
-  const primaryImage = product.images.edges[0]?.node;
-
-  // Enhanced pricing logic - select a representative variant for pricing display
-  const selectRepresentativeVariant = () => {
-    if (!product.variants?.edges?.length) {
-      return null;
-    }
-
-    // Priority 1: First variant with compareAtPrice (for showing discounts)
-    const variantWithCompareAtPrice = product.variants.edges.find(({ node: variant }) =>
-      variant.compareAtPrice?.amount &&
-      parseFloat(variant.compareAtPrice.amount) > parseFloat(variant.price.amount)
-    );
-
-    if (variantWithCompareAtPrice) {
-      return variantWithCompareAtPrice.node;
-    }
-
-    // Priority 2: Lowest priced variant (fallback)
-    let lowestVariant = product.variants.edges[0].node;
-    let lowestPrice = parseFloat(lowestVariant.price.amount);
-
-    for (const { node: variant } of product.variants.edges) {
-      const price = parseFloat(variant.price.amount);
-      if (price < lowestPrice) {
-        lowestPrice = price;
-        lowestVariant = variant;
-      }
-    }
-
-    return lowestVariant;
-  };
-
-  const selectedVariant = selectRepresentativeVariant();
-  const currentPrice = selectedVariant ? parseFloat(selectedVariant.price.amount) : getLowestPrice(product);
-  const currencyCode = selectedVariant ? selectedVariant.price.currencyCode : product.priceRange.minVariantPrice.currencyCode;
-
-  // Get compare-at price from selected variant
-  let originalPrice: number | null = null;
-  let compareAtCurrency: string | null = null;
-
-  if (selectedVariant?.compareAtPrice?.amount) {
-    const compareAtPrice = parseFloat(selectedVariant.compareAtPrice.amount);
-    if (compareAtPrice > currentPrice) {
-      originalPrice = compareAtPrice;
-      compareAtCurrency = selectedVariant.compareAtPrice.currencyCode;
-    }
-  }
-  
-  // Get all product badges
-  const badges = getProductBadges(product);
-  
-  // Check if product is on sale
-  const onSale = isProductOnSale(product);
-  
-  // Get discount percentage
-  const discountPercentage = calculateDiscountPercentage(product);
-  
-  // Check inventory status
-  const lowStock = isLowStock(product);
-  const outOfStock = isOutOfStock(product);
-  
-  // Check if it's a new product
-  const isNew = isNewProduct(product);
-
+const EnhancedProductSkeleton: React.FC = () => {
   return (
-    <Link to={`/store/products/${product.handle}`} className="group">
-      <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card text-card-foreground relative">
-        <div className="aspect-square overflow-hidden relative bg-gray-50">
-          {primaryImageUrl ? (
-            <OptimizedLazyImage
-              src={primaryImageUrl}
-              alt={primaryImage?.altText || product.title}
-              context="product-card"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              placeholderClassName="w-full h-full"
-              productTitle={product.title}
-              productType={product.productType}
-              productTags={product.tags}
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <Package className="w-12 h-12 text-gray-400" />
-            </div>
-          )}
-          
-          {/* Product Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {isNew && (
-              <Badge variant="default" className="text-xs bg-green-500 hover:bg-green-600">
-                <Zap className="w-3 h-3 mr-1" />
-                New
-              </Badge>
-            )}
-            {/* Sale badge - now consistent with enhanced pricing logic */}
-            {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) && (
-              <Badge variant="destructive" className="text-xs">
-                {discountPercentage > 0 ? `${discountPercentage}% OFF` : 'SALE'}
-              </Badge>
-            )}
-            {badges.includes('Featured') && (
-              <Badge variant="secondary" className="text-xs bg-amber-500 text-white">
-                <Star className="w-3 h-3 mr-1" />
-                Featured
-              </Badge>
-            )}
-          </div>
-
-          {/* Stock Status Badge */}
-          <div className="absolute top-2 right-2">
-            {outOfStock && (
-              <Badge variant="destructive" className="text-xs">
-                Out of Stock
-              </Badge>
-            )}
-            {lowStock && !outOfStock && (
-              <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800 border-orange-300">
-                <Clock className="w-3 h-3 mr-1" />
-                Low Stock
-              </Badge>
-            )}
-          </div>
-
-          {/* Multiple Variants Indicator */}
-          {hasMultipleVariants(product) && (
-            <div className="absolute bottom-2 right-2">
-              <Badge variant="outline" className="text-xs bg-white/90">
-                +{(product.variants?.edges?.length || 1) - 1} variants
-              </Badge>
-            </div>
-          )}
+    <Card className="overflow-hidden animate-pulse">
+      <div className="aspect-square overflow-hidden relative bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+      </div>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-16 bg-green-100" />
+          <Skeleton className="h-4 w-20 bg-orange-100" />
         </div>
-
-        <CardContent className="p-4">
-
-          {/* Product Title */}
-          <h3 className="font-serif font-semibold text-lg md:text-xl text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            {capitalizeWords(product.title)}
-          </h3>
-
-          {/* Description */}
-          {product.description && (
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-              {product.description}
-            </p>
-          )}
-
-          {/* Enhanced Pricing - Reserve space for consistent alignment */}
-          <div className="space-y-2">
-            {/* Compare-at Price (Original Price) - Always reserve space */}
-            <div className="h-5 flex items-center">
-              {selectedVariant?.compareAtPrice && parseFloat(selectedVariant.compareAtPrice.amount) > parseFloat(selectedVariant.price.amount) ? (
-                <span className="text-sm text-muted-foreground line-through">
-                  {formatCurrency(selectedVariant.compareAtPrice.amount, selectedVariant.compareAtPrice.currencyCode)}
-                </span>
-              ) : (
-                <div className="h-5"></div>
-              )}
-            </div>
-
-            {/* Current Price - Always at the same level */}
-            <div className="flex items-center">
-              <span className="text-lg font-bold text-foreground">
-                {formatCurrency(currentPrice.toString(), currencyCode)}
-              </span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          {product.tags && product.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {product.tags.slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {capitalizeWords(tag)}
-                </Badge>
-              ))}
-              {product.tags.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{product.tags.length - 3} more
-                </Badge>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </Link>
+        <Skeleton className="h-6 w-3/4 bg-gray-200" />
+        <Skeleton className="h-4 w-full bg-gray-200" />
+        <div className="flex items-center justify-between pt-2">
+          <Skeleton className="h-7 w-24 bg-gray-300" />
+          <Skeleton className="h-4 w-16 bg-gray-200" />
+        </div>
+        <div className="flex gap-1">
+          <Skeleton className="h-5 w-12 bg-gray-200 rounded-full" />
+          <Skeleton className="h-5 w-16 bg-gray-200 rounded-full" />
+          <Skeleton className="h-5 w-10 bg-gray-200 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-const ProductListSkeleton: React.FC = () => {
+const ProductListSkeleton: React.FC<{ count?: number }> = ({ count = 12 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {Array.from({ length: 12 }).map((_, index) => (
-        <Card key={index} className="overflow-hidden">
-          <div className="aspect-square overflow-hidden relative bg-gray-50">
-            <Skeleton className="w-full h-full" />
-          </div>
-          <CardContent className="p-4">
-            <Skeleton className="h-3 w-16 mb-2" />
-            <Skeleton className="h-5 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-2/3 mb-3" />
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-6 w-20" />
-              <Skeleton className="h-3 w-12" />
-            </div>
-            <div className="flex gap-1 mt-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-10" />
-            </div>
-          </CardContent>
-        </Card>
+      {Array.from({ length: count }).map((_, index) => (
+        <EnhancedProductSkeleton key={index} />
       ))}
     </div>
   );

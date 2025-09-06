@@ -345,6 +345,85 @@ export const GET_PRODUCT_BY_HANDLE = `
   }
 `;
 
+export const GET_PRODUCT_BY_TITLE = `
+  query getProductByTitle($title: String!) {
+    products(first: 1, query: $title) {
+      edges {
+        node {
+          id
+          title
+          description
+          descriptionHtml
+          handle
+          vendor
+          tags
+          productType
+          createdAt
+          updatedAt
+          publishedAt
+          totalInventory
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 10) {
+            edges {
+              node {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                quantityAvailable
+                selectedOptions {
+                  name
+                  value
+                }
+                sku
+                weight
+                weightUnit
+              }
+            }
+          }
+          options {
+            id
+            name
+            values
+          }
+          collections(first: 10) {
+            edges {
+              node {
+                id
+                title
+                handle
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_CART = `
   mutation cartCreate($input: CartInput!) {
     cartCreate(input: $input) {
