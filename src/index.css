@@ -8,6 +8,17 @@
 @tailwind utilities;
 
 @layer base {
+  /* Shimmer animation for enhanced loading states */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background-size: 200% 100%;
+  }
+
   :root {
     /* Brand Colors - Inspired by Chennai's heritage and handmade crafts */
     --background: 42 15% 97%;  /* Warm Ivory */

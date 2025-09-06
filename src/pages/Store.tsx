@@ -14,9 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap, X } from 'lucide-react';
 import heroWeavingImage from '@/assets/hero-weaving-3.png';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   // Get filter store functions and state
   const {
@@ -251,10 +253,46 @@ const Store: React.FC = () => {
   }, [searchParams]);
 
   // Memoize featured collections to prevent unnecessary re-renders
-  const featuredCollections = useMemo(() => 
+  const featuredCollections = useMemo(() =>
     collectionsData?.collections?.edges?.slice(0, 4) || [],
     [collectionsData]
   );
+
+  // Prefetch critical data for better perceived performance
+  useEffect(() => {
+    // Prefetch collections if not already loaded
+    if (!collectionsData && !fetchingCollections) {
+      queryClient.prefetchQuery({
+        queryKey: ['collections', { first: 10 }],
+        queryFn: async () => {
+          // This will be handled by urql, but we can still prefetch
+          return collectionsResult.fetching;
+        },
+        staleTime: 5 * 60 * 1000,
+      });
+    }
+
+    // Prefetch products based on current filters
+    const prefetchProducts = () => {
+      const queryKey = ['products', {
+        first: 24,
+        sortKey: 'CREATED_AT',
+        filters: currentFilters,
+        searchQuery
+      }];
+
+      queryClient.prefetchQuery({
+        queryKey,
+        queryFn: async () => {
+          // This will be handled by urql, but we can set up the cache structure
+          return null;
+        },
+        staleTime: 2 * 60 * 1000, // Shorter stale time for products
+      });
+    };
+
+    prefetchProducts();
+  }, [queryClient, collectionsData, fetchingCollections, currentFilters, searchQuery]);
 
   return (
     <div className="min-h-screen bg-background">

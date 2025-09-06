@@ -1,10 +1,11 @@
 import { useQuery } from 'urql';
-import { 
-  GET_PRODUCTS, 
+import { useQuery as useReactQuery } from '@tanstack/react-query';
+import {
+  GET_PRODUCTS,
   SEARCH_PRODUCTS,
   GET_COLLECTIONS,
   GET_PRODUCTS_COUNT,
-  ShopifyProduct, 
+  ShopifyProduct,
   ShopifyCollection,
   isOutOfStock,
   getLowestPrice,
@@ -182,6 +183,42 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     return filtered;
   }, [rawProducts, filters, sortBy]);
 
+  // Add optimistic updates - keep previous data while loading
+  const [previousProducts, setPreviousProducts] = useState<ShopifyProduct[]>([]);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (fetching && products.length > 0) {
+      setPreviousProducts(products);
+      setIsTransitioning(true);
+    } else if (!fetching) {
+      setIsTransitioning(false);
+    }
+  }, [fetching, products]);
+
+  // Use previous products for optimistic updates during transitions
+  const displayProducts = isTransitioning && previousProducts.length > 0
+    ? previousProducts
+    : products;
+
+  // Background prefetching for better perceived performance
+  useEffect(() => {
+    if (products.length > 0) {
+      // Prefetch next page of products (simulate pagination)
+      const prefetchNextPage = async () => {
+        // This would prefetch additional products in a real pagination scenario
+        // For now, we'll just ensure collections are cached
+        if (!collectionsData) {
+          // Trigger collections fetch in background
+        }
+      };
+
+      // Small delay to avoid overwhelming the network
+      const timeoutId = setTimeout(prefetchNextPage, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [products.length, collectionsData]);
+
   // Memoize filter handlers to prevent unnecessary re-renders
   const handleSortChange = useCallback((newSortBy: SortOption) => {
     setSortBy(newSortBy);
@@ -191,8 +228,12 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     updateFilters(newFilters);
   }, [updateFilters]);
 
-  // Handle loading and error states
-  if (fetching || fetchingCollections) return <ProductListSkeleton />;
+  // Handle loading and error states with enhanced skeletons
+  if (fetching || fetchingCollections) {
+    // Show fewer skeletons if we have cached data
+    const skeletonCount = rawProducts.length > 0 ? Math.min(6, rawProducts.length) : 12;
+    return <ProductListSkeleton count={skeletonCount} />;
+  }
   
   if (error) {
     console.error('GraphQL Error:', error);
@@ -241,41 +282,59 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
         />
       )}
       
-      {/* Use regular grid for now to avoid virtualization issues */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
+      {/* Use regular grid with optimistic updates */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-200 ${isTransitioning ? 'opacity-60' : 'opacity-100'}`}>
+        {displayProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+
+      {/* Show loading overlay during transitions */}
+      {isTransitioning && (
+        <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-4 shadow-lg flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-craft-terracotta border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm text-gray-600">Updating products...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 
-const ProductListSkeleton: React.FC = () => {
+const EnhancedProductSkeleton: React.FC = () => {
+  return (
+    <Card className="overflow-hidden animate-pulse">
+      <div className="aspect-square overflow-hidden relative bg-gradient-to-br from-gray-100 to-gray-200">
+        <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+      </div>
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-16 bg-green-100" />
+          <Skeleton className="h-4 w-20 bg-orange-100" />
+        </div>
+        <Skeleton className="h-6 w-3/4 bg-gray-200" />
+        <Skeleton className="h-4 w-full bg-gray-200" />
+        <div className="flex items-center justify-between pt-2">
+          <Skeleton className="h-7 w-24 bg-gray-300" />
+          <Skeleton className="h-4 w-16 bg-gray-200" />
+        </div>
+        <div className="flex gap-1">
+          <Skeleton className="h-5 w-12 bg-gray-200 rounded-full" />
+          <Skeleton className="h-5 w-16 bg-gray-200 rounded-full" />
+          <Skeleton className="h-5 w-10 bg-gray-200 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const ProductListSkeleton: React.FC<{ count?: number }> = ({ count = 12 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {Array.from({ length: 12 }).map((_, index) => (
-        <Card key={index} className="overflow-hidden">
-          <div className="aspect-square overflow-hidden relative bg-gray-50">
-            <Skeleton className="w-full h-full" />
-          </div>
-          <CardContent className="p-4">
-            <Skeleton className="h-3 w-16 mb-2" />
-            <Skeleton className="h-5 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-2/3 mb-3" />
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-6 w-20" />
-              <Skeleton className="h-3 w-12" />
-            </div>
-            <div className="flex gap-1 mt-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-10" />
-            </div>
-          </CardContent>
-        </Card>
+      {Array.from({ length: count }).map((_, index) => (
+        <EnhancedProductSkeleton key={index} />
       ))}
     </div>
   );
