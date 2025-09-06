@@ -70,7 +70,7 @@ const ProductPage: React.FC = () => {
   const isProcessing = actionStatus !== 'idle';
 
 
-  // Set page title for SEO
+  // Set page title and structured data for SEO
   useEffect(() => {
     if (data?.productByHandle) {
       const product = data.productByHandle;
@@ -81,6 +81,56 @@ const ProductPage: React.FC = () => {
       if (metaDescription && product.description) {
         metaDescription.setAttribute('content', product.description.substring(0, 160));
       }
+
+      // Add structured data (JSON-LD) for SEO
+      const existingSchema = document.querySelector('script[type="application/ld+json"]');
+      if (existingSchema) {
+        existingSchema.remove();
+      }
+
+      const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.title,
+        "description": product.description,
+        "image": product.images?.edges?.map(({ node }) => node.url) || [],
+        "brand": {
+          "@type": "Brand",
+          "name": "The Urban Pinnal"
+        },
+        "manufacturer": {
+          "@type": "Organization",
+          "name": "The Urban Pinnal",
+          "url": "https://theurbanpinnal.com"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": product.priceRange.minVariantPrice.amount,
+          "priceCurrency": product.priceRange.minVariantPrice.currencyCode,
+          "availability": product.totalInventory > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "The Urban Pinnal"
+          },
+          "url": `https://theurbanpinnal.com/store/products/${product.handle}`
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "Tamil Nadu Artisans",
+          "description": "Skilled artisans from Tamil Nadu villages"
+        },
+        "category": product.productType || "Handmade Crafts",
+        "keywords": product.tags?.join(", ") || "",
+        "sku": product.variants?.edges?.[0]?.node?.sku || "",
+        "url": `https://theurbanpinnal.com/store/products/${product.handle}`,
+        "dateCreated": product.createdAt,
+        "dateModified": product.updatedAt
+      };
+
+      const schemaScript = document.createElement('script');
+      schemaScript.type = 'application/ld+json';
+      schemaScript.textContent = JSON.stringify(productSchema);
+      document.head.appendChild(schemaScript);
     }
   }, [data]);
 

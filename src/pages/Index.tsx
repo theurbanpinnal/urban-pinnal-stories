@@ -55,6 +55,48 @@ const Index = () => {
       <meta name="description" content="Discover ethically-made, natural products from The Urban Pinnal. A woman-owned brand empowering rural artisans in Tamil Nadu with handmade, sustainable crafts." />
       <meta name="keywords" content="handmade crafts, sustainable products, Tamil Nadu artisans, women-owned business, ethical fashion, natural materials, Chennai crafts, Indian craftsmanship" />
       
+      {/* Structured Data for Homepage */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "The Urban Pinnal",
+          "description": "A woman-owned brand empowering rural artisans in Tamil Nadu with handmade, sustainable crafts",
+          "url": "https://theurbanpinnal.com",
+          "logo": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
+          "image": "https://theurbanpinnal.com/src/assets/hero_3.png",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Chennai",
+            "addressRegion": "Tamil Nadu",
+            "addressCountry": "IN"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+91-XXXXXXXXXX",
+            "contactType": "customer service",
+            "email": "hello@theurbanpinnal.com"
+          },
+          "sameAs": [
+            "https://instagram.com/theurbanpinnal",
+            "https://facebook.com/theurbanpinnal"
+          ],
+          "foundingDate": "2024",
+          "founder": {
+            "@type": "Person",
+            "name": "The Urban Pinnal Team"
+          },
+          "knowsAbout": [
+            "Handmade Crafts",
+            "Sustainable Products",
+            "Tamil Nadu Artisans",
+            "Women Empowerment",
+            "Ethical Fashion",
+            "Natural Materials"
+          ]
+        })}
+      </script>
+      
       <div className="min-h-screen bg-background">
         <LaunchBanner />
         <Navigation />

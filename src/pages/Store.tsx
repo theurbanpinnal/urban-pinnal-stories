@@ -118,6 +118,47 @@ const Store: React.FC = () => {
       document.head.appendChild(ogType);
     }
     ogType.setAttribute('content', 'website');
+
+    // Add structured data for Store page
+    const existingSchema = document.querySelector('script[type="application/ld+json"]');
+    if (existingSchema) {
+      existingSchema.remove();
+    }
+
+    const storeSchema = {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": shopName,
+      "description": shopDescription,
+      "url": "https://theurbanpinnal.com/store",
+      "image": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91-XXXXXXXXXX",
+      "email": "hello@theurbanpinnal.com",
+      "openingHours": "Mo-Su 09:00-18:00",
+      "priceRange": "₹₹",
+      "currenciesAccepted": "INR",
+      "paymentAccepted": "Cash, Credit Card, UPI, Net Banking",
+      "foundingDate": "2024",
+      "founder": {
+        "@type": "Person",
+        "name": "The Urban Pinnal Team"
+      },
+      "sameAs": [
+        "https://instagram.com/theurbanpinnal",
+        "https://facebook.com/theurbanpinnal"
+      ]
+    };
+
+    const schemaScript = document.createElement('script');
+    schemaScript.type = 'application/ld+json';
+    schemaScript.textContent = JSON.stringify(storeSchema);
+    document.head.appendChild(schemaScript);
   }, [shopData]);
 
   // Scroll to products when arriving with a collection filter from home page
