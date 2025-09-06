@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from 'urql';
 import { useFilterStore } from '@/stores';
@@ -35,10 +35,13 @@ const Store: React.FC = () => {
     query: GET_SHOP_INFO,
   });
 
+  // Memoize collections query variables
+  const collectionsVariables = useMemo(() => ({ first: 10 }), []);
+
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
-    variables: { first: 10 },
-    requestPolicy: 'cache-and-network', // Ensure fresh data while using cache when available
+    variables: collectionsVariables,
+    requestPolicy: 'cache-first', // Use cache first for collections as they change less frequently
   });
 
   const { data: shopData } = shopResult;
@@ -47,10 +50,10 @@ const Store: React.FC = () => {
   // Sync with URL on mount and when URL changes
   useEffect(() => {
     syncWithURL();
-  }, [searchParams, syncWithURL]);
+  }, [searchParams]); // Remove syncWithURL from dependencies to prevent infinite loop
 
-  // Handle collection selection and scroll to products
-  const handleCollectionSelect = (collectionTitle: string | null) => {
+  // Memoize collection selection handler
+  const handleCollectionSelect = useCallback((collectionTitle: string | null) => {
     // Update filter store - this will trigger updateURL automatically via useEffect in ProductList
     if (collectionTitle) {
       useFilterStore.getState().updateFilters({ categories: [collectionTitle] });
@@ -72,10 +75,10 @@ const Store: React.FC = () => {
         productsSection.scrollIntoView({ behavior: 'smooth' });
       }
     }, 100);
-  };
+  }, [setSearchParams]);
 
-  // Handle clearing all filters (collection and search)
-  const handleClearAllFilters = () => {
+  // Memoize clear filters handler
+  const handleClearAllFilters = useCallback(() => {
     // Clear all filters using store
     clearFilters();
 
@@ -87,7 +90,7 @@ const Store: React.FC = () => {
     if (productsSection) {
       productsSection.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, [clearFilters, setSearchParams]);
 
   // Set SEO metadata
   useEffect(() => {
@@ -247,7 +250,11 @@ const Store: React.FC = () => {
     }
   }, [searchParams]);
 
-  const featuredCollections = collectionsData?.collections?.edges?.slice(0, 4) || [];
+  // Memoize featured collections to prevent unnecessary re-renders
+  const featuredCollections = useMemo(() => 
+    collectionsData?.collections?.edges?.slice(0, 4) || [],
+    [collectionsData]
+  );
 
   return (
     <div className="min-h-screen bg-background">

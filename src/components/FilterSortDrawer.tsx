@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Filter, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 
-export type SortOption = 'newest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
+export type SortOption = 'newest' | 'oldest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
 
 export interface FilterOptions {
   categories: string[];
@@ -41,20 +41,23 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const sortOptions = [
+  // Memoize static options to prevent unnecessary re-renders
+  const sortOptions = useMemo(() => [
     { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
     { value: 'best-selling', label: 'Best Selling' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'alphabetical', label: 'Alphabetical' },
-  ];
+  ], []);
 
-  const availabilityOptions = [
+  const availabilityOptions = useMemo(() => [
     { value: 'all', label: 'All Products' },
     { value: 'in-stock', label: 'In Stock' },
-  ];
+  ], []);
 
-  const handleCategoryChange = (category: string, checked: boolean) => {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleCategoryChange = useCallback((category: string, checked: boolean) => {
     const newCategories = checked
       ? [...filters.categories, category]
       : filters.categories.filter(c => c !== category);
@@ -63,9 +66,9 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
       ...filters,
       categories: newCategories,
     });
-  };
+  }, [filters, onFiltersChange]);
 
-  const handlePriceRangeChange = (field: 'min' | 'max', value: string) => {
+  const handlePriceRangeChange = useCallback((field: 'min' | 'max', value: string) => {
     const numValue = parseFloat(value) || 0;
     onFiltersChange({
       ...filters,
@@ -74,9 +77,9 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
         [field]: numValue,
       },
     });
-  };
+  }, [filters, onFiltersChange]);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     onFiltersChange({
       categories: [],
       priceRange: { min: 0, max: 10000 },
@@ -86,11 +89,15 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
     if (onClearAllFilters) {
       onClearAllFilters();
     }
-  };
+  }, [onFiltersChange, onClearAllFilters]);
 
-  const activeFiltersCount = filters.categories.length + 
+  // Memoize active filters count calculation
+  const activeFiltersCount = useMemo(() => 
+    filters.categories.length + 
     (filters.availability !== 'all' ? 1 : 0) +
-    (filters.priceRange.min > 0 || filters.priceRange.max < 10000 ? 1 : 0);
+    (filters.priceRange.min > 0 || filters.priceRange.max < 10000 ? 1 : 0),
+    [filters]
+  );
 
   return (
     <div className={className}>
