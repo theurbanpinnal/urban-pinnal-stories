@@ -39,6 +39,7 @@ const Index = () => {
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
     variables: { first: 4 },
+    requestPolicy: 'cache-and-network', // Ensure fresh data while using cache when available
   });
 
   const { data: collectionsData, fetching: fetchingCollections, error: collectionsError } = collectionsResult;

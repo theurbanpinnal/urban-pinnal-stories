@@ -47,9 +47,13 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     updateURL
   } = useFilterStore();
 
-  // Update URL when filters or sort change
+  // Update URL when filters or sort change (only if not already updating)
   useEffect(() => {
-    updateURL();
+    // Small delay to avoid conflicts with manual URL updates
+    const timeoutId = setTimeout(() => {
+      updateURL();
+    }, 50);
+    return () => clearTimeout(timeoutId);
   }, [filters, sortBy, updateURL]);
 
   // Convert sortBy to Shopify sortKey
@@ -81,6 +85,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
     variables: { first: 50 },
+    requestPolicy: 'cache-and-network', // Ensure fresh data while using cache when available
   });
 
   const [countResult] = useQuery({

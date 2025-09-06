@@ -21,6 +21,9 @@ const client = createClient({
       headers: {
         'Content-Type': 'application/json',
         'X-Shopify-Storefront-Access-Token': import.meta.env.VITE_SHOPIFY_STOREFRONT_API_TOKEN || '',
+        // Add cache-busting for collection queries
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
       }
     };
   },

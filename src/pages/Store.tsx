@@ -38,6 +38,7 @@ const Store: React.FC = () => {
   const [collectionsResult] = useQuery({
     query: GET_COLLECTIONS,
     variables: { first: 10 },
+    requestPolicy: 'cache-and-network', // Ensure fresh data while using cache when available
   });
 
   const { data: shopData } = shopResult;
@@ -50,14 +51,14 @@ const Store: React.FC = () => {
 
   // Handle collection selection and scroll to products
   const handleCollectionSelect = (collectionTitle: string | null) => {
-    // Update filter store
+    // Update filter store - this will trigger updateURL automatically via useEffect in ProductList
     if (collectionTitle) {
       useFilterStore.getState().updateFilters({ categories: [collectionTitle] });
     } else {
       useFilterStore.getState().updateFilters({ categories: [] });
     }
 
-    // Update URL parameter
+    // Update URL parameter using React Router to ensure immediate URL update
     if (collectionTitle) {
       setSearchParams({ collection: collectionTitle });
     } else {
@@ -65,10 +66,12 @@ const Store: React.FC = () => {
     }
 
     // Scroll to products section
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      const productsSection = document.getElementById('products');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Handle clearing all filters (collection and search)
