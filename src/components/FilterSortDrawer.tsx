@@ -111,7 +111,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[100000]">
             {sortOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
@@ -124,7 +124,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <DrawerTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">
               <Filter className="h-4 w-4" />
-              Filters
+              Filter & Sort
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-1">
                   {activeFiltersCount}
@@ -135,7 +135,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           <DrawerContent className="max-h-[80vh] z-[99999]">
             <DrawerHeader>
               <div className="flex items-center justify-between">
-                <DrawerTitle>Filter Products</DrawerTitle>
+                <DrawerTitle>Filter & Sort Products</DrawerTitle>
                 <DrawerClose asChild>
                   <Button 
                     variant="ghost" 
@@ -149,6 +149,23 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
               </div>
             </DrawerHeader>
             <div className="p-6 space-y-6 overflow-y-auto">
+              {/* Sort Section */}
+              <div>
+                <h3 className="font-semibold mb-3">Sort By</h3>
+                <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="z-[100000]">
+                    {sortOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Categories */}
               <div>
                 <h3 className="font-semibold mb-3">Categories</h3>
@@ -212,7 +229,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {availabilityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -305,7 +322,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {sortOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -378,7 +395,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100000]">
                     {availabilityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
