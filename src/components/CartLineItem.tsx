@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Minus, Trash2, Loader2, Package } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, capitalizeWords } from '@/lib/utils';
 import { CartLine } from '@/lib/shopify';
 import { useCartStore } from '@/stores';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
@@ -88,11 +88,11 @@ const CartLineItem: React.FC<CartLineItemProps> = ({
       onClick={handleProductClick}
     >
       <h4 className="font-medium text-sm sm:text-base text-foreground truncate group-hover:text-primary group-hover:font-semibold transition-all duration-200">
-        {product.title}
+        {capitalizeWords(product.title)}
       </h4>
       {variant.title !== 'Default Title' && (
         <p className={`text-gray-500 group-hover:text-muted-foreground transition-colors duration-200 ${compact ? 'text-sm' : 'text-sm sm:text-base'}`}>
-          {variant.title}
+          {capitalizeWords(variant.title)}
         </p>
       )}
     </div>

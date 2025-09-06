@@ -177,7 +177,7 @@ const Store: React.FC = () => {
         }
       ],
       "telephone": "+91-XXXXXXXXXX",
-      "email": "hello@theurbanpinnal.com",
+      "email": "support@theurbanpinnal.com",
       "openingHours": "Mo-Su 09:00-18:00",
       "priceRange": "₹₹",
       "currenciesAccepted": "INR",

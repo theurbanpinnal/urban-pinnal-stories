@@ -91,7 +91,7 @@ const Index = () => {
               "@type": "ContactPoint",
               "telephone": "+91-XXXXXXXXXX",
               "contactType": "customer service",
-              "email": "hello@theurbanpinnal.com",
+              "email": "support@theurbanpinnal.com",
               "availableLanguage": ["English", "Tamil"]
             },
             {

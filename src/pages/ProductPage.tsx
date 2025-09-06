@@ -42,7 +42,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
 import Breadcrumb from '@/components/Breadcrumb';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, capitalizeWords } from '@/lib/utils';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 // Action status type for UI locking
@@ -400,7 +400,7 @@ const ProductPage: React.FC = () => {
             {/* Product Title */}
             <div>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
-                {product.title}
+                {capitalizeWords(product.title)}
               </h1>
               
               {/* Enhanced Pricing */}
@@ -452,13 +452,13 @@ const ProductPage: React.FC = () => {
             {options.map((option) => (
               <div key={option.id} className="space-y-4">
                 <label className="block font-sans text-base font-semibold text-foreground">
-                  {option.name}
+                  {capitalizeWords(option.name)}
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {option.values.length === 1 ? (
                     // Single option value - show as selected
                     <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md font-sans px-6 py-3 text-base border-2 bg-foreground text-background">
-                      {option.values[0]}
+                      {capitalizeWords(option.values[0])}
                     </button>
                   ) : (
                     // Multiple option values - show as selectable buttons
@@ -476,7 +476,7 @@ const ProductPage: React.FC = () => {
                               : "border-2 hover:border-foreground"
                           }`}
                         >
-                          {value}
+                          {capitalizeWords(value)}
                         </Button>
                       );
                     })

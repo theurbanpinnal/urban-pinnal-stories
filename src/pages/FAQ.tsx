@@ -56,7 +56,7 @@ const FAQPage: React.FC = () => {
     },
     {
       question: "How can I contact customer support?",
-      answer: "You can reach our customer support team via email at hello@theurbanpinnal.com or through our contact form. We typically respond within 24 hours. You can also connect with us on social media for quick updates and product information."
+      answer: "You can reach our customer support team via email at support@theurbanpinnal.com or through our contact form. We typically respond within 24 hours. You can also connect with us on social media for quick updates and product information."
     }
   ];
 
