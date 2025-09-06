@@ -110,16 +110,36 @@ export function getCurrencySymbol(currencyCode: string): string {
 
 /**
  * Capitalize the first letter of every word in a string
+ * Handles special cases for measurement units and common words
  * @param text - The text to capitalize
  * @returns Text with first letter of each word capitalized
  */
 export function capitalizeWords(text: string): string {
   if (!text) return text;
   
+  // Words that should remain lowercase (measurement units, prepositions, etc.)
+  const lowercaseWords = new Set([
+    'inches', 'inch', 'cm', 'mm', 'ft', 'feet', 'foot', 'kg', 'g', 'lb', 'lbs', 'oz', 'ozs',
+    'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'and', 'or', 'but', 'the', 'a', 'an',
+    'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
+    'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'shall'
+  ]);
+  
   return text
     .toLowerCase()
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map(word => {
+      // Remove any punctuation for checking
+      const cleanWord = word.replace(/[^\w]/g, '');
+      
+      // If it's a measurement unit or common word, keep it lowercase
+      if (lowercaseWords.has(cleanWord)) {
+        return word;
+      }
+      
+      // Otherwise capitalize the first letter
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
     .join(' ');
 }
 
@@ -153,6 +173,41 @@ export function formatDisplayText(text: string, type: 'title' | 'option' | 'tag'
     default:
       return capitalizeWords(text);
   }
+}
+
+/**
+ * Convert a product title to a URL-friendly handle/slug
+ * This creates SEO-friendly URLs that match the product title
+ * @param title - The product title to convert
+ * @returns URL-friendly handle
+ */
+export function titleToHandle(title: string): string {
+  if (!title) return '';
+  
+  return title
+    .toLowerCase()
+    .trim()
+    // Replace spaces and special characters with hyphens
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    // Remove multiple consecutive hyphens
+    .replace(/-+/g, '-')
+    // Remove leading/trailing hyphens
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Convert a handle back to a readable title
+ * @param handle - The URL handle to convert
+ * @returns Readable title
+ */
+export function handleToTitle(handle: string): string {
+  if (!handle) return '';
+  
+  return handle
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 /* Example usage:

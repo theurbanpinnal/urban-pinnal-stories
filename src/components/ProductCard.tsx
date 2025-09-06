@@ -15,7 +15,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
-import { formatCurrency, capitalizeWords } from '@/lib/utils';
+import { formatCurrency, capitalizeWords, titleToHandle } from '@/lib/utils';
 import { Clock, Package, Star, Zap } from 'lucide-react';
 
 interface ProductCardProps {
@@ -125,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = memo(({ product }) => {
   } = productCalculations;
 
   return (
-    <Link to={`/store/products/${product.handle}`} className="group">
+    <Link to={`/store/products/${titleToHandle(product.title)}`} className="group">
       <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-card text-card-foreground relative">
         <div className="aspect-square overflow-hidden relative bg-gray-50">
           {primaryImageUrl ? (

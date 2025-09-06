@@ -1,3 +1,19 @@
+// Helper function to convert title to URL-friendly handle
+function titleToHandle(title) {
+  if (!title) return '';
+  
+  return title
+    .toLowerCase()
+    .trim()
+    // Replace spaces and special characters with hyphens
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    // Remove multiple consecutive hyphens
+    .replace(/-+/g, '-')
+    // Remove leading/trailing hyphens
+    .replace(/^-+|-+$/g, '');
+}
+
 export default async function handler(req, res) {
   try {
     const shopifyDomain = process.env.VITE_SHOPIFY_STORE_DOMAIN;
@@ -15,6 +31,7 @@ export default async function handler(req, res) {
         products(first: $first) {
           edges {
             node {
+              title
               handle
               updatedAt
             }
@@ -96,7 +113,7 @@ export default async function handler(req, res) {
   
   ${products.map(product => `
   <url>
-    <loc>https://theurbanpinnal.com/store/products/${product.handle}</loc>
+    <loc>https://theurbanpinnal.com/store/products/${titleToHandle(product.title)}</loc>
     <lastmod>${new Date(product.updatedAt).toISOString().split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

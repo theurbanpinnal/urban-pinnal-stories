@@ -8,7 +8,7 @@ import { SEARCH_PRODUCTS } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import OptimizedLazyImage from "@/components/OptimizedLazyImage";
-import { formatCurrency, capitalizeWords } from "@/lib/utils";
+import { formatCurrency, capitalizeWords, titleToHandle } from "@/lib/utils";
 
 interface DrawerSearchProps {
   className?: string;
@@ -99,8 +99,8 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
     }
   };
 
-  const handleProductClick = (handle: string) => {
-    navigate(`/store/products/${handle}`);
+  const handleProductClick = (product: any) => {
+    navigate(`/store/products/${titleToHandle(product.title)}`);
     handleClose();
   };
 
@@ -178,7 +178,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
                     {searchResults.map(({ node: product }) => (
                       <button
                         key={product.id}
-                        onClick={() => handleProductClick(product.handle)}
+                        onClick={() => handleProductClick(product)}
                         className="w-full p-4 bg-background border border-border rounded-lg hover:border-primary/50 hover:bg-muted/50 transition-all duration-200 text-left group"
                       >
                         <div className="flex gap-4">
@@ -187,7 +187,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
                               <OptimizedLazyImage
                                 src={product.images.edges[0].node.url}
                                 alt={product.title}
-                                context="search-result"
+                                context="product-card"
                                 className="w-full h-full object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                                 placeholderClassName="w-full h-full rounded-lg"
                                 productTitle={product.title}
