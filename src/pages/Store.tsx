@@ -251,14 +251,19 @@ const Store: React.FC = () => {
       <LaunchBanner />
       <Navigation />
       
-      {/* Breadcrumb Navigation */}
-      <div className="container mx-auto px-4 py-4">
-        <Breadcrumb 
-          items={[
-            { name: 'Store', url: '/store' }
-          ]} 
-        />
-      </div>
+      {/* Breadcrumb Structured Data Only (Hidden from UI) */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Store",
+            "item": "https://theurbanpinnal.com/store"
+          }]
+        })}
+      </script>
       
       {/* Enhanced Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden">
