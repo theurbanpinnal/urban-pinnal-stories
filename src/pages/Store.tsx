@@ -201,8 +201,13 @@ const Store: React.FC = () => {
             </div>
             
             {fetchingCollections ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 3 }).map((_, index) => (
+              <div className={`grid gap-6 ${
+                (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
+              }`}>
+                {Array.from({ length: Math.min(4, featuredCollections.length + 1) }).map((_, index) => (
                   <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
                     <Skeleton className="h-8 w-3/4 mb-3" />
                     <Skeleton className="h-4 w-full mb-2" />
@@ -212,7 +217,12 @@ const Store: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={`grid gap-6 ${
+                (featuredCollections.length + 1) === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                (featuredCollections.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                (featuredCollections.length + 1) === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto'
+              }`}>
                 {/* All Collections Card */}
                 <div 
                   className={`bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer border-2 hover:border-craft-terracotta/30 ${

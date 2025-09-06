@@ -36,6 +36,12 @@ const queryClient = new QueryClient({
   },
 });
 
+// Export for manual cache invalidation
+export const invalidateProductCache = () => {
+  queryClient.invalidateQueries({ queryKey: ['products'] });
+  queryClient.invalidateQueries({ queryKey: ['collections'] });
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
