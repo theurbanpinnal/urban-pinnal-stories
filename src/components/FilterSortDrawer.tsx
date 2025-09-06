@@ -26,6 +26,8 @@ interface FilterSortDrawerProps {
   availableCategories: string[];
   productCount?: number;
   onClearAllFilters?: () => void;
+  searchQuery?: string;
+  onClearSearch?: () => void;
   className?: string;
 }
 
@@ -37,6 +39,8 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   availableCategories,
   productCount,
   onClearAllFilters,
+  searchQuery,
+  onClearSearch,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -238,6 +242,18 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
           </div>
         )}
         
+        {/* Clear Search Button - shown when there's a search query */}
+        {searchQuery && searchQuery.trim() && onClearSearch && (
+          <Button 
+            variant="ghost" 
+            onClick={onClearSearch} 
+            className="hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
+          >
+            <X className="h-4 w-4" />
+            Clear Search
+          </Button>
+        )}
+        
         {/* Clear Filters Button - shown when filters are active */}
         {activeFiltersCount > 0 && (
           <Button 
@@ -371,6 +387,17 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Clear Search */}
+              {searchQuery && searchQuery.trim() && onClearSearch && (
+                <Button 
+                  variant="outline" 
+                  onClick={onClearSearch} 
+                  className="w-full h-12 text-base touch-manipulation"
+                >
+                  Clear Search
+                </Button>
+              )}
 
               {/* Clear Filters */}
               {activeFiltersCount > 0 && (

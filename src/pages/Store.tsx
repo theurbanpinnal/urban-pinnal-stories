@@ -26,8 +26,7 @@ const Store: React.FC = () => {
     searchQuery,
     syncWithURL,
     updateURL,
-    clearFilters,
-    setSearchQuery
+    clearFilters
   } = useFilterStore();
 
   // Set canonical URL
@@ -94,23 +93,6 @@ const Store: React.FC = () => {
       productsSection.scrollIntoView({ behavior: 'smooth' });
     }
   }, [clearFilters, setSearchParams]);
-
-  // Memoize clear search handler
-  const handleClearSearch = useCallback(() => {
-    // Clear only search query using store
-    setSearchQuery('');
-
-    // Clear search URL parameter while preserving other parameters
-    const currentParams = new URLSearchParams(searchParams);
-    currentParams.delete('search');
-    setSearchParams(currentParams);
-
-    // Scroll to products section
-    const productsSection = document.getElementById('products');
-    if (productsSection) {
-      productsSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [setSearchQuery, searchParams, setSearchParams]);
 
   // Set SEO metadata
   useEffect(() => {
@@ -533,30 +515,6 @@ const Store: React.FC = () => {
                     </Badge>
                   )}
                 </div>
-                
-                {/* Clear Search Button - Show when there's a search query */}
-                {searchQuery && (
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleClearSearch}
-                    className="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent py-2 hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
-                  >
-                    <X className="h-4 w-4" />
-                    Clear Search
-                  </Button>
-                )}
-                
-                {/* Clear Filters Button - Show when there are other filters besides search */}
-                {(currentFilters.categories.length > 0 || currentFilters.availability !== 'all' || currentFilters.priceRange.min > 0 || currentFilters.priceRange.max < 10000) && (
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleClearAllFilters}
-                    className="justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent py-2 hidden md:flex items-center gap-2 text-muted-foreground hover:text-foreground h-12 px-4 touch-manipulation"
-                  >
-                    <X className="h-4 w-4" />
-                    Clear Filters
-                  </Button>
-                )}
               </div>
             )}
             

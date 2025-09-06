@@ -31,6 +31,7 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     searchQuery,
     updateFilters,
     setSortBy,
+    setSearchQuery,
     updateURL
   } = useFilterStore();
 
@@ -228,6 +229,10 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
     updateFilters(newFilters);
   }, [updateFilters]);
 
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+  }, [setSearchQuery]);
+
   // Handle loading and error states with enhanced skeletons
   if (fetching || fetchingCollections) {
     // Show fewer skeletons if we have cached data
@@ -279,6 +284,8 @@ const ProductList: React.FC<ProductListProps> = ({ limit = 20, showFilters = tru
           availableCategories={availableCategories}
           productCount={products.length}
           onClearAllFilters={onClearAllFilters}
+          searchQuery={searchQuery}
+          onClearSearch={handleClearSearch}
         />
       )}
       
