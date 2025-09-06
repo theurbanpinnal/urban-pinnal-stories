@@ -6,12 +6,14 @@ import LaunchBanner from '@/components/LaunchBanner';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
+import Breadcrumb from '@/components/Breadcrumb';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap, X } from 'lucide-react';
 import heroWeavingImage from '@/assets/hero-weaving-3.png';
+import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +26,9 @@ const Store: React.FC = () => {
     updateURL,
     clearFilters
   } = useFilterStore();
+
+  // Set canonical URL
+  useCanonicalUrl();
 
   // Get shop info for SEO
   const [shopResult] = useQuery({
@@ -181,6 +186,15 @@ const Store: React.FC = () => {
     <div className="min-h-screen bg-background">
       <LaunchBanner />
       <Navigation />
+      
+      {/* Breadcrumb Navigation */}
+      <div className="container mx-auto px-4 py-4">
+        <Breadcrumb 
+          items={[
+            { name: 'Store', url: '/store' }
+          ]} 
+        />
+      </div>
       
       {/* Enhanced Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden">

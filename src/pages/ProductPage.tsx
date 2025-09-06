@@ -41,7 +41,9 @@ import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
+import Breadcrumb from '@/components/Breadcrumb';
 import { formatCurrency } from '@/lib/utils';
+import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 // Action status type for UI locking
 type ActionStatus = 'idle' | 'adding' | 'buying';
@@ -57,6 +59,9 @@ const ProductPage: React.FC = () => {
   
   // New state-driven UI locking system
   const [actionStatus, setActionStatus] = useState<ActionStatus>('idle');
+
+  // Set canonical URL for product page
+  useCanonicalUrl();
 
   const [result] = useQuery({
     query: GET_PRODUCT_BY_HANDLE,
@@ -324,17 +329,13 @@ const ProductPage: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8">
         {/* Enhanced Breadcrumb */}
-        <div className="mb-8 flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/store')}
-            className="font-sans text-base text-muted-foreground hover:text-foreground transition-colors duration-300"
-          >
-            <ArrowLeft className="mr-3 h-5 w-5" />
-            Back to Store
-          </Button>
-          
-
+        <div className="mb-8">
+          <Breadcrumb 
+            items={[
+              { name: 'Store', url: '/store' },
+              { name: product.title, url: `/store/products/${product.handle}` }
+            ]} 
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

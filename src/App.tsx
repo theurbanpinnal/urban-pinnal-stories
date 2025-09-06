@@ -20,6 +20,7 @@ const JournalPost = lazy(() => import(/* webpackChunkName: "page-journal-post" *
 const Privacy = lazy(() => import(/* webpackChunkName: "page-privacy" */ "./pages/Privacy"));
 const Terms = lazy(() => import(/* webpackChunkName: "page-terms" */ "./pages/Terms"));
 const Shipping = lazy(() => import(/* webpackChunkName: "page-shipping" */ "./pages/Shipping"));
+const FAQ = lazy(() => import(/* webpackChunkName: "page-faq" */ "./pages/FAQ"));
 const Store = lazy(() => import(/* webpackChunkName: "page-store" */ "./pages/Store"));
 const ProductPage = lazy(() => import(/* webpackChunkName: "page-product" */ "./pages/ProductPage"));
 const CartPage = lazy(() => import(/* webpackChunkName: "page-cart" */ "./pages/CartPage"));
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/shipping" element={<Shipping />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/store" element={<Store />} />
               <Route path="/store/products/:handle" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />

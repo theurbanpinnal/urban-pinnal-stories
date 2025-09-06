@@ -8,6 +8,7 @@ import { GET_COLLECTIONS } from "@/lib/shopify";
 import { Badge } from "@/components/ui/badge";
 import { Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useCanonicalUrl } from "@/hooks/use-canonical-url";
 
 // Lazy load non-critical components for better performance
 const BrandIntroduction = lazy(() => import("@/components/BrandIntroduction"));
@@ -30,6 +31,9 @@ const ComponentSkeleton = () => (
 
 const Index = () => {
   const navigate = useNavigate();
+  
+  // Set canonical URL for homepage
+  useCanonicalUrl();
   
   // Get collections data for the collections section
   const [collectionsResult] = useQuery({
