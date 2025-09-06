@@ -25,22 +25,16 @@ const ProductPage = lazy(() => import(/* webpackChunkName: "page-product" */ "./
 const CartPage = lazy(() => import(/* webpackChunkName: "page-cart" */ "./pages/CartPage"));
 const NotFound = lazy(() => import(/* webpackChunkName: "page-not-found" */ "./pages/NotFound"));
 
-// Create QueryClient with optimized defaults
+// Create QueryClient for CMS data only (not for GraphQL)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      staleTime: 2 * 60 * 1000, // 2 minutes for CMS data
+      gcTime: 10 * 60 * 1000, // 10 minutes cache time
       retry: 1,
     },
   },
 });
-
-// Export for manual cache invalidation
-export const invalidateProductCache = () => {
-  queryClient.invalidateQueries({ queryKey: ['products'] });
-  queryClient.invalidateQueries({ queryKey: ['collections'] });
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
