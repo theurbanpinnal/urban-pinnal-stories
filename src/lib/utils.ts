@@ -108,6 +108,53 @@ export function getCurrencySymbol(currencyCode: string): string {
   return symbols[currencyCode.toUpperCase()] || currencyCode;
 }
 
+/**
+ * Capitalize the first letter of every word in a string
+ * @param text - The text to capitalize
+ * @returns Text with first letter of each word capitalized
+ */
+export function capitalizeWords(text: string): string {
+  if (!text) return text;
+  
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+/**
+ * Capitalize the first letter of a string
+ * @param text - The text to capitalize
+ * @returns Text with first letter capitalized
+ */
+export function capitalizeFirst(text: string): string {
+  if (!text) return text;
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+/**
+ * Format text for display with proper capitalization
+ * Handles common e-commerce text formatting needs
+ * @param text - The text to format
+ * @param type - The type of formatting to apply
+ * @returns Formatted text
+ */
+export function formatDisplayText(text: string, type: 'title' | 'option' | 'tag' = 'title'): string {
+  if (!text) return text;
+  
+  switch (type) {
+    case 'title':
+      return capitalizeWords(text);
+    case 'option':
+      return capitalizeWords(text);
+    case 'tag':
+      return capitalizeWords(text);
+    default:
+      return capitalizeWords(text);
+  }
+}
+
 /* Example usage:
  * formatCurrency('1199.00', 'INR') → '₹ 1,199'
  * formatCurrency('1199.50', 'INR') → '₹ 1,199.50'

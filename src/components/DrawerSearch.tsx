@@ -8,7 +8,7 @@ import { SEARCH_PRODUCTS } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import OptimizedLazyImage from "@/components/OptimizedLazyImage";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, capitalizeWords } from "@/lib/utils";
 
 interface DrawerSearchProps {
   className?: string;
@@ -202,7 +202,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
                           )}
                           <div className="flex-1 min-w-0">
                             <h3 className="font-medium text-foreground line-clamp-1 mb-1 group-hover:text-primary transition-colors">
-                              {product.title}
+                              {capitalizeWords(product.title)}
                             </h3>
                             {product.priceRange?.minVariantPrice?.amount && (
                               <p className="text-sm font-semibold text-foreground">
@@ -211,7 +211,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
                             )}
                             {product.productType && (
                               <p className="text-xs text-muted-foreground mt-1">
-                                {product.productType}
+                                {capitalizeWords(product.productType)}
                               </p>
                             )}
                           </div>

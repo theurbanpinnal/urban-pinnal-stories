@@ -20,27 +20,22 @@ const JournalPost = lazy(() => import(/* webpackChunkName: "page-journal-post" *
 const Privacy = lazy(() => import(/* webpackChunkName: "page-privacy" */ "./pages/Privacy"));
 const Terms = lazy(() => import(/* webpackChunkName: "page-terms" */ "./pages/Terms"));
 const Shipping = lazy(() => import(/* webpackChunkName: "page-shipping" */ "./pages/Shipping"));
+const FAQ = lazy(() => import(/* webpackChunkName: "page-faq" */ "./pages/FAQ"));
 const Store = lazy(() => import(/* webpackChunkName: "page-store" */ "./pages/Store"));
 const ProductPage = lazy(() => import(/* webpackChunkName: "page-product" */ "./pages/ProductPage"));
 const CartPage = lazy(() => import(/* webpackChunkName: "page-cart" */ "./pages/CartPage"));
 const NotFound = lazy(() => import(/* webpackChunkName: "page-not-found" */ "./pages/NotFound"));
 
-// Create QueryClient with optimized defaults
+// Create QueryClient for CMS data only (not for GraphQL)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      staleTime: 2 * 60 * 1000, // 2 minutes for CMS data
+      gcTime: 10 * 60 * 1000, // 10 minutes cache time
       retry: 1,
     },
   },
 });
-
-// Export for manual cache invalidation
-export const invalidateProductCache = () => {
-  queryClient.invalidateQueries({ queryKey: ['products'] });
-  queryClient.invalidateQueries({ queryKey: ['collections'] });
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -62,6 +57,7 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/shipping" element={<Shipping />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/store" element={<Store />} />
               <Route path="/store/products/:handle" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />

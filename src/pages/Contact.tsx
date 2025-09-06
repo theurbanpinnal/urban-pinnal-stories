@@ -10,9 +10,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { contactFormSchema, type ContactFormData } from "@/lib/validations";
 import { submitToWeb3Forms } from "@/lib/form-submissions";
+import { useCanonicalUrl } from "@/hooks/use-canonical-url";
 
 const Contact = () => {
   const { toast } = useToast();
+  
+  // Set canonical URL for contact page
+  useCanonicalUrl();
   
   const {
     register,

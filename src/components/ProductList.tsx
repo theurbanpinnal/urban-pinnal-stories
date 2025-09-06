@@ -23,7 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import StarRating from '@/components/ui/star-rating';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, capitalizeWords } from '@/lib/utils';
 import { getSmartObjectPosition } from '@/lib/image-utils';
 import FilterSortDrawer, { FilterOptions, SortOption } from '@/components/FilterSortDrawer';
 import { useState, useMemo, useEffect } from 'react';
@@ -373,7 +373,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Product Title */}
           <h3 className="font-serif font-semibold text-lg md:text-xl text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            {product.title}
+            {capitalizeWords(product.title)}
           </h3>
 
           {/* Description */}
@@ -409,7 +409,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className="flex flex-wrap gap-1 mt-2">
               {product.tags.slice(0, 3).map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
+                  {capitalizeWords(tag)}
                 </Badge>
               ))}
               {product.tags.length > 3 && (

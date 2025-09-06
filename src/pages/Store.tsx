@@ -6,12 +6,14 @@ import LaunchBanner from '@/components/LaunchBanner';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductList from '@/components/ProductList';
+import Breadcrumb from '@/components/Breadcrumb';
 import { GET_SHOP_INFO, GET_COLLECTIONS } from '@/lib/shopify';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Star, Zap, X } from 'lucide-react';
 import heroWeavingImage from '@/assets/hero-weaving-3.png';
+import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +26,9 @@ const Store: React.FC = () => {
     updateURL,
     clearFilters
   } = useFilterStore();
+
+  // Set canonical URL
+  useCanonicalUrl();
 
   // Get shop info for SEO
   const [shopResult] = useQuery({
@@ -118,6 +123,111 @@ const Store: React.FC = () => {
       document.head.appendChild(ogType);
     }
     ogType.setAttribute('content', 'website');
+
+    // Add structured data for Store page
+    const existingSchema = document.querySelector('script[type="application/ld+json"]');
+    if (existingSchema) {
+      existingSchema.remove();
+    }
+
+    const storeSchema = {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": shopName,
+      "description": shopDescription,
+      "url": "https://theurbanpinnal.com/store",
+      "image": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Chennai",
+        "addressLocality": "Chennai",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "600001",
+        "addressCountry": "IN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "13.0827",
+        "longitude": "80.2707"
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Chennai",
+          "containedInPlace": {
+            "@type": "State",
+            "name": "Tamil Nadu",
+            "containedInPlace": {
+              "@type": "Country",
+              "name": "India"
+            }
+          }
+        },
+        {
+          "@type": "State",
+          "name": "Tamil Nadu",
+          "containedInPlace": {
+            "@type": "Country",
+            "name": "India"
+          }
+        },
+        {
+          "@type": "Country",
+          "name": "India"
+        }
+      ],
+      "telephone": "+91-XXXXXXXXXX",
+      "email": "support@theurbanpinnal.com",
+      "openingHours": "Mo-Su 09:00-18:00",
+      "priceRange": "₹₹",
+      "currenciesAccepted": "INR",
+      "paymentAccepted": "Cash, Credit Card, UPI, Net Banking",
+      "foundingDate": "2024",
+      "founder": {
+        "@type": "Person",
+        "name": "The Urban Pinnal Team"
+      },
+      "sameAs": [
+        "https://instagram.com/theurbanpinnal",
+        "https://facebook.com/theurbanpinnal"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Handmade Crafts Collection",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Handmade Bags",
+              "description": "Traditional handcrafted bags made by Tamil Nadu artisans"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Sustainable Crafts",
+              "description": "Eco-friendly products using natural materials"
+            }
+          }
+        ]
+      },
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": "13.0827",
+          "longitude": "80.2707"
+        },
+        "geoRadius": "500000"
+      }
+    };
+
+    const schemaScript = document.createElement('script');
+    schemaScript.type = 'application/ld+json';
+    schemaScript.textContent = JSON.stringify(storeSchema);
+    document.head.appendChild(schemaScript);
   }, [shopData]);
 
   // Scroll to products when arriving with a collection filter from home page
@@ -141,11 +251,25 @@ const Store: React.FC = () => {
       <LaunchBanner />
       <Navigation />
       
+      {/* Breadcrumb Structured Data Only (Hidden from UI) */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Store",
+            "item": "https://theurbanpinnal.com/store"
+          }]
+        })}
+      </script>
+      
       {/* Enhanced Hero Section */}
       <section className="relative h-[60vh] w-full overflow-hidden">
                   <img
             src={heroWeavingImage}
-            alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
+            alt="Skilled artisan weaving traditional handcrafted bags using time-honored techniques"
             className="w-full h-full object-cover"
             loading="eager"
             {...{ fetchpriority: "high" }}
@@ -240,7 +364,7 @@ const Store: React.FC = () => {
                     All Collections
                   </h3>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                    Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                    Discover our complete range of handcrafted products. From traditional handmade bags to modern accessories, explore everything we have to offer.
                   </p>
                   <div className="flex items-center justify-between">
                     <Badge variant={currentFilters.categories.length === 0 ? "default" : "outline"} className={`text-xs ${

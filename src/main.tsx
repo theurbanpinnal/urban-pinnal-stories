@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createClient, Provider, fetchExchange } from 'urql';
+import { createClient, Provider, fetchExchange, cacheExchange } from 'urql';
 import { CartProvider } from './components/CartProvider';
 import App from './App.tsx';
 import './index.css';
@@ -11,6 +11,7 @@ const shopifyUrl = `/shopify/api/2024-01/graphql.json`;
 const client = createClient({
   url: shopifyUrl,
   exchanges: [
+    cacheExchange, // urql's default cache exchange
     fetchExchange // Use the fetchExchange to customize fetch behavior
   ],
   fetchOptions: () => {
@@ -24,6 +25,9 @@ const client = createClient({
     };
   },
 });
+
+// Export client for cache invalidation
+export { client };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

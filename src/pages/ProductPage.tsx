@@ -41,7 +41,9 @@ import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ShareButton from '@/components/ShareButton';
-import { formatCurrency } from '@/lib/utils';
+import Breadcrumb from '@/components/Breadcrumb';
+import { formatCurrency, capitalizeWords } from '@/lib/utils';
+import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 
 // Action status type for UI locking
 type ActionStatus = 'idle' | 'adding' | 'buying';
@@ -58,6 +60,9 @@ const ProductPage: React.FC = () => {
   // New state-driven UI locking system
   const [actionStatus, setActionStatus] = useState<ActionStatus>('idle');
 
+  // Set canonical URL for product page
+  useCanonicalUrl();
+
   const [result] = useQuery({
     query: GET_PRODUCT_BY_HANDLE,
     variables: { handle: handle || '' },
@@ -70,7 +75,7 @@ const ProductPage: React.FC = () => {
   const isProcessing = actionStatus !== 'idle';
 
 
-  // Set page title for SEO
+  // Set page title and structured data for SEO
   useEffect(() => {
     if (data?.productByHandle) {
       const product = data.productByHandle;
@@ -81,6 +86,56 @@ const ProductPage: React.FC = () => {
       if (metaDescription && product.description) {
         metaDescription.setAttribute('content', product.description.substring(0, 160));
       }
+
+      // Add structured data (JSON-LD) for SEO
+      const existingSchema = document.querySelector('script[type="application/ld+json"]');
+      if (existingSchema) {
+        existingSchema.remove();
+      }
+
+      const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.title,
+        "description": product.description,
+        "image": product.images?.edges?.map(({ node }) => node.url) || [],
+        "brand": {
+          "@type": "Brand",
+          "name": "The Urban Pinnal"
+        },
+        "manufacturer": {
+          "@type": "Organization",
+          "name": "The Urban Pinnal",
+          "url": "https://theurbanpinnal.com"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": product.priceRange.minVariantPrice.amount,
+          "priceCurrency": product.priceRange.minVariantPrice.currencyCode,
+          "availability": product.totalInventory > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "seller": {
+            "@type": "Organization",
+            "name": "The Urban Pinnal"
+          },
+          "url": `https://theurbanpinnal.com/store/products/${product.handle}`
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "Tamil Nadu Artisans",
+          "description": "Skilled artisans from Tamil Nadu villages"
+        },
+        "category": product.productType || "Handmade Crafts",
+        "keywords": product.tags?.join(", ") || "",
+        "sku": product.variants?.edges?.[0]?.node?.sku || "",
+        "url": `https://theurbanpinnal.com/store/products/${product.handle}`,
+        "dateCreated": product.createdAt,
+        "dateModified": product.updatedAt
+      };
+
+      const schemaScript = document.createElement('script');
+      schemaScript.type = 'application/ld+json';
+      schemaScript.textContent = JSON.stringify(productSchema);
+      document.head.appendChild(schemaScript);
     }
   }, [data]);
 
@@ -274,17 +329,13 @@ const ProductPage: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8">
         {/* Enhanced Breadcrumb */}
-        <div className="mb-8 flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/store')}
-            className="font-sans text-base text-muted-foreground hover:text-foreground transition-colors duration-300"
-          >
-            <ArrowLeft className="mr-3 h-5 w-5" />
-            Back to Store
-          </Button>
-          
-
+        <div className="mb-8">
+          <Breadcrumb 
+            items={[
+              { name: 'Store', url: '/store' },
+              { name: product.title, url: `/store/products/${product.handle}` }
+            ]} 
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -349,7 +400,7 @@ const ProductPage: React.FC = () => {
             {/* Product Title */}
             <div>
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
-                {product.title}
+                {capitalizeWords(product.title)}
               </h1>
               
               {/* Enhanced Pricing */}
@@ -401,13 +452,13 @@ const ProductPage: React.FC = () => {
             {options.map((option) => (
               <div key={option.id} className="space-y-4">
                 <label className="block font-sans text-base font-semibold text-foreground">
-                  {option.name}
+                  {capitalizeWords(option.name)}
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {option.values.length === 1 ? (
                     // Single option value - show as selected
                     <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md font-sans px-6 py-3 text-base border-2 bg-foreground text-background">
-                      {option.values[0]}
+                      {capitalizeWords(option.values[0])}
                     </button>
                   ) : (
                     // Multiple option values - show as selectable buttons
@@ -425,7 +476,7 @@ const ProductPage: React.FC = () => {
                               : "border-2 hover:border-foreground"
                           }`}
                         >
-                          {value}
+                          {capitalizeWords(value)}
                         </Button>
                       );
                     })

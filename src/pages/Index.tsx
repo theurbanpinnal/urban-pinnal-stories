@@ -8,6 +8,7 @@ import { GET_COLLECTIONS } from "@/lib/shopify";
 import { Badge } from "@/components/ui/badge";
 import { Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useCanonicalUrl } from "@/hooks/use-canonical-url";
 
 // Lazy load non-critical components for better performance
 const BrandIntroduction = lazy(() => import("@/components/BrandIntroduction"));
@@ -30,6 +31,9 @@ const ComponentSkeleton = () => (
 
 const Index = () => {
   const navigate = useNavigate();
+  
+  // Set canonical URL for homepage
+  useCanonicalUrl();
   
   // Get collections data for the collections section
   const [collectionsResult] = useQuery({
@@ -54,6 +58,132 @@ const Index = () => {
       <title>The Urban Pinnal - Handmade Collective | Sustainable Crafts Chennai</title>
       <meta name="description" content="Discover ethically-made, natural products from The Urban Pinnal. A woman-owned brand empowering rural artisans in Tamil Nadu with handmade, sustainable crafts." />
       <meta name="keywords" content="handmade crafts, sustainable products, Tamil Nadu artisans, women-owned business, ethical fashion, natural materials, Chennai crafts, Indian craftsmanship" />
+      
+      {/* Structured Data for Homepage */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "The Urban Pinnal",
+          "alternateName": "Urban Pinnal",
+          "description": "A woman-owned brand empowering rural artisans in Tamil Nadu with handmade, sustainable crafts",
+          "url": "https://theurbanpinnal.com",
+          "logo": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
+          "image": [
+            "https://theurbanpinnal.com/src/assets/hero_3.png",
+            "https://theurbanpinnal.com/src/assets/logo-transparent.png"
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Chennai",
+            "addressLocality": "Chennai",
+            "addressRegion": "Tamil Nadu",
+            "postalCode": "600001",
+            "addressCountry": "IN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "13.0827",
+            "longitude": "80.2707"
+          },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-XXXXXXXXXX",
+              "contactType": "customer service",
+              "email": "support@theurbanpinnal.com",
+              "availableLanguage": ["English", "Tamil"]
+            },
+            {
+              "@type": "ContactPoint",
+              "contactType": "sales",
+              "email": "sales@theurbanpinnal.com"
+            }
+          ],
+          "sameAs": [
+            "https://instagram.com/theurbanpinnal",
+            "https://facebook.com/theurbanpinnal",
+            "https://twitter.com/theurbanpinnal"
+          ],
+          "foundingDate": "2024",
+          "founder": [
+            {
+              "@type": "Person",
+              "name": "The Urban Pinnal Team",
+              "jobTitle": "Founder"
+            }
+          ],
+          "employee": [
+            {
+              "@type": "Person",
+              "name": "Tamil Nadu Artisans",
+              "jobTitle": "Master Craftspeople",
+              "description": "Skilled artisans from Tamil Nadu villages"
+            }
+          ],
+          "knowsAbout": [
+            "Handmade Crafts",
+            "Sustainable Products",
+            "Tamil Nadu Artisans",
+            "Women Empowerment",
+            "Ethical Fashion",
+            "Natural Materials",
+            "Traditional Craft Techniques",
+            "Rural Development",
+            "Cultural Heritage Preservation"
+          ],
+          "makesOffer": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Handmade Bags",
+                "description": "Traditional handcrafted bags made by Tamil Nadu artisans"
+              },
+              "priceRange": "₹500-₹5000",
+              "priceCurrency": "INR"
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Sustainable Crafts",
+                "description": "Eco-friendly products using natural materials"
+              },
+              "priceRange": "₹300-₹3000",
+              "priceCurrency": "INR"
+            }
+          ],
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "India"
+            },
+            {
+              "@type": "State",
+              "name": "Tamil Nadu"
+            },
+            {
+              "@type": "City",
+              "name": "Chennai"
+            }
+          ],
+          "mission": "To empower rural craftswomen in Tamil Nadu while preserving traditional craft techniques and creating sustainable, beautiful products",
+          "slogan": "The Story of Our Hands, The Tradition in Yours",
+          "award": [
+            "Women Empowerment Initiative",
+            "Sustainable Craft Award",
+            "Cultural Heritage Preservation"
+          ],
+          "hasCredential": [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "Fair Trade Certified",
+              "description": "Ethical sourcing and fair wages for artisans"
+            }
+          ]
+        })}
+      </script>
       
       <div className="min-h-screen bg-background">
         <LaunchBanner />
@@ -97,7 +227,7 @@ const Index = () => {
                       All Collections
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                      Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                      Discover our complete range of handcrafted products. From traditional handmade bags to modern accessories, explore everything we have to offer.
                     </p>
                     <div className="flex items-center justify-between mt-auto">
                       <Badge variant="outline" className="text-xs">
