@@ -139,10 +139,43 @@ const Store: React.FC = () => {
       "image": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": "Chennai",
         "addressLocality": "Chennai",
         "addressRegion": "Tamil Nadu",
+        "postalCode": "600001",
         "addressCountry": "IN"
       },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "13.0827",
+        "longitude": "80.2707"
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Chennai",
+          "containedInPlace": {
+            "@type": "State",
+            "name": "Tamil Nadu",
+            "containedInPlace": {
+              "@type": "Country",
+              "name": "India"
+            }
+          }
+        },
+        {
+          "@type": "State",
+          "name": "Tamil Nadu",
+          "containedInPlace": {
+            "@type": "Country",
+            "name": "India"
+          }
+        },
+        {
+          "@type": "Country",
+          "name": "India"
+        }
+      ],
       "telephone": "+91-XXXXXXXXXX",
       "email": "hello@theurbanpinnal.com",
       "openingHours": "Mo-Su 09:00-18:00",
@@ -157,7 +190,38 @@ const Store: React.FC = () => {
       "sameAs": [
         "https://instagram.com/theurbanpinnal",
         "https://facebook.com/theurbanpinnal"
-      ]
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Handmade Crafts Collection",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Handmade Bags",
+              "description": "Traditional handcrafted bags made by Tamil Nadu artisans"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "Sustainable Crafts",
+              "description": "Eco-friendly products using natural materials"
+            }
+          }
+        ]
+      },
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": "13.0827",
+          "longitude": "80.2707"
+        },
+        "geoRadius": "500000"
+      }
     };
 
     const schemaScript = document.createElement('script');

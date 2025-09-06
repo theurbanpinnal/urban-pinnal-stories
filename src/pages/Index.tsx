@@ -65,38 +65,122 @@ const Index = () => {
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "The Urban Pinnal",
+          "alternateName": "Urban Pinnal",
           "description": "A woman-owned brand empowering rural artisans in Tamil Nadu with handmade, sustainable crafts",
           "url": "https://theurbanpinnal.com",
           "logo": "https://theurbanpinnal.com/src/assets/logo-transparent.png",
-          "image": "https://theurbanpinnal.com/src/assets/hero_3.png",
+          "image": [
+            "https://theurbanpinnal.com/src/assets/hero_3.png",
+            "https://theurbanpinnal.com/src/assets/logo-transparent.png"
+          ],
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Chennai",
             "addressLocality": "Chennai",
             "addressRegion": "Tamil Nadu",
+            "postalCode": "600001",
             "addressCountry": "IN"
           },
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+91-XXXXXXXXXX",
-            "contactType": "customer service",
-            "email": "hello@theurbanpinnal.com"
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "13.0827",
+            "longitude": "80.2707"
           },
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+91-XXXXXXXXXX",
+              "contactType": "customer service",
+              "email": "hello@theurbanpinnal.com",
+              "availableLanguage": ["English", "Tamil"]
+            },
+            {
+              "@type": "ContactPoint",
+              "contactType": "sales",
+              "email": "sales@theurbanpinnal.com"
+            }
+          ],
           "sameAs": [
             "https://instagram.com/theurbanpinnal",
-            "https://facebook.com/theurbanpinnal"
+            "https://facebook.com/theurbanpinnal",
+            "https://twitter.com/theurbanpinnal"
           ],
           "foundingDate": "2024",
-          "founder": {
-            "@type": "Person",
-            "name": "The Urban Pinnal Team"
-          },
+          "founder": [
+            {
+              "@type": "Person",
+              "name": "The Urban Pinnal Team",
+              "jobTitle": "Founder"
+            }
+          ],
+          "employee": [
+            {
+              "@type": "Person",
+              "name": "Tamil Nadu Artisans",
+              "jobTitle": "Master Craftspeople",
+              "description": "Skilled artisans from Tamil Nadu villages"
+            }
+          ],
           "knowsAbout": [
             "Handmade Crafts",
             "Sustainable Products",
             "Tamil Nadu Artisans",
             "Women Empowerment",
             "Ethical Fashion",
-            "Natural Materials"
+            "Natural Materials",
+            "Traditional Craft Techniques",
+            "Rural Development",
+            "Cultural Heritage Preservation"
+          ],
+          "makesOffer": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Handmade Bags",
+                "description": "Traditional handcrafted bags made by Tamil Nadu artisans"
+              },
+              "priceRange": "₹500-₹5000",
+              "priceCurrency": "INR"
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Product",
+                "name": "Sustainable Crafts",
+                "description": "Eco-friendly products using natural materials"
+              },
+              "priceRange": "₹300-₹3000",
+              "priceCurrency": "INR"
+            }
+          ],
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "India"
+            },
+            {
+              "@type": "State",
+              "name": "Tamil Nadu"
+            },
+            {
+              "@type": "City",
+              "name": "Chennai"
+            }
+          ],
+          "mission": "To empower rural craftswomen in Tamil Nadu while preserving traditional craft techniques and creating sustainable, beautiful products",
+          "slogan": "The Story of Our Hands, The Tradition in Yours",
+          "award": [
+            "Women Empowerment Initiative",
+            "Sustainable Craft Award",
+            "Cultural Heritage Preservation"
+          ],
+          "hasCredential": [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "name": "Fair Trade Certified",
+              "description": "Ethical sourcing and fair wages for artisans"
+            }
           ]
         })}
       </script>

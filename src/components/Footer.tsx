@@ -152,6 +152,14 @@ const Footer = () => {
                     Contact
                   </Link>
                 </li>
+                <li>
+                  <Link 
+                    to="/faq" 
+                    className="text-craft-ivory/80 hover:text-craft-ivory transition-elegant"
+                  >
+                    FAQ
+                  </Link>
+                </li>
               </ul>
               <ul className="space-y-3">
                 <li>
