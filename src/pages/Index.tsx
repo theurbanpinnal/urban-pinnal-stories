@@ -97,7 +97,7 @@ const Index = () => {
                       All Collections
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                      Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                      Discover our complete range of handcrafted products. From traditional handmade bags to modern accessories, explore everything we have to offer.
                     </p>
                     <div className="flex items-center justify-between mt-auto">
                       <Badge variant="outline" className="text-xs">

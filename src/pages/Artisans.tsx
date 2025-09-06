@@ -18,7 +18,7 @@ const Artisans = () => {
         <section className="relative h-[60vh] w-full overflow-hidden">
           <img
             src={founderArtisanImage}
-            alt="Skilled artisan working on traditional handcrafted textiles, showcasing the dedication and expertise of our craftswomen"
+            alt="Skilled artisan working on traditional handcrafted bags, showcasing the dedication and expertise of our craftswomen"
             className="w-full h-full object-cover"
             loading="eager"
             {...{ fetchpriority: "high" }}

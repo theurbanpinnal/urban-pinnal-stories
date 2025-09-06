@@ -145,7 +145,7 @@ const Store: React.FC = () => {
       <section className="relative h-[60vh] w-full overflow-hidden">
                   <img
             src={heroWeavingImage}
-            alt="Skilled artisan weaving traditional handcrafted textiles using time-honored techniques"
+            alt="Skilled artisan weaving traditional handcrafted bags using time-honored techniques"
             className="w-full h-full object-cover"
             loading="eager"
             {...{ fetchpriority: "high" }}
@@ -240,7 +240,7 @@ const Store: React.FC = () => {
                     All Collections
                   </h3>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                    Discover our complete range of handcrafted products. From traditional textiles to modern accessories, explore everything we have to offer.
+                    Discover our complete range of handcrafted products. From traditional handmade bags to modern accessories, explore everything we have to offer.
                   </p>
                   <div className="flex items-center justify-between">
                     <Badge variant={currentFilters.categories.length === 0 ? "default" : "outline"} className={`text-xs ${
