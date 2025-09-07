@@ -120,7 +120,7 @@ export function capitalizeWords(text: string): string {
   // Words that should remain lowercase (measurement units, prepositions, etc.)
   const lowercaseWords = new Set([
     'inches', 'inch', 'cm', 'mm', 'ft', 'feet', 'foot', 'kg', 'g', 'lb', 'lbs', 'oz', 'ozs',
-    'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'and', 'or', 'but', 'the', 'a', 'an',
+    'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'and', 'or', 'but', 'a', 'an',
     'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
     'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'shall'
   ]);

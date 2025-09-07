@@ -71,17 +71,17 @@ const FAQPage: React.FC = () => {
         <Navigation />
         
         {/* Breadcrumb Navigation */}
-        <div className="container mx-auto px-4 py-4">
-          <Breadcrumb 
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <Breadcrumb
             items={[
               { name: 'FAQ', url: '/faq' }
-            ]} 
+            ]}
           />
         </div>
-        
+
         {/* FAQ Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="py-8 sm:py-12 md:py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <FAQ faqs={faqs} />
           </div>
         </section>

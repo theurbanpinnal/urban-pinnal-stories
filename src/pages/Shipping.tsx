@@ -356,7 +356,7 @@ const Shipping = () => {
                     <div>
                       <p className="font-semibold text-foreground mb-2">Phone Support</p>
                       <p>+91 98842 15963</p>
-                      <p className="text-sm">Mon-Sat, 9 AM - 6 PM IST</p>
+                      <p className="text-sm">Mon-Sun, 9 AM - 6 PM IST</p>
                     </div>
                     <div>
                       <p className="font-semibold text-foreground mb-2">WhatsApp Support</p>
