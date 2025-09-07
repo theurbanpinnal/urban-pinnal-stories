@@ -56,7 +56,7 @@ const LoginButton = ({
               className
             )}
           >
-            <User className={cn("w-4 h-4", !iconOnly && "mr-1 sm:mr-2")} />
+            {iconOnly && <User className="w-4 h-4" />}
             {!iconOnly && (children || "My Account")}
           </Button>
         </TooltipTrigger>

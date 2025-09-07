@@ -348,6 +348,7 @@ const Navigation = () => {
                   <LoginButton 
                     variant="link" 
                     className="p-0 h-auto font-medium text-base sm:text-lg text-foreground hover:text-craft-terracotta"
+                    iconOnly={false}
                   >
                     My Account
                   </LoginButton>

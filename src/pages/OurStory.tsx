@@ -1,6 +1,5 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import Breadcrumb from "@/components/Breadcrumb";
 import { Users, Heart, Leaf } from "lucide-react";
 import bannerImage from "@/assets/story-banner.jpg";
 import founderArtisanImage from "@/assets/founder-artisan.jpg";
@@ -20,15 +19,6 @@ const OurStory = () => {
       
       <div className="min-h-screen bg-background">
         <Navigation />
-        
-        {/* Breadcrumb Navigation */}
-        <div className="container mx-auto px-4 py-4">
-          <Breadcrumb 
-            items={[
-              { name: 'Our Story', url: '/our-story' }
-            ]} 
-          />
-        </div>
         
         {/* Banner Section */}
         <section className="relative h-[60vh] w-full overflow-hidden">
