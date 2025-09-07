@@ -184,9 +184,9 @@ const Store: React.FC = () => {
           "name": "India"
         }
       ],
-      "telephone": "+91-XXXXXXXXXX",
+      "telephone": "+91-98842 15963",
       "email": "support@theurbanpinnal.com",
-      "openingHours": "Mo-Su 09:00-18:00",
+      "openingHours": "Mon-Sun 09:00-18:00",
       "priceRange": "₹₹",
       "currenciesAccepted": "INR",
       "paymentAccepted": "Cash, Credit Card, UPI, Net Banking",
