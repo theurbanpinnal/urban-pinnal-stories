@@ -179,7 +179,7 @@ const Shipping = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground">
                       <div>
                         <p><strong>Email:</strong> support@theurbanpinnal.com</p>
-                        <p><strong>Phone:</strong> +91-XXXXXXXXXX</p>
+                        <p><strong>Phone:</strong> +91-98842 15963</p>
                         <p><strong>Subject:</strong> "Order Cancellation - [Order Number]"</p>
                       </div>
                       <div>
@@ -356,7 +356,7 @@ const Shipping = () => {
                     <div>
                       <p className="font-semibold text-foreground mb-2">Phone Support</p>
                       <p>+91 98842 15963</p>
-                      <p className="text-sm">Mon-Sat, 9 AM - 6 PM IST</p>
+                      <p className="text-sm">Mon-Sun, 9 AM - 6 PM IST</p>
                     </div>
                     <div>
                       <p className="font-semibold text-foreground mb-2">WhatsApp Support</p>

@@ -35,7 +35,7 @@ const Terms = () => {
               {/* Last Updated */}
               <div className="text-center mb-12">
                 <p className="text-sm text-muted-foreground">
-                  Last updated: {new Date().toLocaleDateString('en-US', { 
+                  Last updated: {new Date('2025-08-15').toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric' 
