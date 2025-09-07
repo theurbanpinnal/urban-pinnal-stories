@@ -91,22 +91,6 @@ const Navigation = () => {
                     </NavigationMenuItem>
                   ))}
                   
-                  {/* Contact Link */}
-                  <NavigationMenuItem>
-                    <Button
-                      variant="ghost"
-                      asChild
-                      className={cn(
-                        "font-sans text-xs sm:text-sm xl:text-base font-medium transition-all duration-200 ease-out hover:text-craft-terracotta hover:bg-accent/10 px-2 sm:px-3 xl:px-4 h-10",
-                        location.pathname === "/contact" && "text-craft-terracotta"
-                      )}
-                    >
-                      <Link to="/contact">
-                        Contact
-                      </Link>
-                    </Button>
-                  </NavigationMenuItem>
-                  
                   {/* About Menu Trigger */}
                   <NavigationMenuItem>
                     <Button

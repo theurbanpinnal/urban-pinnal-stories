@@ -36,9 +36,9 @@ const LoginButton = ({
       return;
     }
     
-    // Navigate to Shopify customer login page
+    // Navigate to Shopify customer login page in same tab
     const loginUrl = `https://${shopifyDomain}/account/login`;
-    window.open(loginUrl, '_blank', 'noopener,noreferrer');
+    window.location.href = loginUrl;
   };
 
   return (
