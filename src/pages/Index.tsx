@@ -49,10 +49,10 @@ const Index = () => {
 
 
 
-  // Handle collection selection and navigation to products page
+  // Handle collection selection and navigation to store
   const handleCollectionSelect = (collectionTitle: string) => {
-    // Navigate to products page with collection filter
-    navigate(`/products?collection=${encodeURIComponent(collectionTitle)}`);
+    // Navigate to store page with collection filter
+    navigate(`/store?collection=${encodeURIComponent(collectionTitle)}`);
   };
 
   return (
