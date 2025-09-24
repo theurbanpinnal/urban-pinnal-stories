@@ -323,6 +323,55 @@
     z-index: 99998 !important;
   }
 
+  /* Instagram Browser Compatibility */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    /* Instagram browser specific styles */
+    [data-radix-drawer-content] {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    
+    [data-radix-drawer-content] input[type="number"] {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    
+    [data-radix-drawer-content] button {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    [data-radix-drawer-content] .checkbox {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+  }
+
+  /* Enhanced touch targets for Instagram browser */
+  .instagram-browser [data-radix-drawer-content] button {
+    min-height: 48px !important;
+    min-width: 48px !important;
+    font-size: 16px !important;
+  }
+
+  .instagram-browser [data-radix-drawer-content] input[type="number"] {
+    min-height: 48px !important;
+    font-size: 16px !important;
+    padding: 12px 8px !important;
+  }
+
+  .instagram-browser [data-radix-drawer-content] .checkbox {
+    min-height: 24px !important;
+    min-width: 24px !important;
+  }
+
+  .instagram-browser [data-radix-drawer-content] label {
+    font-size: 16px !important;
+    line-height: 24px !important;
+  }
+
   /* Improve touch interaction for close button */
   [data-radix-drawer-content] [data-radix-drawer-close] {
     touch-action: manipulation;
