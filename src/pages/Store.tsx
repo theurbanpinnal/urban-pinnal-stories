@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
 import { useFilterStore } from '@/stores';
 import LaunchBanner from '@/components/LaunchBanner';
@@ -15,9 +15,11 @@ import { Package, Star, Zap, X } from 'lucide-react';
 import heroWeavingImage from '@/assets/hero-weaving-3.png';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 import { useQueryClient } from '@tanstack/react-query';
+import { scrollToSectionWithRetry } from '@/lib/scroll-to-section';
 
 const Store: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Get filter store functions and state
@@ -70,13 +72,12 @@ const Store: React.FC = () => {
       setSearchParams({});
     }
 
-    // Scroll to products section
-    setTimeout(() => {
-      const productsSection = document.getElementById('products');
-      if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+    // Scroll to products section using reliable utility
+    scrollToSectionWithRetry('products', {
+      behavior: 'smooth',
+      offset: 20, // Smaller offset to ensure beginning of section
+      timeout: 200
+    });
   }, [setSearchParams]);
 
   // Memoize clear filters handler
@@ -242,13 +243,12 @@ const Store: React.FC = () => {
   useEffect(() => {
     const collectionParam = searchParams.get('collection');
     if (collectionParam) {
-      // Small delay to ensure page has loaded
-      setTimeout(() => {
-        const productsSection = document.getElementById('products');
-        if (productsSection) {
-          productsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
+      // Use reliable scroll-to-section utility
+      scrollToSectionWithRetry('products', {
+        behavior: 'smooth',
+        offset: 20, // Smaller offset to ensure beginning of section
+        timeout: 300
+      });
     }
   }, [searchParams]);
 

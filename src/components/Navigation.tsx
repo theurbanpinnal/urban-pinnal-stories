@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import logoTransparent from "@/assets/logo-transparent.png";
 import Cart from "@/components/Cart";
 import DrawerSearch from "@/components/DrawerSearch";
+import LoginButton from "@/components/LoginButton";
 import founderArtisanImage from "@/assets/founder-artisan.jpg";
 import heroWeavingImage from "@/assets/hero-weaving.jpg";
 import storyBannerImage from "@/assets/story-banner.jpg";
@@ -26,7 +27,6 @@ const Navigation = () => {
 
   const primaryNavigationItems = [
     { label: "Store", href: "/store" },
-    { label: "Contact", href: "/contact" },
   ];
 
   const moreMenuItems = [
@@ -110,6 +110,7 @@ const Navigation = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
+            <LoginButton iconOnly={true} showTooltip={true} />
             <Cart />
             <DrawerSearch />
           </div>
@@ -128,8 +129,8 @@ const Navigation = () => {
               >
               <div className="flex">
                 {/* Left Sidebar - Menu Items */}
-                <div className="w-64 bg-muted/30 border-r border-border/20">
-                  <div className="p-6">
+                <div className="w-64 bg-muted/30 border-r border-border/20 flex flex-col">
+                  <div className="p-6 flex-1">
                     <h3 className="font-serif text-lg font-semibold text-craft-terracotta mb-1">
                       Discover Our Heritage
                     </h3>
@@ -172,6 +173,18 @@ const Navigation = () => {
                         </Link>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* My Account - Pushed to bottom */}
+                  <div className="p-6 border-t border-border/20">
+                    <LoginButton 
+                      variant="link" 
+                      className="p-0 h-auto font-medium text-sm text-foreground/90 hover:text-craft-terracotta"
+                      showTooltip={true}
+                      tooltipText="Login to track your orders"
+                    >
+                      My Account
+                    </LoginButton>
                   </div>
                 </div>
                 
@@ -330,6 +343,17 @@ const Navigation = () => {
                   </Link>
                 ))}
                 
+                {/* My Account Link */}
+                <div className="py-2 sm:py-3 border-b border-border/20">
+                  <LoginButton 
+                    variant="link" 
+                    className="p-0 h-auto font-medium text-base sm:text-lg text-foreground hover:text-craft-terracotta"
+                    iconOnly={false}
+                  >
+                    My Account
+                  </LoginButton>
+                </div>
+                
                 {/* More Menu Items */}
                 <div className="pt-2">
                   <h3 className="font-medium text-sm text-muted-foreground mb-3 uppercase tracking-wider">
@@ -352,6 +376,24 @@ const Navigation = () => {
                       </p>
                     </Link>
                   ))}
+                </div>
+                
+                {/* Contact Link - After Explore Section */}
+                <div className="pt-2">
+                  <h3 className="font-medium text-sm text-muted-foreground mb-3 uppercase tracking-wider">
+                    Support
+                  </h3>
+                  <div className="py-2 sm:py-3 border-b border-border/20">
+                    <Link
+                      to="/contact"
+                      className={cn(
+                        "block font-medium text-base sm:text-lg",
+                        location.pathname === "/contact" ? "text-craft-terracotta" : "text-foreground"
+                      )}
+                    >
+                      Contact
+                    </Link>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Filter, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { getBrowserCapabilities, showInstagramBrowserWarning } from '@/lib/instagram-browser-detection';
+import CustomScroll from '@/components/CustomScroll';
 
 export type SortOption = 'newest' | 'oldest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
 
@@ -44,6 +46,19 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [browserCapabilities, setBrowserCapabilities] = useState(() => getBrowserCapabilities());
+  const [useFallbackUI, setUseFallbackUI] = useState(false);
+
+  // Detect browser capabilities and show warning if needed
+  useEffect(() => {
+    const capabilities = getBrowserCapabilities();
+    setBrowserCapabilities(capabilities);
+    
+    if (capabilities.isInstagram) {
+      setUseFallbackUI(true);
+      showInstagramBrowserWarning();
+    }
+  }, []);
 
   // Memoize static options to prevent unnecessary re-renders
   const sortOptions = useMemo(() => [
@@ -59,6 +74,21 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
     { value: 'all', label: 'All Products' },
     { value: 'in-stock', label: 'In Stock' },
   ], []);
+
+  // Enhanced touch event handling for Instagram browser compatibility
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (browserCapabilities.isInstagram) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [browserCapabilities.isInstagram]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (browserCapabilities.isInstagram) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [browserCapabilities.isInstagram]);
 
   // Memoize handlers to prevent unnecessary re-renders
   const handleCategoryChange = useCallback((category: string, checked: boolean) => {
@@ -105,7 +135,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 
   return (
     <div className={className}>
-      {/* Desktop Sort Dropdown */}
+      {/* Desktop Filter Controls */}
       <div className="hidden md:flex items-center gap-4 mb-6">
         <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
           <SelectTrigger className="w-48">
@@ -288,7 +318,17 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
       <div className="md:hidden mb-6">
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
           <DrawerTrigger asChild>
-            <Button variant="outline" className="w-full flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center gap-2"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              style={{
+                minHeight: browserCapabilities.isInstagram ? '48px' : 'auto',
+                fontSize: browserCapabilities.isInstagram ? '16px' : '14px',
+                touchAction: browserCapabilities.isInstagram ? 'manipulation' : 'auto'
+              }}
+            >
               <SlidersHorizontal className="h-4 w-4" />
               Filter & Sort
               {activeFiltersCount > 0 && (
@@ -314,7 +354,14 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                 </DrawerClose>
               </div>
             </DrawerHeader>
-            <div className="p-6 space-y-6 overflow-y-auto">
+            <CustomScroll 
+              className="p-6 space-y-6"
+              smooth={true}
+              momentum={!browserCapabilities.isInstagram}
+              scrollbarStyle="thin"
+              enableTouch={true}
+              enableWheel={true}
+            >
               {/* Sort Section */}
               <div>
                 <h3 className="font-semibold mb-3">Sort By</h3>
@@ -340,7 +387,16 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                     <p className="text-sm text-muted-foreground">No categories available</p>
                   ) : (
                     availableCategories.map((category) => (
-                      <div key={category} className="flex items-center space-x-2 py-2">
+                      <div 
+                        key={category} 
+                        className="flex items-center space-x-2 py-2"
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                        style={{
+                          minHeight: browserCapabilities.isInstagram ? '48px' : 'auto',
+                          padding: browserCapabilities.isInstagram ? '12px 0' : '8px 0'
+                        }}
+                      >
                         <Checkbox
                           id={`mobile-${category}`}
                           checked={filters.categories.includes(category)}
@@ -348,8 +404,20 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                             handleCategoryChange(category, checked as boolean)
                           }
                           className="h-5 w-5 touch-manipulation"
+                          style={{
+                            minHeight: browserCapabilities.isInstagram ? '24px' : '20px',
+                            minWidth: browserCapabilities.isInstagram ? '24px' : '20px',
+                            fontSize: browserCapabilities.isInstagram ? '16px' : '14px'
+                          }}
                         />
-                        <Label htmlFor={`mobile-${category}`} className="capitalize text-base cursor-pointer touch-manipulation">
+                        <Label 
+                          htmlFor={`mobile-${category}`} 
+                          className="capitalize text-base cursor-pointer touch-manipulation"
+                          style={{
+                            fontSize: browserCapabilities.isInstagram ? '16px' : '14px',
+                            lineHeight: browserCapabilities.isInstagram ? '24px' : '20px'
+                          }}
+                        >
                           {category}
                         </Label>
                       </div>
@@ -368,6 +436,14 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                     value={filters.priceRange.min}
                     onChange={(e) => handlePriceRangeChange('min', e.target.value)}
                     className="w-20 px-2 py-1 border rounded text-sm"
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    style={{
+                      minHeight: browserCapabilities.isInstagram ? '48px' : 'auto',
+                      fontSize: browserCapabilities.isInstagram ? '16px' : '14px',
+                      padding: browserCapabilities.isInstagram ? '12px 8px' : '8px',
+                      touchAction: browserCapabilities.isInstagram ? 'manipulation' : 'auto'
+                    }}
                   />
                   <span>-</span>
                   <input
@@ -376,6 +452,14 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                     value={filters.priceRange.max}
                     onChange={(e) => handlePriceRangeChange('max', e.target.value)}
                     className="w-20 px-2 py-1 border rounded text-sm"
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    style={{
+                      minHeight: browserCapabilities.isInstagram ? '48px' : 'auto',
+                      fontSize: browserCapabilities.isInstagram ? '16px' : '14px',
+                      padding: browserCapabilities.isInstagram ? '12px 8px' : '8px',
+                      touchAction: browserCapabilities.isInstagram ? 'manipulation' : 'auto'
+                    }}
                   />
                 </div>
               </div>
@@ -411,6 +495,13 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   variant="outline" 
                   onClick={onClearSearch} 
                   className="w-full h-12 text-base touch-manipulation"
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
+                  style={{
+                    minHeight: browserCapabilities.isInstagram ? '48px' : '48px',
+                    fontSize: browserCapabilities.isInstagram ? '16px' : '16px',
+                    touchAction: browserCapabilities.isInstagram ? 'manipulation' : 'auto'
+                  }}
                 >
                   Clear Search
                 </Button>
@@ -422,11 +513,18 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   variant="outline" 
                   onClick={clearFilters} 
                   className="w-full h-12 text-base touch-manipulation"
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
+                  style={{
+                    minHeight: browserCapabilities.isInstagram ? '48px' : '48px',
+                    fontSize: browserCapabilities.isInstagram ? '16px' : '16px',
+                    touchAction: browserCapabilities.isInstagram ? 'manipulation' : 'auto'
+                  }}
                 >
                   Clear All Filters
                 </Button>
               )}
-            </div>
+            </CustomScroll>
           </DrawerContent>
         </Drawer>
         
