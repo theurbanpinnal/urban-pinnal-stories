@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { ShoppingCart, Loader2 } from 'lucide-react';
 import OptimizedLazyImage from '@/components/OptimizedLazyImage';
 import CartLineItem from '@/components/CartLineItem';
+import CustomScroll from '@/components/CustomScroll';
 import { formatCurrency } from '@/lib/utils';
 
 interface CartProps {
@@ -73,7 +74,14 @@ const Cart: React.FC<CartProps> = ({ children }) => {
         </div>
 
         {/* Cart Items - Scrollable area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 sm:p-3">
+        <CustomScroll 
+          className="flex-1 p-2 sm:p-3"
+          smooth={true}
+          momentum={true}
+          scrollbarStyle="thin"
+          enableTouch={true}
+          enableWheel={true}
+        >
           {cartLines.length === 0 ? (
             <div className="text-center py-4 sm:py-6">
               <ShoppingCart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
@@ -111,7 +119,7 @@ const Cart: React.FC<CartProps> = ({ children }) => {
                   ))}
                 </div>
           )}
-        </div>
+        </CustomScroll>
 
         {/* Cart Footer - Fixed at bottom */}
         {cartLines.length > 0 && (

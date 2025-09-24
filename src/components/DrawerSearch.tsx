@@ -8,6 +8,7 @@ import { SEARCH_PRODUCTS } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import OptimizedLazyImage from "@/components/OptimizedLazyImage";
+import CustomScroll from "@/components/CustomScroll";
 import { formatCurrency, capitalizeWords, titleToHandle } from "@/lib/utils";
 
 interface DrawerSearchProps {
@@ -158,7 +159,14 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
         </div>
 
         {/* Search Results - Scrollable area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6">
+        <CustomScroll 
+          className="flex-1 p-4 sm:p-6"
+          smooth={true}
+          momentum={true}
+          scrollbarStyle="thin"
+          enableTouch={true}
+          enableWheel={true}
+        >
           {searchTerm.length > 2 ? (
             <>
               {searchLoading ? (
@@ -245,7 +253,7 @@ const DrawerSearch = ({ className = "" }: DrawerSearchProps) => {
               </p>
             </div>
           )}
-        </div>
+        </CustomScroll>
 
         {/* Footer - Fixed at bottom (only show when there are results) */}
         {searchTerm.length > 2 && searchResults.length > 0 && (

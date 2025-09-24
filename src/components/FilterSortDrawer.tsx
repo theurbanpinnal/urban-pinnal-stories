@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { getBrowserCapabilities, showInstagramBrowserWarning } from '@/lib/instagram-browser-detection';
+import CustomScroll from '@/components/CustomScroll';
 
 export type SortOption = 'newest' | 'oldest' | 'price-low' | 'price-high' | 'alphabetical' | 'best-selling';
 
@@ -353,7 +354,14 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                 </DrawerClose>
               </div>
             </DrawerHeader>
-            <div className="p-6 space-y-6 overflow-y-auto">
+            <CustomScroll 
+              className="p-6 space-y-6"
+              smooth={true}
+              momentum={!browserCapabilities.isInstagram}
+              scrollbarStyle="thin"
+              enableTouch={true}
+              enableWheel={true}
+            >
               {/* Sort Section */}
               <div>
                 <h3 className="font-semibold mb-3">Sort By</h3>
@@ -516,7 +524,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
                   Clear All Filters
                 </Button>
               )}
-            </div>
+            </CustomScroll>
           </DrawerContent>
         </Drawer>
         
