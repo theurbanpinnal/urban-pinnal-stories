@@ -135,7 +135,7 @@ const FilterSortDrawer: React.FC<FilterSortDrawerProps> = ({
 
   return (
     <div className={className}>
-      {/* Desktop Sort Dropdown */}
+      {/* Desktop Filter Controls */}
       <div className="hidden md:flex items-center gap-4 mb-6">
         <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
           <SelectTrigger className="w-48">

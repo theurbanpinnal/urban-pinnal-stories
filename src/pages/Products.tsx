@@ -2,10 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import ProductList from '@/components/ProductList';
-import FilterSortDrawer from '@/components/FilterSortDrawer';
 import { useFilterStore } from '@/stores/filter-store';
-import { useQuery } from 'urql';
-import { GET_PRODUCTS, GET_COLLECTIONS } from '@/lib/shopify';
 import { useCanonicalUrl } from '@/hooks/use-canonical-url';
 import { useCustomScroll } from '@/hooks/use-custom-scroll';
 import { scrollToSectionWithRetry } from '@/lib/scroll-to-section';
@@ -17,15 +14,7 @@ const Products: React.FC = () => {
   
   // Get filter store functions and state
   const {
-    filters: currentFilters,
-    sortBy,
-    searchQuery,
-    syncWithURL,
-    updateURL,
-    clearFilters,
-    updateFilters,
-    setSortBy,
-    setSearchQuery
+    syncWithURL
   } = useFilterStore();
 
   // Set canonical URL
@@ -58,93 +47,6 @@ const Products: React.FC = () => {
       });
     }
   }, [searchParams]);
-
-  // Memoize products query variables
-  const productsVariables = React.useMemo(() => {
-    const query = searchQuery ? `title:*${searchQuery}* OR tag:*${searchQuery}*` : '';
-    const sortKey = sortBy === 'newest' ? 'CREATED_AT' :
-                   sortBy === 'oldest' ? 'CREATED_AT' :
-                   sortBy === 'price-low' ? 'PRICE' :
-                   sortBy === 'price-high' ? 'PRICE' :
-                   sortBy === 'alphabetical' ? 'TITLE' :
-                   sortBy === 'best-selling' ? 'BEST_SELLING' : 'CREATED_AT';
-    
-    const reverse = sortBy === 'oldest' || sortBy === 'price-high';
-    
-    return {
-      first: 50,
-      query,
-      sortKey,
-      reverse
-    };
-  }, [searchQuery, sortBy]);
-
-  const [productsResult] = useQuery({
-    query: GET_PRODUCTS,
-    variables: productsVariables,
-  });
-
-  const { data: productsData, fetching: productsLoading, error: productsError } = productsResult;
-
-  // Memoize collections query variables
-  const collectionsVariables = React.useMemo(() => ({ first: 10 }), []);
-
-  const [collectionsResult] = useQuery({
-    query: GET_COLLECTIONS,
-    variables: collectionsVariables,
-    requestPolicy: 'cache-first',
-  });
-
-  const { data: collectionsData } = collectionsResult;
-
-  // Extract products and collections
-  const products = productsData?.products?.edges || [];
-  const collections = collectionsData?.collections?.edges || [];
-
-  // Get available categories from collections
-  const availableCategories = React.useMemo(() => 
-    collections.map(edge => edge.node.title).filter(Boolean),
-    [collections]
-  );
-
-  // Handle collection selection
-  const handleCollectionSelect = React.useCallback((collectionTitle: string | null) => {
-    if (collectionTitle) {
-      updateFilters({ categories: [collectionTitle] });
-      setSearchParams({ collection: collectionTitle });
-    } else {
-      updateFilters({ categories: [] });
-      setSearchParams({});
-    }
-
-    // Scroll to products section using reliable utility
-    scrollToSectionWithRetry('products', {
-      behavior: 'smooth',
-      offset: 20, // Smaller offset to ensure beginning of section
-      timeout: 200
-    });
-  }, [updateFilters, setSearchParams, scrollToElement]);
-
-  // Handle clear filters
-  const handleClearAllFilters = React.useCallback(() => {
-    clearFilters();
-    setSearchParams({});
-  }, [clearFilters, setSearchParams]);
-
-  // Handle sort change
-  const handleSortChange = React.useCallback((newSortBy: any) => {
-    setSortBy(newSortBy);
-  }, [setSortBy]);
-
-  // Handle filters change
-  const handleFiltersChange = React.useCallback((newFilters: any) => {
-    updateFilters(newFilters);
-  }, [updateFilters]);
-
-  // Handle search clear
-  const handleClearSearch = React.useCallback(() => {
-    setSearchQuery('');
-  }, [setSearchQuery]);
 
   // Handle back to store
   const handleBackToStore = React.useCallback(() => {
@@ -190,28 +92,10 @@ const Products: React.FC = () => {
             </p>
           </div>
 
-          {/* Filter and Sort Controls */}
-          <FilterSortDrawer
-            sortBy={sortBy}
-            onSortChange={handleSortChange}
-            filters={currentFilters}
-            onFiltersChange={handleFiltersChange}
-            availableCategories={availableCategories}
-            productCount={products.length}
-            onClearAllFilters={handleClearAllFilters}
-            searchQuery={searchQuery}
-            onClearSearch={handleClearSearch}
-          />
-
           {/* Product List */}
           <ProductList
-            products={products}
-            loading={productsLoading}
-            error={productsError}
-            sortBy={sortBy}
-            filters={currentFilters}
-            searchQuery={searchQuery}
-            onClearAllFilters={handleClearAllFilters}
+            limit={50}
+            showFilters={true}
           />
         </div>
       </section>

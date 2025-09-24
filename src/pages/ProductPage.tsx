@@ -520,7 +520,7 @@ const ProductPage: React.FC = () => {
                 </div>
                 {selectedVariant?.quantityAvailable && (
                   <span className="text-sm text-muted-foreground">
-                    Max: {Math.min(maxQuantity, selectedVariant.quantityAvailable)}
+                    Max: {Math.min(10, selectedVariant.quantityAvailable)}
                   </span>
                 )}
               </div>
