@@ -25,6 +25,7 @@ const FAQ = lazy(() => import(/* webpackChunkName: "page-faq" */ "./pages/FAQ"))
 const Store = lazy(() => import(/* webpackChunkName: "page-store" */ "./pages/Store"));
 const Products = lazy(() => import(/* webpackChunkName: "page-products" */ "./pages/Products"));
 const ProductPage = lazy(() => import(/* webpackChunkName: "page-product" */ "./pages/ProductPage"));
+const ProgrammaticPage = lazy(() => import(/* webpackChunkName: "page-programmatic" */ "./pages/ProgrammaticPage"));
 const CartPage = lazy(() => import(/* webpackChunkName: "page-cart" */ "./pages/CartPage"));
 const NotFound = lazy(() => import(/* webpackChunkName: "page-not-found" */ "./pages/NotFound"));
 
@@ -78,6 +79,13 @@ const App = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/store/products/:handle" element={<ProductPage />} />
                 <Route path="/cart" element={<CartPage />} />
+                {/* Programmatic SEO Routes */}
+                <Route path="/categories/:slug" element={<ProgrammaticPage />} />
+                <Route path="/locations/:slug" element={<ProgrammaticPage />} />
+                <Route path="/use-cases/:slug" element={<ProgrammaticPage />} />
+                <Route path="/comparisons/:slug" element={<ProgrammaticPage />} />
+                <Route path="/seasonal/:slug" element={<ProgrammaticPage />} />
+                <Route path="/guides/:slug" element={<ProgrammaticPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

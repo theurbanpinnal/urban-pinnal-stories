@@ -89,6 +89,7 @@ export default async function handler(req, res) {
     const staticPages = [
       { url: '/', priority: '1.0', changefreq: 'weekly' },
       { url: '/store', priority: '0.9', changefreq: 'daily' },
+      { url: '/products', priority: '0.8', changefreq: 'weekly' },
       { url: '/our-story', priority: '0.8', changefreq: 'monthly' },
       { url: '/craft', priority: '0.8', changefreq: 'monthly' },
       { url: '/artisans', priority: '0.8', changefreq: 'monthly' },
@@ -98,6 +99,42 @@ export default async function handler(req, res) {
       { url: '/privacy', priority: '0.3', changefreq: 'yearly' },
       { url: '/terms', priority: '0.3', changefreq: 'yearly' },
       { url: '/shipping', priority: '0.5', changefreq: 'monthly' },
+    ];
+
+    // Programmatic SEO pages
+    const programmaticPages = [
+      // Category pages
+      { url: '/categories/handmade-bags', priority: '0.8', changefreq: 'weekly' },
+      { url: '/categories/sustainable-crafts', priority: '0.8', changefreq: 'weekly' },
+      { url: '/categories/traditional-accessories', priority: '0.8', changefreq: 'weekly' },
+      { url: '/categories/handwoven-textiles', priority: '0.8', changefreq: 'weekly' },
+      { url: '/categories/artisanal-home-decor', priority: '0.8', changefreq: 'weekly' },
+
+      // Location pages
+      { url: '/locations/chennai-crafts', priority: '0.7', changefreq: 'weekly' },
+      { url: '/locations/tamil-nadu-artisans', priority: '0.7', changefreq: 'weekly' },
+      { url: '/locations/kanchipuram-silk', priority: '0.7', changefreq: 'weekly' },
+      { url: '/locations/madurai-crafts', priority: '0.7', changefreq: 'weekly' },
+
+      // Use case pages
+      { url: '/use-cases/office-bags', priority: '0.7', changefreq: 'weekly' },
+      { url: '/use-cases/home-decor-crafts', priority: '0.7', changefreq: 'weekly' },
+      { url: '/use-cases/wedding-gifts', priority: '0.7', changefreq: 'weekly' },
+      { url: '/use-cases/eco-friendly-gifts', priority: '0.7', changefreq: 'weekly' },
+      { url: '/use-cases/corporate-gifts', priority: '0.7', changefreq: 'weekly' },
+
+      // Comparison pages
+      { url: '/comparisons/handmade-vs-machine-made', priority: '0.6', changefreq: 'monthly' },
+
+      // Seasonal pages
+      { url: '/seasonal/diwali-crafts', priority: '0.6', changefreq: 'monthly' },
+      { url: '/seasonal/pongal-crafts', priority: '0.6', changefreq: 'monthly' },
+      { url: '/seasonal/christmas-handmade-gifts', priority: '0.6', changefreq: 'monthly' },
+
+      // Guide pages
+      { url: '/guides/caring-for-handmade-crafts', priority: '0.5', changefreq: 'monthly' },
+      { url: '/guides/authentic-artisan-guide', priority: '0.5', changefreq: 'monthly' },
+      { url: '/guides/sustainable-crafts-guide', priority: '0.5', changefreq: 'monthly' },
     ];
 
     // Generate sitemap XML
@@ -110,7 +147,15 @@ export default async function handler(req, res) {
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>`).join('')}
-  
+
+  ${programmaticPages.map(page => `
+  <url>
+    <loc>https://theurbanpinnal.com${page.url}</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`).join('')}
+
   ${products.map(product => `
   <url>
     <loc>https://theurbanpinnal.com/store/products/${titleToHandle(product.title)}</loc>
@@ -118,7 +163,7 @@ export default async function handler(req, res) {
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`).join('')}
-  
+
   ${collections.map(collection => `
   <url>
     <loc>https://theurbanpinnal.com/store?collection=${encodeURIComponent(collection.handle)}</loc>
